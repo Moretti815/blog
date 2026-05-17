@@ -9,7 +9,7 @@
     "startSite":"11/01/2024",
     "filingNum":"",
     "onePageListNum":15,
-    "singlePage":["about","friends"],
+    "singlePage":["about"],
     "iconList":{},
     "exlink":{},
     "commentLabelColor":"#006b75",
@@ -33,11 +33,6 @@
     "primerCSS":"<link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />",
     "needComment":1,
     "GMEEK_VERSION":"last",
-    "friendsConfig":{
-        "description":"亦师亦友 · 给予帮助的人最可爱！",
-        "dataUrl":"https://cdn.jsdmirror.com/gh/Kemeow0815/friends@output/v2/data.json",
-        "latencyUrl":"https://check-flink.qyliu.top/result.json"
-    },
     "aboutConfig":{
         "top_info":{
             "avatar":"https://blog.liushen.fun/info/avatar.ico",
