@@ -9,9 +9,9 @@
     "startSite":"11/01/2024",
     "filingNum":"",
     "onePageListNum":15,
-    "singlePage":["about"],
-    "iconList":{"friends":"m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"},
-    "exlink":{"friends":"https://moretti815.github.io/blog/friends.html"},
+    "singlePage":["about","friends"],
+    "iconList":{},
+    "exlink":{},
     "commentLabelColor":"#006b75",
     "yearColorList":["#bc4c00", "#0969da", "#1f883d", "#A333D0"],
     "i18n":"CN",
@@ -33,6 +33,11 @@
     "primerCSS":"<link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />",
     "needComment":1,
     "GMEEK_VERSION":"last",
+    "friendsConfig":{
+        "description":"亦师亦友 · 给予帮助的人最可爱！",
+        "dataUrl":"https://cdn.jsdmirror.com/gh/Kemeow0815/friends@output/v2/data.json",
+        "latencyUrl":"https://check-flink.qyliu.top/result.json"
+    },
     "aboutConfig":{
         "top_info":{
             "avatar":"https://blog.liushen.fun/info/avatar.ico",
