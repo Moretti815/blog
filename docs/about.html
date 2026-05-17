@@ -27,6 +27,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </style>
 
 <style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+
 /* About Page Styles */
 #about-container {
     display: flex;
@@ -178,10 +182,11 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 .personal-info .section-title {
     top: 10px;
-    right: -10px;
+    right: 10px;
     writing-mode: vertical-rl;
     text-orientation: upright;
-    font-size: 36px;
+    font-size: 32px;
+    z-index: 1;
 }
 
 .info-grid p {
@@ -348,21 +353,38 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     top: 10px;
     left: 20px;
     font-size: 36px;
+    z-index: 1;
+    pointer-events: none;
 }
 
-.skills-grid {
+.skills-carousel {
     margin-top: 70px;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
-.skill-category {
+.skills-track {
     display: flex;
-    flex-direction: row;
     gap: 12px;
-    overflow: hidden;
-    flex-wrap: wrap;
+    animation: scrollSkills 20s linear infinite;
+    width: fit-content;
+}
+
+.skills-track:hover {
+    animation-play-state: paused;
+}
+
+.skills-track-reverse {
+    animation-direction: reverse;
+}
+
+@keyframes scrollSkills {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 .skill-card {
@@ -376,6 +398,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease;
+    flex-shrink: 0;
 }
 
 .skill-card:hover {
@@ -406,6 +429,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     top: 10px;
     left: 20px;
     font-size: 36px;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .projects-grid {
@@ -463,6 +488,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     right: 20px;
     bottom: 10px;
     font-size: 36px;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .hobbies-list {
@@ -498,6 +525,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     right: 20px;
     bottom: 10px;
     font-size: 36px;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .self-evaluation p {
@@ -636,7 +665,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 @media (max-width: 600px) {
     body {
-        padding: 12px;
+        padding: 8px;
+    }
+    .postTitle {
+        font-size: 24px;
     }
 
     .site-name {
@@ -652,6 +684,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         font-size: 13px;
     }
 
+    .skills-carousel {
+        margin-top: 50px;
+    }
+
     .skill-card {
         width: 50px;
         height: 50px;
@@ -661,6 +697,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     .skill-card img {
         width: 36px;
         height: 36px;
+    }
+
+    .skills-track {
+        animation-duration: 15s;
     }
 
     .project h3 {
@@ -684,7 +724,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         </svg>
     </a>
     <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
-        <svg class="octicon" width="16" height="16">
+        <svg class="octicon" width="16" height="16" >
             <path id="themeSwitch" fill-rule="evenodd"></path>
         </svg>
     </a>
@@ -791,8 +831,38 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <section class="skills-and-projects">
         <div class="skills about-card">
             <h2 class="section-title">技能</h2>
-            <div class="skills-grid">
-                <div class="skill-category">
+            <div class="skills-carousel">
+                <div class="skills-track">
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633005bf0fd1e.jpg" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/63300647df7fa.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/63300647e1f10.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/26/6330ff27e5c9b.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/63300647dea51.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2023/05/09/645a45854e093.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633001374747b.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <!-- Duplicate for seamless loop -->
                     
                     <div class="skill-card">
                         <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633005bf0fd1e.jpg" alt="skill" onerror="this.style.display='none'">
@@ -823,7 +893,45 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
                     </div>
                     
                 </div>
-                <div class="skill-category">
+                <div class="skills-track skills-track-reverse">
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633006cc55e07.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633006eee047b.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633006f9ab27d.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2023/04/11/6434a635e9726.webp" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633007087a4dc.webp" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633005bf0fd1e.jpg" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/63300647df7fa.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/63300647e1f10.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <div class="skill-card">
+                        <img src="https://img02.anheyu.com/adminuploads/1/2022/09/26/6330ff27e5c9b.png" alt="skill" onerror="this.style.display='none'">
+                    </div>
+                    
+                    <!-- Duplicate for seamless loop -->
                     
                     <div class="skill-card">
                         <img src="https://img02.anheyu.com/adminuploads/1/2022/09/25/633006cc55e07.png" alt="skill" onerror="this.style.display='none'">
