@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    
+    <link rel="icon" href="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="亦师亦友 · 给予帮助的人最可爱！">
+<meta property="og:title" content="友链">
+<meta property="og:description" content="亦师亦友 · 给予帮助的人最可爱！">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moretti815.github.io/blog/friends.html">
+<meta property="og:image" content="https://img.314926.xyz/h">
+<title>友链</title>
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+
+/* 友链页面样式 */
+.friends-header {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.friends-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--color-fg-default);
+}
+
+.friends-header p {
+    color: var(--color-fg-muted);
+    font-size: 14px;
+}
+
+/* 友链网格布局 */
+.flink-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/* 友链卡片 */
+.flink-list-item {
+    display: block;
+    background-color: var(--color-canvas-default);
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.flink-list-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 网站截图 */
+.flink-snapshot {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    background-color: var(--color-canvas-subtle);
+    border-bottom: 1px solid var(--color-border-default);
+}
+
+/* 卡片内容 */
+.flink-content {
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+/* 头像 */
+.flink-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--color-border-default);
+}
+
+/* 文字信息 */
+.flink-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.flink-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-fg-default);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.flink-desc {
+    font-size: 13px;
+    color: var(--color-fg-muted);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 延迟状态标签 */
+.status-tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 3px 10px;
+    border-radius: 12px 0 12px 0;
+    font-size: 11px;
+    color: white;
+    font-weight: bold;
+    transition: font-size 0.3s ease-out, opacity 0.3s ease-out;
+    z-index: 10;
+}
+
+.flink-list-item:hover .status-tag {
+    font-size: 0;
+    opacity: 0;
+}
+
+/* 延迟状态颜色 */
+.status-tag-green {
+    background-color: #1a7f37;
+}
+
+.status-tag-light-yellow {
+    background-color: #9a6700;
+}
+
+.status-tag-dark-yellow {
+    background-color: #bc4c00;
+}
+
+.status-tag-red {
+    background-color: #cf222e;
+}
+
+/* 文章列表 */
+.flink-posts {
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--color-border-muted);
+}
+
+.flink-post-item {
+    display: block;
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--color-fg-muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+}
+
+.flink-post-item:last-child {
+    border-bottom: none;
+}
+
+.flink-post-item:hover {
+    color: var(--color-accent-fg);
+}
+
+.flink-post-date {
+    font-size: 11px;
+    color: var(--color-fg-subtle);
+    margin-left: 8px;
+}
+
+/* 标签 */
+.flink-labels {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 10;
+}
+
+.flink-label {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    color: white;
+    font-weight: 500;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .flink-list {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    .flink-snapshot {
+        height: 140px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 8px;
+    }
+
+    .postTitle {
+        font-size: 24px;
+    }
+
+    .flink-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .flink-snapshot {
+        height: 180px;
+    }
+
+    .friends-header h1 {
+        font-size: 22px;
+    }
+}
+
+/* 加载动画 */
+.flink-loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-fg-muted);
+}
+
+/* 错误提示 */
+.flink-error {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-danger-fg);
+}
+</style>
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">友链</h1>
+<div class="title-right">
+    <a href="https://moretti815.github.io/blog" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16">
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+</div>
+</div>
+    <div id="content">
+<div class="friends-header">
+    <h1>🤝 友链</h1>
+    <p>亦师亦友 · 给予帮助的人最可爱！</p>
+</div>
+
+<div id="friends-container">
+    <div class="flink-loading">加载中...</div>
+</div>
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://moretti815.github.io/blog">Moretti's Blog</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("11/01/2024"!=""){
+    var startSite=new Date("11/01/2024");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d", IconList["home"]);
+
+// 友链数据 URL
+const FRIENDS_DATA_URL = 'https://cdn.jsdmirror.com/gh/Kemeow0815/friends@output/v2/data.json';
+const LATENCY_DATA_URL = 'https://check-flink.qyliu.top/result.json';
+
+// 缓存配置
+const CACHE_KEY = 'friendsDataCache';
+const CACHE_EXPIRATION = 30 * 60 * 1000; // 30分钟
+
+// 获取缓存数据
+function getCachedData() {
+    try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_EXPIRATION) {
+                return data;
+            }
+        }
+    } catch (e) {
+        console.error('Cache read error:', e);
+    }
+    return null;
+}
+
+// 设置缓存数据
+function setCachedData(data) {
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+            data: data,
+            timestamp: Date.now()
+        }));
+    } catch (e) {
+        console.error('Cache write error:', e);
+    }
+}
+
+// 格式化日期
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+// 创建友链卡片 HTML
+function createFriendCard(friend, latencyStatus) {
+    const url = friend.url || '#';
+    const icon = friend.icon || '';
+    const snapshot = friend.snapshot || '';
+    const title = friend.title || 'Unknown';
+    const description = friend.description || '';
+    const posts = friend.posts || [];
+    const labels = friend.labels || [];
+
+    let statusClass = 'status-tag-red';
+    let statusText = 'ERR';
+
+    if (latencyStatus) {
+        if (latencyStatus.latency === -1) {
+            statusText = 'ERR';
+        } else {
+            const latency = latencyStatus.latency;
+            statusText = latency < 1 ? Math.round(latency * 1000) + ' MS' : latency.toFixed(1) + ' S';
+            if (latency <= 2) {
+                statusClass = 'status-tag-green';
+            } else if (latency <= 5) {
+                statusClass = 'status-tag-light-yellow';
+            } else if (latency <= 10) {
+                statusClass = 'status-tag-dark-yellow';
+            }
+        }
+    }
+
+    // 生成标签 HTML
+    const labelsHtml = labels.map(label => {
+        const color = label.color || '666666';
+        return `<span class="flink-label" style="background-color: #${color};">${label.name}</span>`;
+    }).join('');
+
+    // 生成文章列表 HTML
+    const postsHtml = posts.slice(0, 3).map(post => {
+        const postDate = formatDate(post.published);
+        return `<a href="${post.link}" target="_blank" class="flink-post-item" title="${post.title}">${post.title}<span class="flink-post-date">${postDate}</span></a>`;
+    }).join('');
+
+    return `
+        <a href="${url}" target="_blank" class="flink-list-item" data-url="${url.replace(/\/$/, '')}">
+            <div class="status-tag ${statusClass}">${statusText}</div>
+            ${labelsHtml ? `<div class="flink-labels">${labelsHtml}</div>` : ''}
+            <img class="flink-snapshot" src="${snapshot}" alt="${title}" loading="lazy" onerror="this.src='${icon}'">
+            <div class="flink-content">
+                <img class="flink-avatar" src="${icon}" alt="${title}" loading="lazy">
+                <div class="flink-info">
+                    <div class="flink-name">${title}</div>
+                    <div class="flink-desc">${description}</div>
+                </div>
+            </div>
+            ${postsHtml ? `<div class="flink-posts">${postsHtml}</div>` : ''}
+        </a>
+    `;
+}
+
+// 渲染友链列表
+function renderFriends(friendsData, latencyData) {
+    const container = document.getElementById('friends-container');
+    if (!friendsData || !friendsData.content || friendsData.content.length === 0) {
+        container.innerHTML = '<div class="flink-error">暂无友链</div>';
+        return;
+    }
+
+    const latencyMap = {};
+    if (latencyData && latencyData.link_status) {
+        latencyData.link_status.forEach(item => {
+            const key = item.link.replace(/\/$/, '');
+            latencyMap[key] = item;
+        });
+    }
+
+    const friendsHtml = friendsData.content.map(friend => {
+        const urlKey = (friend.url || '').replace(/\/$/, '');
+        const latencyStatus = latencyMap[urlKey];
+        return createFriendCard(friend, latencyStatus);
+    }).join('');
+
+    container.innerHTML = `<div class="flink-list">${friendsHtml}</div>`;
+}
+
+// 加载延迟数据并应用
+function loadLatencyData() {
+    fetch(LATENCY_DATA_URL)
+        .then(response => response.json())
+        .then(data => {
+            document.querySelectorAll('.flink-list-item').forEach(card => {
+                const link = card.getAttribute('data-url');
+                if (!link) return;
+
+                const status = data.link_status?.find(item =>
+                    item.link.replace(/\/$/, '') === link
+                );
+
+                if (status) {
+                    const statusTag = card.querySelector('.status-tag');
+                    if (!statusTag) return;
+
+                    let statusText = 'ERR';
+                    let statusClass = 'status-tag-red';
+
+                    if (status.latency === -1) {
+                        statusText = 'ERR';
+                    } else {
+                        const latency = status.latency;
+                        statusText = latency < 1 ? Math.round(latency * 1000) + ' MS' : latency.toFixed(1) + ' S';
+                        if (latency <= 2) {
+                            statusClass = 'status-tag-green';
+                        } else if (latency <= 5) {
+                            statusClass = 'status-tag-light-yellow';
+                        } else if (latency <= 10) {
+                            statusClass = 'status-tag-dark-yellow';
+                        }
+                    }
+
+                    statusTag.textContent = statusText;
+                    statusTag.className = `status-tag ${statusClass}`;
+                }
+            });
+
+            // 缓存延迟数据
+            try {
+                localStorage.setItem('latencyDataCache', JSON.stringify({
+                    data: data,
+                    timestamp: Date.now()
+                }));
+            } catch (e) {
+                console.error('Latency cache error:', e);
+            }
+        })
+        .catch(error => {
+            console.error('Latency data fetch error:', error);
+        });
+}
+
+// 加载友链数据
+function loadFriendsData() {
+    const cachedData = getCachedData();
+
+    if (cachedData) {
+        renderFriends(cachedData, null);
+        // 后台更新延迟数据
+        loadLatencyData();
+    }
+
+    // 获取最新数据
+    fetch(FRIENDS_DATA_URL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setCachedData(data);
+            renderFriends(data, null);
+            loadLatencyData();
+        })
+        .catch(error => {
+            console.error('Friends data fetch error:', error);
+            if (!cachedData) {
+                document.getElementById('friends-container').innerHTML =
+                    '<div class="flink-error">加载友链失败</div>';
+            }
+        });
+}
+
+// 页面加载完成后执行
+document.addEventListener('DOMContentLoaded', loadFriendsData);
+</script>
+
+
+</html>
