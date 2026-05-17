@@ -245,15 +245,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 <body>
     <div id="header">
-<div class="title-left">
-    <a href="https://moretti815.github.io/blog" class="btn btn-invisible circle" title="首页">
+<h1 class="postTitle">友链</h1>
+<div class="title-right">
+    <a href="https://moretti815.github.io/blog" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
             <path id="pathHome" fill-rule="evenodd"></path>
         </svg>
     </a>
-    <span class="postTitle">友链</span>
-</div>
-<div class="title-right">
     <a href="https://moretti815.github.io/blog/tag.html" id="buttonSearch" class="btn btn-invisible circle" title="搜索">
         <svg class="octicon" width="16" height="16">
             <path id="pathSearch" fill-rule="evenodd"></path>
@@ -340,9 +338,9 @@ console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 
 </script>
 
 <script>
-document.getElementById("pathHome").setAttribute("d", IconList["home"]);
-document.getElementById("pathSearch").setAttribute("d", IconList["search"]);
-document.getElementById("pathRSS").setAttribute("d", IconList["rss"]);
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathSearch").setAttribute("d",IconList["search"]);
+document.getElementById("pathRSS").setAttribute("d",IconList["rss"]);
 
 // Friend links data URL
 const FRIEND_LINKS_URL = 'https://cdn.jsdmirror.com/gh/Kemeow0815/friends@output/v2/data.json';
