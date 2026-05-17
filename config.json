@@ -21,7 +21,7 @@
     "nightTheme":"dark_colorblind",
     "urlMode":"pinyin",
     "style":"",
-    "script":"<script src='https://moretti815.github.io/blog/TOC/GmeekTOC.js'></script><script src='https://moretti815.github.io/blog/Lightbox/lightbox.js'></script><script src='https://moretti815.github.io/blog/GmeekVercount.js'></script><script src='https://moretti815.github.io/blog/oneko.js/oneko.js'></script>",
+    "script":"<script src='https://moretti815.github.io/blog/TOC/GmeekTOC.js'></script><script src='https://moretti815.github.io/blog/Lightbox/lightbox.js'></script><script src='https://moretti815.github.io/blog/GmeekVercount.js'></script><script src='https://moretti815.github.io/blog/oneko.js/oneko.js'></script><script src='https://moretti815.github.io/blog/Mermaid/GmeekMermaid.js'></script>",
     "head":"",
     "allHead":"",
     "indexStyle":"",
