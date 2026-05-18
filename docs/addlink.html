@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    
+    <link rel="icon" href="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="期待与您建立友好的互联网连接！">
+<meta property="og:title" content="申请友链">
+<meta property="og:description" content="期待与您建立友好的互联网连接！">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moretti815.github.io/blog/addlink.html">
+<meta property="og:image" content="https://img.314926.xyz/h">
+<title>申请友链</title>
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+
+/* 申请友链页面样式 */
+.addlink-header {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.addlink-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--color-fg-default);
+}
+
+.addlink-header p {
+    font-size: 16px;
+    color: var(--color-fg-muted);
+}
+
+/* 操作按钮 */
+.addlink-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.addlink-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-canvas-default);
+    color: var(--color-fg-default);
+    cursor: pointer;
+}
+
+.addlink-actions .btn:hover {
+    background-color: var(--color-canvas-subtle);
+    border-color: var(--color-border-muted);
+    transform: translateY(-1px);
+}
+
+.addlink-actions .btn-primary {
+    background-color: var(--color-accent-emphasis);
+    color: var(--color-fg-on-emphasis);
+    border-color: var(--color-accent-emphasis);
+}
+
+.addlink-actions .btn-primary:hover {
+    background-color: var(--color-accent-muted);
+    border-color: var(--color-accent-muted);
+}
+
+/* 内容区域 */
+.addlink-content {
+    margin-top: 24px;
+}
+
+.addlink-section {
+    margin-bottom: 32px;
+}
+
+.addlink-section h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--color-border-default);
+    color: var(--color-fg-default);
+}
+
+.addlink-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 20px 0 12px 0;
+    color: var(--color-fg-default);
+}
+
+.addlink-section p {
+    line-height: 1.8;
+    margin-bottom: 12px;
+    color: var(--color-fg-default);
+}
+
+.addlink-section ol,
+.addlink-section ul {
+    padding-left: 24px;
+    margin-bottom: 16px;
+}
+
+.addlink-section li {
+    line-height: 1.8;
+    margin-bottom: 8px;
+    color: var(--color-fg-default);
+}
+
+.addlink-section li ol,
+.addlink-section li ul {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+/* 提示框 */
+.addlink-notice {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--color-accent-emphasis);
+    background-color: var(--color-canvas-subtle);
+}
+
+.addlink-notice-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-fg-default);
+}
+
+.addlink-notice p {
+    margin: 0;
+    color: var(--color-fg-muted);
+}
+
+/* Tab 切换 */
+.addlink-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border-default);
+    margin-bottom: 16px;
+    gap: 4px;
+}
+
+.addlink-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-fg-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    bottom: -1px;
+}
+
+.addlink-tab:hover {
+    color: var(--color-fg-default);
+    background-color: var(--color-canvas-subtle);
+    border-radius: 6px 6px 0 0;
+}
+
+.addlink-tab.active {
+    color: var(--color-accent-emphasis);
+    border-bottom-color: var(--color-accent-emphasis);
+    background-color: var(--color-canvas-subtle);
+    border-radius: 6px 6px 0 0;
+}
+
+.addlink-tab-panel {
+    display: none;
+}
+
+.addlink-tab-panel.active {
+    display: block;
+}
+
+/* 代码块 */
+.addlink-code-block {
+    position: relative;
+    background-color: var(--color-canvas-overlay);
+    border: 1px solid var(--color-border-default);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0;
+}
+
+.addlink-code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background-color: var(--color-canvas-subtle);
+    border-bottom: 1px solid var(--color-border-default);
+}
+
+.addlink-code-lang {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-fg-muted);
+    text-transform: uppercase;
+}
+
+.addlink-code-copy {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: var(--color-fg-muted);
+    background: none;
+    border: 1px solid var(--color-border-default);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.addlink-code-copy:hover {
+    background-color: var(--color-canvas-default);
+    color: var(--color-fg-default);
+}
+
+.addlink-code-copy.copied {
+    color: var(--color-success-fg);
+    border-color: var(--color-success-fg);
+}
+
+.addlink-code-content {
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-fg-default);
+    white-space: pre;
+    word-wrap: normal;
+}
+
+.addlink-code-content code {
+    font-family: inherit;
+    background: none;
+    padding: 0;
+}
+
+/* 信息表格 */
+.addlink-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+
+.addlink-info-table td {
+    padding: 10px 12px;
+    border: 1px solid var(--color-border-default);
+    vertical-align: top;
+}
+
+.addlink-info-table td:first-child {
+    width: 120px;
+    font-weight: 600;
+    background-color: var(--color-canvas-subtle);
+    color: var(--color-fg-default);
+}
+
+.addlink-info-table td:last-child {
+    color: var(--color-fg-default);
+    word-break: break-all;
+}
+
+/* 文本信息列表 */
+.addlink-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+}
+
+.addlink-info-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border-muted);
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+}
+
+.addlink-info-list li:last-child {
+    border-bottom: none;
+}
+
+.addlink-info-list .label {
+    font-weight: 600;
+    min-width: 90px;
+    color: var(--color-fg-default);
+    flex-shrink: 0;
+}
+
+.addlink-info-list .value {
+    color: var(--color-fg-muted);
+    word-break: break-all;
+    flex: 1;
+}
+
+/* 强调文字 */
+.addlink-section strong {
+    color: var(--color-accent-emphasis);
+}
+
+.addlink-section a {
+    color: var(--color-accent-emphasis);
+    text-decoration: none;
+}
+
+.addlink-section a:hover {
+    text-decoration: underline;
+}
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+    .addlink-header h1 {
+        font-size: 22px;
+    }
+
+    .addlink-section h2 {
+        font-size: 18px;
+    }
+
+    .addlink-section h3 {
+        font-size: 16px;
+    }
+
+    .addlink-tab {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .addlink-code-content {
+        font-size: 12px;
+        padding: 12px;
+    }
+
+    .addlink-info-table td:first-child {
+        width: 80px;
+    }
+}
+</style>
+
+
+<body>
+    <div id="header">
+<a href="https://moretti815.github.io/blog" class="avatar circle" title="首页">
+    <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif" class="circle" style="width: 48px;height: 48px;">
+</a>
+<div style="margin-left:8px;">
+    <div class="postTitle">申请友链</div>
+</div>
+<div class="title-right">
+    <a class="btn btn-invisible circle" href="https://moretti815.github.io/blog" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16">
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+</div>
+</div>
+    <div id="content">
+<div class="addlink-header">
+    <h1>期待与您建立友好的互联网连接……</h1>
+    <p>欢迎来到我的博客！如果您想申请友链，请查看以下友链要求。</p>
+    <div class="addlink-actions">
+        <a href="https://moretti815.github.io/blog/friends.html" class="btn">
+            <svg class="octicon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 5a2 2 0 1 0 4 0a2 2 0 1 0-4 0m0 17v-5l-1-1v-4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4l-1 1v5m6-17a2 2 0 1 0 4 0a2 2 0 1 0-4 0m0 17v-4h-2l2-6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1l2 6h-2v4"/>
+            </svg>
+            友链
+        </a>
+        <a href="https://moretti815.github.io/blog/fcircle.html" class="btn btn-primary">
+            <svg class="octicon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1 4.5A2.5 2.5 0 0 1 3.5 2h8A2.5 2.5 0 0 1 14 4.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 1 12.5zM3.5 3A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 11.5 3zm1 9.25a.75.75 0 1 0 0-1.5a.75.75 0 0 0 0 1.5M8 11.5C8 9.57 6.43 8 4.5 8a.5.5 0 0 0 0 1C5.879 9 7 10.121 7 11.5a.5.5 0 0 0 1 0m3 0C11 7.916 8.084 5 4.5 5a.5.5 0 0 0 0 1C7.532 6 10 8.468 10 11.5a.5.5 0 0 0 1 0"/>
+            </svg>
+            朋友圈
+        </a>
+    </div>
+</div>
+
+<div class="addlink-content">
+    <!-- 注意事项 -->
+    <div class="addlink-section">
+        <h2>注意事项</h2>
+        <p>欢迎来到我的博客！如果您想申请友链，请查看下方的友链要求，若符合要求点击下列按钮添加友链，发送您网站相关内容，感谢您的赏识！</p>
+    </div>
+
+    <!-- 友链要求 -->
+    <div class="addlink-section">
+        <h2>友链要求</h2>
+
+        <div class="addlink-notice">
+            <div class="addlink-notice-title">
+                <svg class="octicon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z"/>
+                </svg>
+                更新记录
+            </div>
+            <p>2026-05-18规则更新：</p>
+
+            <ol>
+                <li>如果想直接申请友链，请尽量确保贵站的文章数量大于10篇，这样更能展现您对网站长期维护的决心。</li>
+                <li>友链友链，先友后链，如果愿意和我多交流，成为朋友（例如多次留言且多次过来玩），完全可以取消10篇文章的限制，前提是贵站满足以下条件：
+                    <ul>
+                        <li>站点内容积极向上，无不良广告或违规内容。</li>
+                        <li>页面设计美观，展现出长期用心经营的态度。</li>
+                    </ul>
+                </li>
+                <li>即便取消文章数量的要求，也希望贵站能保持定期更新，这样我们的交流会更有活力！</li>
+            </ol>
+
+            <p>感谢理解，期待与您成为朋友！如果有任何不便，敬请包涵。</p>
+
+            <ol start="4">
+                <li><strong>网站性质</strong>：申请的网站应为非盈利性质，例如个人博客或博客组织等，体现内容分享的初心与乐趣，原则上不接受商业化严重的站点。</li>
+                <li><strong>内容要求</strong>：博客内容建议以原创为主，避免采集站和严重同质化的内容；同时，需确保网站不包含违法信息、色情或暴力内容。</li>
+                <li><strong>访问体验</strong>：希望贵站在国内的访问速度良好，以提供更顺畅的浏览体验。适度的广告或弹窗是可以接受的，但请避免影响用户体验。</li>
+                <li><strong>稳定性与长期性</strong>：期待友链能够长久稳定，如若贵站链接在一周内无法访问，或者SSL证书过期超过一个月，我可能会在不告知的情况下移除贵站友链，烦请谅解！</li>
+                <li><strong>互惠原则</strong>：为了更好地建立互信，请先在贵站添加本站友链或告知添加时间，方便我及时核实。一般情况下不接受单向友链。</li>
+                <li><strong>友链维护</strong>：我会定期维护友链页面，如果发现本站链接被移除，可能会同步取消贵站友链。不过请放心，任何更新都可以联系我协调。</li>
+                <li><strong>域名要求</strong>：对域名没有严格限制，常见免费域名是可以接受的，但需确保贵站内容优质，且避免使用不可信的分发子域名。
+                    <ol>
+                        <li>可接受的免费域名：如 github.io、eu.org、cloudns、cf pages 等。</li>
+                        <li>暂不接受的免费域名：如 vercel，由于 SNI 阻断的原因暂不考虑使用。</li>
+                        <li>需要审核的小众二级分发域名：可能存在劫持或安全风险，这类域名本站暂不接受。</li>
+                        <li>付费域名：常见的顶级域名如 .cn、.com、.fun、.top 等，都完全符合要求。</li>
+                    </ol>
+                </li>
+                <li><strong>文章数量</strong>：为了确保友链的质量，建议申请友链时贵站的文章数量在10篇以上。</li>
+                <li><strong>名称微调</strong>：我可能会根据展示美观适当调整友链名称的长度，您可以随时检查友链页面，如果有修改意见，欢迎联系我沟通！</li>
+                <li><strong>法律优先</strong>：以上所有条件均需完全符合法律法规，如有任何冲突，一切以中华人民共和国法律为准。</li>
+            </ol>
+
+            <p>如果您满足这些条件，并愿意与本站建立友链，请在评论区留下格式化信息。我期待与您建立友好的互联网连接！</p>
+        </div>
+    </div>
+
+    <!-- 友链添加 -->
+    <div class="addlink-section">
+        <h2>友链添加</h2>
+        <p>如果您想在您的网站上添加我的友链，可以使用以下信息：</p>
+
+        <div class="addlink-actions" style="margin-bottom: 24px;">
+            <a href="https://github.com/Kemeow0815/friends/issues/new?template=template_friend.yaml" target="_blank" class="btn btn-primary">
+                <svg class="octicon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9.26 13a2 2 0 0 1 .01-2.01A3 3 0 0 0 9 5H5a3 3 0 0 0 0 6h.08a6 6 0 0 0 0 2H5A5 5 0 0 1 5 3h4a5 5 0 0 1 .26 10m1.48-6a2 2 0 0 1-.01 2.01A3 3 0 0 0 11 15h4a3 3 0 0 0 0-6h-.08a6 6 0 0 0 0-2H15a5 5 0 0 1 0 10h-4a5 5 0 0 1-.26-10"/>
+                </svg>
+                申请友链
+            </a>
+        </div>
+
+        <h3>本站信息</h3>
+
+        <!-- Tab 切换 -->
+        <div class="addlink-tabs">
+            <button class="addlink-tab active" data-tab="formatted">格式化信息</button>
+            <button class="addlink-tab" data-tab="text">文本信息</button>
+        </div>
+
+        <!-- 格式化信息面板 -->
+        <div class="addlink-tab-panel active" id="tab-formatted">
+            <div class="addlink-code-block">
+                <div class="addlink-code-header">
+                    <span class="addlink-code-lang">YML</span>
+                    <button class="addlink-code-copy" onclick="copyCode(this)">
+                        <svg class="octicon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
+                            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
+                        </svg>
+                        <span><built-in method copy of dict object at 0x7f23cd28b5c0></span>
+                    </button>
+                </div>
+                <div class="addlink-code-content"><code id="code-yml">- name: Moretti's Blog
+  link: https://moretti815.github.io/blog
+  avatar: https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif
+  descr: 期待与您建立友好的互联网连接！
+  siteshot: https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/screenshot.webp
+  /*/---下面是选填项---/*/
+  atom(options): https://moretti815.github.io/blog/rss.xml</code></div>
+            </div>
+        </div>
+
+        <!-- 文本信息面板 -->
+        <div class="addlink-tab-panel" id="tab-text">
+            <ul class="addlink-info-list">
+                <li>
+                    <span class="label">网站名称</span>
+                    <span class="value">Moretti's Blog</span>
+                </li>
+                <li>
+                    <span class="label">网址</span>
+                    <span class="value">https://moretti815.github.io/blog</span>
+                </li>
+                <li>
+                    <span class="label">网站图标</span>
+                    <span class="value">https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif</span>
+                </li>
+                <li>
+                    <span class="label">网站描述</span>
+                    <span class="value">期待与您建立友好的互联网连接！</span>
+                </li>
+                <li>
+                    <span class="label">网站截图</span>
+                    <span class="value">https://blog.liushen.fun/info/siteshot.jpg</span>
+                </li>
+                <li>
+                    <span class="label">Atom(可选)</span>
+                    <span class="value">https://moretti815.github.io/blog/rss.xml</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- <p>其中网页截图信息如果没有提供，将采用 WordPress 自动 API 进行截图，速度上可能会有延迟，还是建议上传截图。</p> -->
+    </div>
+</div>
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://moretti815.github.io/blog">Moretti's Blog</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("11/01/2024"!=""){
+    var startSite=new Date("11/01/2024");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d", IconList["home"]);
+
+// Tab 切换功能
+document.querySelectorAll('.addlink-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        const targetTab = this.getAttribute('data-tab');
+
+        // 移除所有 active 状态
+        document.querySelectorAll('.addlink-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.addlink-tab-panel').forEach(p => p.classList.remove('active'));
+
+        // 添加当前 active 状态
+        this.classList.add('active');
+        document.getElementById('tab-' + targetTab).classList.add('active');
+    });
+});
+
+// 复制代码功能
+function copyCode(btn) {
+    const codeBlock = btn.closest('.addlink-code-block').querySelector('.addlink-code-content code');
+    const text = codeBlock.innerText;
+
+    navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.querySelector('span').innerText;
+        btn.querySelector('span').innerText = '已复制';
+        btn.classList.add('copied');
+
+        setTimeout(() => {
+            btn.querySelector('span').innerText = originalText;
+            btn.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('复制失败:', err);
+        // 降级方案
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+
+        const originalText = btn.querySelector('span').innerText;
+        btn.querySelector('span').innerText = '已复制';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.querySelector('span').innerText = originalText;
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+
+
+</html>

@@ -58,6 +58,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     padding: 0;
     margin: 0;
     list-style: none;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* 友链卡片 */
@@ -71,6 +73,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     color: inherit;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .flink-list-item:hover {
@@ -85,6 +90,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     object-fit: cover;
     background-color: var(--color-canvas-subtle);
     border-bottom: 1px solid var(--color-border-default);
+    display: block;
+    max-width: 100%;
 }
 
 /* 卡片内容 */
@@ -180,10 +187,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     color: var(--color-fg-muted);
     text-decoration: none;
     border-bottom: 1px solid var(--color-border-muted);
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     transition: color 0.2s ease;
+    line-height: 1.5;
 }
 
 .flink-post-item:last-child {
@@ -233,6 +240,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 @media (max-width: 600px) {
     body {
         padding: 8px;
+        min-width: auto;
+        max-width: 100%;
     }
 
     .postTitle {
@@ -242,15 +251,115 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     .flink-list {
         grid-template-columns: 1fr;
         gap: 12px;
+        width: 100%;
+    }
+
+    .flink-list-item {
+        width: 100%;
+        min-width: auto;
     }
 
     .flink-snapshot {
         height: 180px;
+        width: 100%;
+    }
+
+    .flink-content {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .flink-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .flink-name {
+        font-size: 15px;
+    }
+
+    .flink-desc {
+        font-size: 12px;
+    }
+
+    .flink-posts {
+        padding: 0 12px 12px;
+    }
+
+    .flink-post-item {
+        padding: 6px 0;
+        font-size: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .flink-post-item span.flink-post-date {
+        margin-left: 0;
+        font-size: 11px;
     }
 
     .friends-header h1 {
         font-size: 22px;
     }
+
+    .status-tag {
+        padding: 2px 8px;
+        font-size: 10px;
+    }
+
+    .flink-labels {
+        top: 6px;
+        right: 6px;
+    }
+
+    .flink-label {
+        padding: 1px 6px;
+        font-size: 10px;
+    }
+}
+
+/* 友链操作按钮 */
+.friends-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.friends-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-canvas-default);
+    color: var(--color-fg-default);
+    cursor: pointer;
+}
+
+.friends-actions .btn:hover {
+    background-color: var(--color-canvas-subtle);
+    border-color: var(--color-border-muted);
+    transform: translateY(-1px);
+}
+
+.friends-actions .btn-primary {
+    background-color: var(--color-accent-emphasis);
+    color: var(--color-fg-on-emphasis);
+    border-color: var(--color-accent-emphasis);
+}
+
+.friends-actions .btn-primary:hover {
+    background-color: var(--color-accent-muted);
+    border-color: var(--color-accent-muted);
 }
 
 /* 加载动画 */
@@ -290,6 +399,21 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <div class="friends-header">
     <h1>🤝 友链</h1>
     <p>亦师亦友 · 给予帮助的人最可爱！</p>
+    <div class="friends-actions">
+        <a href="https://moretti815.github.io/blog/fcircle.html" class="btn btn-primary">
+            <svg class="octicon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M1 4.5A2.5 2.5 0 0 1 3.5 2h8A2.5 2.5 0 0 1 14 4.5v8a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 1 12.5zM3.5 3A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 11.5 3zm1 9.25a.75.75 0 1 0 0-1.5a.75.75 0 0 0 0 1.5M8 11.5C8 9.57 6.43 8 4.5 8a.5.5 0 0 0 0 1C5.879 9 7 10.121 7 11.5a.5.5 0 0 0 1 0m3 0C11 7.916 8.084 5 4.5 5a.5.5 0 0 0 0 1C7.532 6 10 8.468 10 11.5a.5.5 0 0 0 1 0"/>
+            </svg>
+            朋友圈
+        </a>
+        <a href="https://moretti815.github.io/blog/addlink.html" class="btn">
+            <svg class="octicon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+            申请友链
+        </a>
+    </div>
 </div>
 
 <div id="friends-container">
@@ -350,7 +474,7 @@ document.getElementById("pathHome").setAttribute("d", IconList["home"]);
 
 // 友链数据 URL
 const FRIENDS_DATA_URL = 'https://cdn.jsdmirror.com/gh/Kemeow0815/friends@output/v2/data.json';
-const LATENCY_DATA_URL = 'https://check-flink.qyliu.top/result.json';
+const LATENCY_DATA_URL = 'https://clink.268682.xyz/result.json';
 
 // 缓存配置
 const CACHE_KEY = 'friendsDataCache';
