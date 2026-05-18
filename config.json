@@ -133,5 +133,12 @@
             "work":"工作上极富责任心与信念感，对待工作认真负责，有较强的组织管理及动手能力。",
             "summary":"人嘎嘎好！"
         }
-    }
+    },
+    "rewardTitle": "赞助支持",
+    "rewardDesc": "如果您觉得我的内容对您有帮助...",
+    "rewardSubDesc": "所有赞助将用于网站维护...",
+    "rewardAlipayQrcode": "https://moretti815.github.io/blog/reward/alipay.avif",
+    "rewardWechatQrcode": "https://moretti815.github.io/blog/reward/weixin.avif",
+    "rewardSponsorSubmitUrl": "https://github.com/kemeow0815/sponsors",
+    "rewardSponsorsDataUrl": "https://cdn.jsdmirror.com/gh/Kemeow0815/sponsors@main/data/sponsors/sponsors.json"
 }
