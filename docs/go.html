@@ -429,10 +429,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         <div class="safego-title">Moretti's Blog</div>
         <div class="safego-subtitle">安全跳转中心</div>
         
-        <div class="safego-url-label">You are about to jump to:</div>
+        <div class="safego-url-label">您即将跳转到：</div>
         <div class="safego-url-box">
             <span class="safego-url-text" id="jump-url-text"></span>
-            <button class="safego-copy-btn" onclick="copyToClipboard()" aria-label="Copy">
+            <button class="safego-copy-btn" onclick="copyToClipboard()" aria-label="复制">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
                 </svg>
@@ -440,12 +440,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         </div>
         
         <div class="safego-countdown" id="countdown-text">
-            Will jump in <span class="safego-countdown-number" id="countdown">5</span> seconds
+            将在 <span class="safego-countdown-number" id="countdown">5</span> 秒后跳转，请自行确认链接安全性
         </div><div class="safego-progress-bar">
             <div class="safego-progress" id="progress"></div>
         </div><div class="safego-buttons">
-            <button class="safego-btn safego-btn-cancel" onclick="goBack()">Cancel</button>
-            <button class="safego-btn safego-btn-confirm" onclick="jumpNow()">Jump Now</button>
+            <button class="safego-btn safego-btn-cancel" onclick="goBack()">回到上页</button>
+            <button class="safego-btn safego-btn-confirm" onclick="jumpNow()">立即前往</button>
         </div>
     </div>
 </div>
@@ -582,18 +582,24 @@ if (theme === "auto") {
 (function() {
     const preloader = document.getElementById('preloader');
     if (!preloader) return;
-    
+
     // 最小显示时间（毫秒）- 确保动画至少显示一段时间，避免闪烁
     const minDisplayTime = 500;
     const startTime = Date.now();
-    
+    let hidden = false;
+
     function hidePreloader() {
+        if (hidden) return;
+        hidden = true;
+
         const elapsedTime = Date.now() - startTime;
         const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
-        
+
         setTimeout(function() {
             preloader.classList.add('hidden');
-            
+            preloader.style.display = 'none';
+            window.dispatchEvent(new CustomEvent('preloaderHidden'));
+
             // 动画完全结束后移除元素
             setTimeout(function() {
                 if (preloader.parentNode) {
@@ -602,13 +608,16 @@ if (theme === "auto") {
             }, 500); // 与 CSS transition 时间一致
         }, remainingTime);
     }
-    
+
     // 页面加载完成后隐藏动画
     if (document.readyState === 'complete') {
         hidePreloader();
     } else {
         window.addEventListener('load', hidePreloader);
     }
+
+    // 备用方案：最多等待 3 秒，确保即使资源加载失败也不会一直显示
+    setTimeout(hidePreloader, 3000);
 })();console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
 
 // 树枝背景动画 - 参考 BackgrounRandom.astro
@@ -752,7 +761,7 @@ if (theme === "auto") {
         goPagePath: 'https://moretti815.github.io/blog/go.html',
         domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
         ignoreAttrs: ["data-fancybox"],
-        enableTargetBlank: true
+        enableTargetBlank: false
     };
     
     function encodeSafeUrl(url) {
@@ -830,7 +839,9 @@ if (theme === "auto") {
             // Check if external link
             if (isExternalLink(href)) {
                 const encodedUrl = encodeSafeUrl(href);
-                const goUrl = SAFEGO_CONFIG.goPagePath + '?u=' + encodedUrl;
+                // 将来源页 URL 附加到 go 链接中，解决 noopener 导致 referrer 为空的问题
+                const fromUrl = encodeURIComponent(window.location.href);
+                const goUrl = SAFEGO_CONFIG.goPagePath + '?u=' + encodedUrl + '&from=' + fromUrl;
                 
                 link.setAttribute('href', goUrl);
                 link.setAttribute('data-safego-processed', 'true');
@@ -881,10 +892,18 @@ if (theme === "auto") {
         countdownTime: 5,
         enableBase64: true
     };
-    
+
     let countdown = SAFEGO_CONFIG.countdownTime;
     let countdownInterval = null;
     let jumpUrl = '';
+
+    // 中转页不需要加载动画，立即移除以确保内容可见
+    (function() {
+        var preloader = document.getElementById('preloader');
+        if (preloader && preloader.parentNode) {
+            preloader.parentNode.removeChild(preloader);
+        }
+    })();
     
     function getQueryString(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
@@ -965,19 +984,19 @@ if (theme === "auto") {
             clearInterval(countdownInterval);
             countdownInterval = null;
         }
-        
+
         // 优先使用 document.referrer 返回来源页
         if (document.referrer && document.referrer !== window.location.href) {
             window.location.href = document.referrer;
             return;
         }
-        
-        // 其次使用 history.back()
+
+        // 其次尝试 history.back()
         if (window.history.length > 1) {
             window.history.back();
             return;
         }
-        
+
         // 最后回到首页
         window.location.href = 'https://moretti815.github.io/blog';
     }
@@ -1002,9 +1021,9 @@ if (theme === "auto") {
         var toast = document.getElementById("copy-toast");
         
         function showToast(success) {
-            toast.textContent = success ? 
-                'Copied!' : 
-                'Copy Failed';
+            toast.textContent = success ?
+                '已复制！' :
+                '复制失败';
             toast.classList.add("show");
             setTimeout(function() {
                 toast.classList.remove("show");
@@ -1031,37 +1050,46 @@ if (theme === "auto") {
     // 适配加载动画：等待加载动画结束后再开始倒计时
     function waitForPreloader() {
         var preloader = document.getElementById('preloader');
-        
+
         // 如果加载动画不存在或已隐藏，直接开始倒计时
         if (!preloader || preloader.classList.contains('hidden') || preloader.style.display === 'none' || preloader.style.visibility === 'hidden') {
             startCountdown();
             return;
         }
-        
+
+        // 监听自定义事件 preloaderHidden
+        function onPreloaderHidden() {
+            window.removeEventListener('preloaderHidden', onPreloaderHidden);
+            startCountdown();
+        }
+        window.addEventListener('preloaderHidden', onPreloaderHidden);
+
         // 创建 MutationObserver 监听加载动画的隐藏
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'attributes') {
                     if (preloader.classList.contains('hidden') || preloader.style.display === 'none' || preloader.style.visibility === 'hidden' || preloader.style.opacity === '0') {
                         observer.disconnect();
+                        window.removeEventListener('preloaderHidden', onPreloaderHidden);
                         startCountdown();
                     }
                 }
             });
         });
-        
-        observer.observe(preloader, { 
-            attributes: true, 
-            attributeFilter: ['class', 'style'] 
+
+        observer.observe(preloader, {
+            attributes: true,
+            attributeFilter: ['class', 'style']
         });
-        
-        // 备用方案：最多等待 2 秒
+
+        // 备用方案：最多等待 3.5 秒（确保 base.html 的 3 秒强制隐藏先执行）
         setTimeout(function() {
             observer.disconnect();
+            window.removeEventListener('preloaderHidden', onPreloaderHidden);
             startCountdown();
-        }, 2000);
+        }, 3500);
     }
-    
+
     // 立即尝试开始（如果页面已经加载完成）
     if (document.readyState === 'complete') {
         waitForPreloader();
