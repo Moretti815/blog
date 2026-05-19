@@ -887,6 +887,14 @@ console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 
                 link.setAttribute('data-safego-processed', 'true');
                 link.setAttribute('target', '_blank');
                 link.setAttribute('rel', 'noopener noreferrer');
+                
+                // 点击时记录来源页面到 localStorage（同源共享）
+                link.addEventListener('click', function() {
+                    try {
+                        localStorage.setItem('safego_source', window.location.href);
+                        localStorage.setItem('safego_source_time', Date.now());
+                    } catch (e) {}
+                });
             }
         });
     }
