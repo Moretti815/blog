@@ -153,11 +153,11 @@
     "safego": {
         "enable": true,
         "enableBase64Encode": true,
+        "enableTargetBlank": true,
         "countdownTime": 5,
         "title": "Moretti's Blog",
         "subtitle": "安全跳转中心",
         "avatar": "https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif",
-        "urlParamName": "u",
         "domainWhitelist": ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
         "ignoreAttrs": ["data-fancybox"]
     }
