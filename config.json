@@ -153,7 +153,7 @@
     "safego": {
         "enable": true,
         "enableBase64Encode": true,
-        "enableTargetBlank": false,
+        "enableTargetBlank": true,
         "countdownTime": 5,
         "title": "Moretti's Blog",
         "subtitle": "安全跳转中心",
