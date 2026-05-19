@@ -24,11 +24,326 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="外链安全检测">
-<meta property="og:title" content="安全跳转 - Moretti's Blog">
-<meta property="og:description" content="外链安全检测">
-<meta property="og:type" content="website">
-<title>安全跳转 - Moretti's Blog</title>
+<meta name="robots" content="noindex, nofollow">
+<style type="text/css">
+/* 中转页专用样式 */
+.go-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    padding: 20px;
+    flex-direction: column;
+}
+
+.go-avatar-placeholder,
+.go-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.go-avatar {
+    display: none;
+}
+
+.go-avatar-placeholder {
+    background: var(--color-border-default, rgba(255, 255, 255, 0.18));
+}
+
+.go-description {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-fg-default, #f3f3f3);
+}
+
+.go-subtitle {
+    font-size: 14px;
+    margin: 6px 0 22px;
+    color: var(--color-fg-muted, #c4c4c4);
+    line-height: 1.7;
+}
+
+.go-loading {
+    position: relative;
+    text-align: center;
+    padding: 28px;
+    border-radius: 26px;
+    animation: go-fadein 0.6s ease;
+    width: 460px;
+    max-width: calc(100vw - 32px);
+    transition: all 0.3s ease-in-out;
+    border: 1px solid var(--color-border-default, #6d7682);
+    background: var(--color-canvas-overlay, rgba(57, 62, 70, 0.92));
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.go-loading:hover {
+    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.28);
+}
+
+@keyframes go-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.go-content {
+    margin-bottom: 18px;
+}
+
+.go-url-text {
+    margin-bottom: 12px;
+    font-size: 15px;
+    letter-spacing: 0.4px;
+    color: var(--color-fg-default, #efefef);
+}
+
+.go-jump-url {
+    position: relative;
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 22px;
+    padding: 16px 68px 16px 16px;
+    border-radius: 18px;
+    min-height: 58px;
+    text-align: left;
+    word-break: break-all;
+    line-height: 1.6;
+    font-size: 15px;
+    border: 1px solid var(--color-border-muted, #737b86);
+    background-color: var(--color-canvas-subtle, #333940);
+    color: var(--color-fg-default, #efefef);
+}
+
+.go-jump-url-text {
+    display: block;
+    display: -webkit-box;
+    padding-right: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.6;
+    max-height: 3.2em;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.go-copy-btn-container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+}
+
+.go-copy-toast {
+    position: absolute;
+    top: -34px;
+    right: 0;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: var(--color-canvas-default, rgba(239, 239, 239, 0.95));
+    color: var(--color-fg-default, #222831);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.go-loading[data-copy-state="success"] .go-copy-toast,
+.go-loading[data-copy-state="error"] .go-copy-toast {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.go-copy-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border-muted, #737b86);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    background-color: var(--color-canvas-default, #222831);
+    color: var(--color-fg-muted, #c8d0da);
+}
+
+.go-copy-btn:hover {
+    color: var(--color-fg-default, #ffffff);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.go-copy-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.go-countdown-text {
+    margin-top: 12px;
+    margin-bottom: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-fg-default, #efefef);
+}
+
+.go-countdown-number {
+    display: inline-block;
+    margin: 0 2px;
+    font-weight: 700;
+}
+
+.go-button-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.go-button {
+    padding: 0 20px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    height: 44px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.go-button:hover {
+    transform: translateY(-1px);
+}
+
+.go-button:active {
+    transform: translateY(0);
+}
+
+.go-cancel-button {
+    background-color: rgba(135, 44, 44, 0.16);
+    color: #ffd5d5;
+    border: 1px solid rgba(255, 118, 118, 0.12);
+}
+
+.go-confirm-button {
+    background: linear-gradient(135deg, #28566f, #2f6f90);
+    color: #fff;
+    border-color: rgba(86, 148, 182, 0.2);
+    box-shadow: 0 12px 24px rgba(40, 86, 111, 0.26);
+}
+
+.go-progress-bar {
+    width: 100%;
+    border-radius: 999px;
+    overflow: hidden;
+    height: 8px;
+    margin-top: 16px;
+    background-color: var(--color-neutral-muted, #444);
+}
+
+.go-progress {
+    width: 100%;
+    height: 100%;
+    transition: width 1s linear;
+    background-color: var(--color-accent-emphasis, #888);
+}
+
+/* 亮色模式适配 */
+[data-color-mode="light"] .go-loading {
+    border: 1px solid var(--color-border-default, #d6d9df);
+    background: var(--color-canvas-overlay, rgba(255, 255, 255, 0.78));
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
+}
+
+[data-color-mode="light"] .go-loading:hover {
+    box-shadow: 0 22px 46px rgba(0, 0, 0, 0.14);
+}
+
+[data-color-mode="light"] .go-description {
+    color: var(--color-fg-default, #1f2328);
+}
+
+[data-color-mode="light"] .go-url-text,
+[data-color-mode="light"] .go-countdown-text {
+    color: var(--color-fg-default, #333);
+}
+
+[data-color-mode="light"] .go-jump-url {
+    border: 1px solid var(--color-border-muted, #d6dde8);
+    background-color: var(--color-canvas-subtle, #f7f9fe);
+    color: var(--color-fg-default, #333);
+}
+
+[data-color-mode="light"] .go-copy-toast {
+    background: var(--color-canvas-default, rgba(17, 24, 39, 0.94));
+    color: #fff;
+}
+
+[data-color-mode="light"] .go-copy-btn {
+    background-color: var(--color-canvas-default, #f7f9fe);
+    border-color: var(--color-border-muted, #d0d7e2);
+    color: #667085;
+}
+
+[data-color-mode="light"] .go-copy-btn:hover {
+    color: #334155;
+    box-shadow: 0 12px 24px rgba(100, 100, 100, 0.14);
+}
+
+[data-color-mode="light"] .go-cancel-button {
+    background-color: #eef5f8;
+    color: #4b5563;
+    border: 1px solid #dde7ee;
+}
+
+[data-color-mode="light"] .go-confirm-button {
+    background: linear-gradient(135deg, #3fc1c9, #38a9b6);
+    box-shadow: 0 12px 24px rgba(63, 193, 201, 0.24);
+}
+
+[data-color-mode="light"] .go-progress-bar {
+    background-color: #ebf0f7;
+}
+
+[data-color-mode="light"] .go-progress {
+    background-color: #abedd8;
+}
+
+/* 移动端适配 */
+@media (max-width: 520px) {
+    .go-container {
+        padding: 16px;
+        min-height: calc(100vh - 150px);
+    }
+
+    .go-loading {
+        padding: 22px 18px;
+    }
+
+    .go-button-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 </head>
 <style>
@@ -96,198 +411,6 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 }
 </style>
 
-<style>
-#go-container {
-    max-width: 600px;
-    margin: 60px auto;
-    padding: 40px;
-    background-color: var(--color-canvas-default);
-    border: 1px solid var(--color-border-default);
-    border-radius: 16px;
-    text-align: center;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-}
-
-.go-header {
-    margin-bottom: 32px;
-}
-
-.go-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 16px;
-    border: 3px solid var(--color-accent-emphasis);
-    object-fit: cover;
-}
-
-.go-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--color-fg-default);
-    margin-bottom: 8px;
-}
-
-.go-subtitle {
-    font-size: 14px;
-    color: var(--color-fg-muted);
-}
-
-.go-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--color-border-default), transparent);
-    margin: 24px 0;
-}
-
-.go-warning {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: var(--color-attention-fg);
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-
-.go-warning svg {
-    width: 18px;
-    height: 18px;
-}
-
-.go-target-label {
-    font-size: 13px;
-    color: var(--color-fg-muted);
-    margin-bottom: 8px;
-}
-
-.go-target-url {
-    background-color: var(--color-canvas-subtle);
-    border: 1px solid var(--color-border-default);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 14px;
-    color: var(--color-fg-default);
-    word-break: break-all;
-    margin-bottom: 20px;
-    font-family: monospace;
-}
-
-.go-countdown {
-    font-size: 14px;
-    color: var(--color-fg-muted);
-    margin-bottom: 24px;
-}
-
-.go-countdown-number {
-    color: var(--color-accent-fg);
-    font-weight: 600;
-    font-size: 18px;
-}
-
-.go-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.go-btn {
-    padding: 10px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.go-btn-primary {
-    background-color: var(--color-btn-primary-bg);
-    color: var(--color-btn-primary-text);
-}
-
-.go-btn-primary:hover {
-    background-color: var(--color-btn-primary-hover-bg);
-}
-
-.go-btn-secondary {
-    background-color: var(--color-btn-bg);
-    color: var(--color-btn-text);
-    border: 1px solid var(--color-btn-border);
-}
-
-.go-btn-secondary:hover {
-    background-color: var(--color-btn-hover-bg);
-}
-
-.go-copy-toast {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-100px);
-    background-color: var(--color-success-emphasis);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    opacity: 0;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.go-copy-toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-
-.go-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    color: var(--color-fg-muted);
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-
-.go-loading svg {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-@media (max-width: 600px) {
-    #go-container {
-        margin: 20px auto;
-        padding: 24px;
-    }
-    
-    .go-avatar {
-        width: 64px;
-        height: 64px;
-    }
-    
-    .go-title {
-        font-size: 20px;
-    }
-    
-    .go-actions {
-        flex-direction: column;
-    }
-    
-    .go-btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-</style>
-
 
 <body>
     <!-- 树枝背景 -->
@@ -297,66 +420,289 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h1 class="postTitle">安全跳转</h1>
 </div>
     <div id="content">
-<div id="go-container">
-    <div class="go-loading" id="go-loading">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="10"/>
-        </svg>
-        加载中...
-    </div>
-    
-    <div class="go-header" id="go-content" style="display: none;">
-        <img class="go-avatar" src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif" alt="avatar">
-        <div class="go-title">Moretti's Blog</div>
-        <div class="go-subtitle">安全跳转中心</div>
-    </div>
-    
-    <div class="go-divider" id="go-divider" style="display: none;"></div>
-    
-    <div class="go-warning" id="go-warning" style="display: none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        您即将离开本站
-    </div>
-    
-    <div class="go-target-label" id="go-target-label" style="display: none;">目标链接：</div>
-    <div class="go-target-url" id="go-target-url" style="display: none;"></div>
-    
-    <div class="go-countdown" id="go-countdown" style="display: none;">
-        <span class="go-countdown-number" id="countdown-number">5</span>
-        秒后自动跳转
-    </div>
-    
-    <div class="go-actions" id="go-actions" style="display: none;">
-        <button class="go-btn go-btn-primary" id="btn-go" onclick="goToTarget()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                <polyline points="15 3 21 3 21 9"/>
-                <line x1="10" y1="14" x2="21" y2="3"/>
-            </svg>
-            立即跳转
-        </button>
-        <button class="go-btn go-btn-secondary" id="btn-copy" onclick="copyUrl()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            复制链接
-        </button>
-        <button class="go-btn go-btn-secondary" id="btn-back" onclick="goBack()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="19" y1="12" x2="5" y2="12"/>
-                <polyline points="12 19 5 12 12 5"/>
-            </svg>
-            返回上页
-        </button>
+<div class="go-container">
+    <div class="go-avatar-placeholder"></div>
+    <img src="" alt="avatar" class="go-avatar" id="go-avatar">
+    <div class="go-description">Moretti's Blog</div>
+    <div class="go-subtitle">安全跳转中心</div>
+
+    <div class="go-loading" id="go-loading" data-copy-state="idle">
+        <div class="go-content">
+            <div class="go-url-text">您即将离开本站，跳转到：</div>
+            <div class="go-jump-url" id="go-jump-url">
+                <span class="go-jump-url-text" id="go-jump-url-text"></span>
+                <div class="go-copy-btn-container">
+                    <span class="go-copy-toast" id="go-copy-toast">Copied</span>
+                    <button class="go-copy-btn" onclick="goCopyToClipboard()" aria-label="copy link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="go-countdown-text" id="go-countdown-text">
+            将在<span class="go-countdown-number" id="go-countdown"></span>秒后跳转，请自行确认链接安全性
+        </div>
+        <div class="go-progress-bar" id="go-progress-bar">
+            <div class="go-progress" id="go-progress"></div>
+        </div>
+
+        <div class="go-button-container">
+            <button class="go-button go-cancel-button" onclick="goBack()">Cancel</button>
+            <button class="go-button go-confirm-button" onclick="goJump()">Jump Now</button>
+        </div>
     </div>
 </div>
 
-<div class="go-copy-toast" id="copy-toast">已复制！</div>
+<script>
+(function() {
+    // 配置
+    const SAFEGO_CONFIG = {
+        countdown: 5,
+        enableBase64: true,
+        avatar: 'https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif',
+        urlParamName: 'u'
+    };
+
+    let countdown = SAFEGO_CONFIG.countdown;
+    let jumpUrl = '';
+    let countdownInterval = null;
+    let copyToastTimer = null;
+
+    // 获取 URL 参数
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        return r ? decodeURI(r[2]) : null;
+    }
+
+    // Base64 解码
+    function decodeSafeUrl(paramStr) {
+        if (!paramStr) return paramStr;
+        var base64 = paramStr.replace(/-/g, "+").replace(/_/g, "/");
+        var paddingLength = (4 - (base64.length % 4)) % 4;
+        if (paddingLength) {
+            base64 += "=".repeat(paddingLength);
+        }
+        return decodeURIComponent(atob(base64).split("").map(function (char) {
+            return "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2);
+        }).join(""));
+    }
+
+    // 加载头像
+    function loadAvatar() {
+        const avatarImg = document.getElementById('go-avatar');
+        const placeholder = document.querySelector('.go-avatar-placeholder');
+        if (!SAFEGO_CONFIG.avatar) {
+            placeholder.style.display = 'none';
+            return;
+        }
+        const img = new Image();
+        img.onload = function() {
+            avatarImg.src = SAFEGO_CONFIG.avatar;
+            avatarImg.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        img.onerror = function() {
+            placeholder.style.display = 'none';
+        };
+        img.src = SAFEGO_CONFIG.avatar;
+    }
+
+    // 更新复制提示
+    function updateCopyToast(state, message) {
+        const loadingEl = document.getElementById('go-loading');
+        const toastEl = document.getElementById('go-copy-toast');
+        if (!loadingEl || !toastEl) return;
+
+        loadingEl.setAttribute('data-copy-state', state);
+        toastEl.textContent = message;
+
+        if (copyToastTimer) {
+            clearTimeout(copyToastTimer);
+        }
+        if (state === 'success' || state === 'error') {
+            copyToastTimer = setTimeout(function() {
+                loadingEl.setAttribute('data-copy-state', 'idle');
+            }, 1600);
+        }
+    }
+
+    // 复制到剪贴板
+    function goCopyToClipboard() {
+        const urlText = document.getElementById('go-jump-url-text').textContent;
+        if (!urlText) {
+            updateCopyToast('error', 'Nothing to copy');
+            return;
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(urlText).then(function() {
+                updateCopyToast('success', 'Copied');
+            }).catch(function() {
+                fallbackCopy(urlText);
+            });
+        } else {
+            fallbackCopy(urlText);
+        }
+    }
+
+    // 备用复制方法
+    function fallbackCopy(text) {
+        const tempInput = document.createElement('input');
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, text.length);
+        try {
+            document.execCommand('copy');
+            updateCopyToast('success', 'Copied');
+        } catch (e) {
+            updateCopyToast('error', 'Copy failed');
+        }
+        document.body.removeChild(tempInput);
+    }
+
+    // 更新倒计时
+    function updateCountdown() {
+        const countdownEl = document.getElementById('go-countdown');
+        const progressEl = document.getElementById('go-progress');
+        const countdownTextEl = document.getElementById('go-countdown-text');
+
+        if (countdown < 0) {
+            if (countdownTextEl) {
+                countdownTextEl.innerHTML = '请自行确认链接安全后再继续跳转';
+            }
+            if (progressEl) {
+                progressEl.style.width = '100%';
+            }
+            return;
+        }
+
+        if (countdownEl) {
+            countdownEl.textContent = countdown;
+        }
+        if (progressEl && SAFEGO_CONFIG.countdown > 0) {
+            progressEl.style.width = (countdown / SAFEGO_CONFIG.countdown * 100) + '%';
+        }
+
+        if (countdown === 0) {
+            goJump();
+        } else {
+            countdown--;
+        }
+    }
+
+    // 开始倒计时
+    function startCountdown() {
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    // 跳转
+    function goJump() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+        if (jumpUrl) {
+            window.location.href = jumpUrl;
+        }
+    }
+
+    // 返回
+    function goBack() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+        // 优先使用 document.referrer 返回来源页面
+        if (document.referrer && document.referrer !== window.location.href) {
+            window.location.href = document.referrer;
+        } else if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = 'https://moretti815.github.io/blog';
+        }
+    }
+
+    // 初始化
+    function init() {
+        // 获取跳转链接
+        jumpUrl = getQueryString(SAFEGO_CONFIG.urlParamName);
+
+        if (SAFEGO_CONFIG.enableBase64 && jumpUrl) {
+            try {
+                jumpUrl = decodeSafeUrl(jumpUrl);
+            } catch (e) {
+                jumpUrl = null;
+            }
+        }
+
+        // 验证 URL
+        const urlReg = /^(http|https):\/\//i;
+        if (!jumpUrl || !urlReg.test(jumpUrl)) {
+            document.title = 'Invalid parameter';
+            jumpUrl = 'https://moretti815.github.io/blog';
+        }
+
+        // 显示 URL
+        document.getElementById('go-jump-url-text').textContent = jumpUrl;
+
+        // 加载头像
+        loadAvatar();
+
+        // 等待加载动画完成后开始倒计时
+        waitForPreloader();
+    }
+
+    // 等待加载动画
+    function waitForPreloader() {
+        const preloader = document.getElementById('preloader');
+
+        // 如果没有加载动画或已隐藏，直接开始倒计时
+        if (!preloader || preloader.classList.contains('hidden') || preloader.style.display === 'none') {
+            startCountdown();
+            return;
+        }
+
+        // 监听加载动画隐藏
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes') {
+                    if (preloader.classList.contains('hidden') || preloader.style.display === 'none' || preloader.style.opacity === '0') {
+                        observer.disconnect();
+                        startCountdown();
+                    }
+                }
+            });
+        });
+
+        observer.observe(preloader, {
+            attributes: true,
+            attributeFilter: ['class', 'style']
+        });
+
+        // 备用方案：最多等待 800ms
+        setTimeout(function() {
+            observer.disconnect();
+            startCountdown();
+        }, 800);
+    }
+
+    // 页面加载完成后初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // 暴露全局函数
+    window.goJump = goJump;
+    window.goBack = goBack;
+    window.goCopyToClipboard = goCopyToClipboard;
+})();
+</script>
 </div>
     <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://moretti815.github.io/blog">Moretti's Blog</a></div>
 <div id="footer2">
@@ -626,55 +972,44 @@ if (theme === "auto") {
         enableBase64: true,
         goPagePath: 'https://moretti815.github.io/blog/go.html',
         domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
-        ignoreAttrs: ["data-fancybox"]
+        ignoreAttrs: ["data-fancybox"],
+        urlParamName: 'u'
     };
-    
+
     function encodeSafeUrl(url) {
         if (!SAFEGO_CONFIG.enableBase64) {
             return encodeURIComponent(url);
         }
-        
-        // Base64 encode with URL safe characters
         const base64 = btoa(encodeURIComponent(url).replace(/%([0-9A-F]{2})/g,
             function(_, p1) { return String.fromCharCode('0x' + p1); }
         ));
-        
-        // Replace URL unsafe characters
         return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
-    
+
     function isExternalLink(href) {
         if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:')) {
             return false;
         }
-        
-        // Relative links
         if (href.startsWith('/') && !href.startsWith('//')) {
             return false;
         }
-        
         try {
             const url = new URL(href, window.location.href);
             const currentHost = window.location.hostname;
-            
-            // Same domain
             if (url.hostname === currentHost) {
                 return false;
             }
-            
-            // Check whitelist
             for (let i = 0; i < SAFEGO_CONFIG.domainWhitelist.length; i++) {
                 if (url.hostname.includes(SAFEGO_CONFIG.domainWhitelist[i])) {
                     return false;
                 }
             }
-            
             return true;
         } catch (e) {
             return false;
         }
     }
-    
+
     function hasIgnoreAttr(element) {
         for (let i = 0; i < SAFEGO_CONFIG.ignoreAttrs.length; i++) {
             if (element.hasAttribute(SAFEGO_CONFIG.ignoreAttrs[i])) {
@@ -683,53 +1018,34 @@ if (theme === "auto") {
         }
         return false;
     }
-    
+
     function processLinks() {
         const links = document.querySelectorAll('a[href]');
-        
         links.forEach(function(link) {
-            // Skip already processed
             if (link.hasAttribute('data-safego-processed')) {
                 return;
             }
-            
             const href = link.getAttribute('href');
-            
-            // Skip if has ignore attribute
             if (hasIgnoreAttr(link)) {
                 link.setAttribute('data-safego-processed', 'true');
                 return;
             }
-            
-            // Check if external link
             if (isExternalLink(href)) {
                 const encodedUrl = encodeSafeUrl(href);
-                const goUrl = SAFEGO_CONFIG.goPagePath + '?u=' + encodedUrl;
-                
+                const goUrl = SAFEGO_CONFIG.goPagePath + '?' + SAFEGO_CONFIG.urlParamName + '=' + encodedUrl;
                 link.setAttribute('href', goUrl);
                 link.setAttribute('data-safego-processed', 'true');
-                link.setAttribute('target', '_blank');
-                link.setAttribute('rel', 'noopener noreferrer');
-                
-                // 点击时记录来源页面到 localStorage（同源共享）
-                link.addEventListener('click', function() {
-                    try {
-                        localStorage.setItem('safego_source', window.location.href);
-                        localStorage.setItem('safego_source_time', Date.now());
-                    } catch (e) {}
-                });
+                // 不设置 target="_blank"，在当前页打开中转页，以便正确返回
             }
         });
     }
-    
-    // Process on DOM ready
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', processLinks);
     } else {
         processLinks();
     }
-    
-    // Process dynamically added links
+
     const observer = new MutationObserver(function(mutations) {
         let shouldProcess = false;
         mutations.forEach(function(mutation) {
@@ -743,239 +1059,14 @@ if (theme === "auto") {
                 });
             }
         });
-        
         if (shouldProcess) {
             processLinks();
         }
     });
-    
+
     observer.observe(document.body, { childList: true, subtree: true });
 })();
 
-</script>
-
-<script>
-document.getElementById("pathHome").setAttribute("d", IconList["home"]);
-
-// SafeGo Logic
-const SAFEGO_CONFIG = {
-    countdownTime: 5,
-    enableBase64: true
-};
-
-let targetUrl = '';
-let countdownInterval = null;
-let remainingTime = SAFEGO_CONFIG.countdownTime;
-
-function decodeUrlParam(str) {
-    if (!str) return '';
-    
-    // URL safe base64 decode
-    str = str.replace(/-/g, '+').replace(/_/g, '/');
-    
-    // Add padding
-    while (str.length % 4) {
-        str += '=';
-    }
-    
-    try {
-        const decoded = atob(str);
-        return decodeURIComponent(decoded.split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-    } catch (e) {
-        return decodeURIComponent(str);
-    }
-}
-
-function getTargetUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const encodedUrl = params.get('u') || params.get('url') || params.get('target');
-    
-    if (!encodedUrl) {
-        return '';
-    }
-    
-    if (SAFEGO_CONFIG.enableBase64) {
-        return decodeUrlParam(encodedUrl);
-    }
-    
-    return decodeURIComponent(encodedUrl);
-}
-
-function isValidUrl(url) {
-    if (!url) return false;
-    
-    try {
-        const parsed = new URL(url);
-        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-    } catch (e) {
-        return false;
-    }
-}
-
-function showContent() {
-    // 先显示内容（但不开始倒计时）
-    document.getElementById('go-loading').style.display = 'none';
-    document.getElementById('go-content').style.display = 'block';
-    document.getElementById('go-divider').style.display = 'block';
-    document.getElementById('go-warning').style.display = 'flex';
-    document.getElementById('go-target-label').style.display = 'block';
-    document.getElementById('go-target-url').style.display = 'block';
-    document.getElementById('go-target-url').textContent = targetUrl;
-    document.getElementById('go-actions').style.display = 'flex';
-    
-    // 显示倒计时区域（但不开始计时）
-    if (SAFEGO_CONFIG.countdownTime > 0) {
-        document.getElementById('go-countdown').style.display = 'block';
-        document.getElementById('countdown-number').textContent = SAFEGO_CONFIG.countdownTime;
-    }
-}
-
-function startCountdownAfterPreloader() {
-    // 延迟一点时间确保加载动画完全消失后再开始倒计时
-    setTimeout(function() {
-        if (SAFEGO_CONFIG.countdownTime > 0) {
-            startCountdown();
-        }
-    }, 100);
-}
-
-function startCountdown() {
-    remainingTime = SAFEGO_CONFIG.countdownTime;
-    document.getElementById('countdown-number').textContent = remainingTime;
-    
-    countdownInterval = setInterval(function() {
-        remainingTime--;
-        document.getElementById('countdown-number').textContent = remainingTime;
-        
-        if (remainingTime <= 0) {
-            clearInterval(countdownInterval);
-            goToTarget();
-        }
-    }, 1000);
-}
-
-function goToTarget() {
-    if (countdownInterval) {
-        clearInterval(countdownInterval);
-    }
-    
-    if (isValidUrl(targetUrl)) {
-        window.location.href = targetUrl;
-    } else {
-        alert('无效的链接');
-    }
-}
-
-function copyUrl() {
-    if (!targetUrl) return;
-    
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(targetUrl).then(showCopyToast);
-    } else {
-        // Fallback
-        const textarea = document.createElement('textarea');
-        textarea.value = targetUrl;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showCopyToast();
-    }
-}
-
-function showCopyToast() {
-    const toast = document.getElementById('copy-toast');
-    toast.classList.add('show');
-    setTimeout(function() {
-        toast.classList.remove('show');
-    }, 2000);
-}
-
-function goBack() {
-    if (countdownInterval) {
-        clearInterval(countdownInterval);
-    }
-    
-    // 优先使用 localStorage 中记录的来源页面（30秒内有效）
-    const sourcePage = localStorage.getItem('safego_source');
-    const sourceTime = localStorage.getItem('safego_source_time');
-    const now = Date.now();
-    
-    if (sourcePage && sourceTime && (now - parseInt(sourceTime)) < 30000) {
-        // 清除记录避免重复使用
-        localStorage.removeItem('safego_source');
-        localStorage.removeItem('safego_source_time');
-        window.location.href = sourcePage;
-        return;
-    }
-    
-    // 其次使用 document.referrer
-    if (document.referrer && !document.referrer.includes('/go.html')) {
-        window.location.href = document.referrer;
-        return;
-    }
-    
-    // 最后回到主页
-    window.location.href = 'https://moretti815.github.io/blog';
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    targetUrl = getTargetUrl();
-    
-    if (!targetUrl || !isValidUrl(targetUrl)) {
-        document.getElementById('go-loading').innerHTML = '<span style="color: var(--color-danger-fg);">未提供有效的链接</span>';
-        setTimeout(function() {
-            window.location.href = 'https://moretti815.github.io/blog';
-        }, 2000);
-        return;
-    }
-    
-    // 等待加载动画结束后再显示内容
-    waitForPreloader();
-});
-
-function waitForPreloader() {
-    const preloader = document.getElementById('preloader');
-    
-    // 如果加载动画不存在或已隐藏，显示内容并开始倒计时
-    if (!preloader || preloader.classList.contains('hidden') || preloader.style.display === 'none') {
-        showContent();
-        startCountdownAfterPreloader();
-        return;
-    }
-    
-    // 先显示内容（倒计时显示但不开始）
-    showContent();
-    
-    // 创建 MutationObserver 监听加载动画的隐藏
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.type === 'attributes') {
-                if (preloader.classList.contains('hidden') || preloader.style.display === 'none' || preloader.style.opacity === '0') {
-                    observer.disconnect();
-                    // 加载动画结束后才开始倒计时
-                    startCountdownAfterPreloader();
-                }
-            }
-        });
-    });
-    
-    observer.observe(preloader, { 
-        attributes: true, 
-        attributeFilter: ['class', 'style'] 
-    });
-    
-    // 备用方案：最多等待 800ms（加载动画最小显示时间 500ms + 过渡时间 300ms）
-    setTimeout(function() {
-        observer.disconnect();
-        startCountdownAfterPreloader();
-    }, 800);
-}
 </script>
 
 </html>
