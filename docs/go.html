@@ -24,14 +24,11 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="友链朋友圈 · 看看朋友们都在写什么">
-<meta property="og:title" content="朋友圈">
-<meta property="og:description" content="友链朋友圈 · 看看朋友们都在写什么">
+<meta name="description" content="外链安全检测">
+<meta property="og:title" content="安全跳转 - Moretti's Blog">
+<meta property="og:description" content="外链安全检测">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://moretti815.github.io/blog/fcircle.html">
-<meta property="og:image" content="https://img.314926.xyz/h">
-<title>朋友圈</title>
-
+<title>安全跳转 - Moretti's Blog</title>
 
 </head>
 <style>
@@ -100,135 +97,196 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </style>
 
 <style>
-.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
-.title-right{display:flex;margin:auto 0 0 auto;}
-.title-right .circle{padding: 14px 16px;margin-right:8px;}
-
-/* 朋友圈页面样式 */
-.fcircle-header {
-    margin-bottom: 24px;
+#go-container {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 40px;
+    background-color: var(--color-canvas-default);
+    border: 1px solid var(--color-border-default);
+    border-radius: 16px;
     text-align: center;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
-.fcircle-header h1 {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 8px;
+.go-header {
+    margin-bottom: 32px;
+}
+
+.go-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    border: 3px solid var(--color-accent-emphasis);
+    object-fit: cover;
+}
+
+.go-title {
+    font-size: 24px;
+    font-weight: 600;
     color: var(--color-fg-default);
+    margin-bottom: 8px;
 }
 
-.fcircle-header p {
-    color: var(--color-fg-muted);
+.go-subtitle {
     font-size: 14px;
+    color: var(--color-fg-muted);
 }
 
-/* 操作按钮 */
-.fcircle-actions {
+.go-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-border-default), transparent);
+    margin: 24px 0;
+}
+
+.go-warning {
     display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 8px;
+    color: var(--color-attention-fg);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.go-warning svg {
+    width: 18px;
+    height: 18px;
+}
+
+.go-target-label {
+    font-size: 13px;
+    color: var(--color-fg-muted);
+    margin-bottom: 8px;
+}
+
+.go-target-url {
+    background-color: var(--color-canvas-subtle);
+    border: 1px solid var(--color-border-default);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--color-fg-default);
+    word-break: break-all;
+    margin-bottom: 20px;
+    font-family: monospace;
+}
+
+.go-countdown {
+    font-size: 14px;
+    color: var(--color-fg-muted);
+    margin-bottom: 24px;
+}
+
+.go-countdown-number {
+    color: var(--color-accent-fg);
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.go-actions {
+    display: flex;
     gap: 12px;
-    margin-top: 16px;
+    justify-content: center;
     flex-wrap: wrap;
 }
 
-.fcircle-actions .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
+.go-btn {
+    padding: 10px 24px;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border: 1px solid var(--color-border-default);
-    background-color: var(--color-canvas-default);
-    color: var(--color-fg-default);
     cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.fcircle-actions .btn:hover {
-    background-color: var(--color-canvas-subtle);
-    border-color: var(--color-border-muted);
-    transform: translateY(-1px);
+.go-btn-primary {
+    background-color: var(--color-btn-primary-bg);
+    color: var(--color-btn-primary-text);
 }
 
-.fcircle-actions .btn-primary {
-    background-color: var(--color-accent-emphasis);
-    color: var(--color-fg-on-emphasis);
-    border-color: var(--color-accent-emphasis);
+.go-btn-primary:hover {
+    background-color: var(--color-btn-primary-hover-bg);
 }
 
-.fcircle-actions .btn-primary:hover {
-    background-color: var(--color-accent-muted);
-    border-color: var(--color-accent-muted);
+.go-btn-secondary {
+    background-color: var(--color-btn-bg);
+    color: var(--color-btn-text);
+    border: 1px solid var(--color-btn-border);
 }
 
-/* Friend Circle Lite 容器适配 */
-#friend-circle-lite-root {
-    width: 100%;
-    box-sizing: border-box;
+.go-btn-secondary:hover {
+    background-color: var(--color-btn-hover-bg);
 }
 
-/* 适配 FCLite 的明暗模式 */
-[data-color-mode="dark"] #friend-circle-lite-root {
-    --fclite-bg: var(--color-canvas-default);
-    --fclite-border: var(--color-border-default);
-    --fclite-text: var(--color-fg-default);
-    --fclite-text-secondary: var(--color-fg-muted);
-    --fclite-link: var(--color-accent-fg);
+.go-copy-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background-color: var(--color-success-emphasis);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
 }
 
-[data-color-mode="light"] #friend-circle-lite-root {
-    --fclite-bg: var(--color-canvas-default);
-    --fclite-border: var(--color-border-default);
-    --fclite-text: var(--color-fg-default);
-    --fclite-text-secondary: var(--color-fg-muted);
-    --fclite-link: var(--color-accent-fg);
+.go-copy-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
 }
 
-/* 加载动画 */
-.fcircle-loading {
-    text-align: center;
-    padding: 40px;
+.go-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     color: var(--color-fg-muted);
+    font-size: 14px;
+    margin-bottom: 20px;
 }
 
-/* 错误提示 */
-.fcircle-error {
-    text-align: center;
-    padding: 40px;
-    color: var(--color-danger-fg);
+.go-loading svg {
+    animation: spin 1s linear infinite;
 }
 
-/* 响应式适配 */
-@media (max-width: 768px) {
-    .fcircle-header h1 {
-        font-size: 24px;
-    }
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 @media (max-width: 600px) {
-    body {
-        padding: 8px;
-        min-width: auto;
-        max-width: 100%;
+    #go-container {
+        margin: 20px auto;
+        padding: 24px;
     }
-
-    .postTitle {
-        font-size: 24px;
+    
+    .go-avatar {
+        width: 64px;
+        height: 64px;
     }
-
-    .fcircle-header h1 {
-        font-size: 22px;
+    
+    .go-title {
+        font-size: 20px;
     }
-
-    .fcircle-header p {
-        font-size: 13px;
+    
+    .go-actions {
+        flex-direction: column;
+    }
+    
+    .go-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 </style>
-
 
 
 <body>
@@ -241,7 +299,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
     </div>
     <div id="header">
-<h1 class="postTitle">朋友圈</h1>
+<h1 class="postTitle">安全跳转</h1>
 <div class="title-right">
     <a href="https://moretti815.github.io/blog" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
@@ -249,34 +307,73 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         </svg>
     </a>
     <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
-        <svg class="octicon" width="16" height="16">
+        <svg class="octicon" width="16" height="16" >
             <path id="themeSwitch" fill-rule="evenodd"></path>
         </svg>
     </a>
 </div>
 </div>
     <div id="content">
-<div class="fcircle-header">
-    <h1>📰 朋友圈</h1>
-    <p>友链朋友圈 · 看看朋友们都在写什么</p>
-    <div class="fcircle-actions">
-        <a href="https://moretti815.github.io/blog/friends.html" class="btn btn-primary">
-            <svg class="octicon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 5a2 2 0 1 0 4 0a2 2 0 1 0-4 0m0 17v-5l-1-1v-4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4l-1 1v5m6-17a2 2 0 1 0 4 0a2 2 0 1 0-4 0m0 17v-4h-2l2-6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1l2 6h-2v4"/>
+<div id="go-container">
+    <div class="go-loading" id="go-loading">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="10"/>
+        </svg>
+        加载中...
+    </div>
+    
+    <div class="go-header" id="go-content" style="display: none;">
+        <img class="go-avatar" src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif" alt="avatar">
+        <div class="go-title">Moretti's Blog</div>
+        <div class="go-subtitle">安全跳转中心</div>
+    </div>
+    
+    <div class="go-divider" id="go-divider" style="display: none;"></div>
+    
+    <div class="go-warning" id="go-warning" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        您即将离开本站
+    </div>
+    
+    <div class="go-target-label" id="go-target-label" style="display: none;">目标链接：</div>
+    <div class="go-target-url" id="go-target-url" style="display: none;"></div>
+    
+    <div class="go-countdown" id="go-countdown" style="display: none;">
+        <span class="go-countdown-number" id="countdown-number">4</span>
+        秒后自动跳转
+    </div>
+    
+    <div class="go-actions" id="go-actions" style="display: none;">
+        <button class="go-btn go-btn-primary" id="btn-go" onclick="goToTarget()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
             </svg>
-            友链
-        </a>
-        <a href="https://moretti815.github.io/blog/addlink.html" class="btn">
-            <svg class="octicon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            立即跳转
+        </button>
+        <button class="go-btn go-btn-secondary" id="btn-copy" onclick="copyUrl()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
             </svg>
-            申请友链
-        </a>
+            复制链接
+        </button>
+        <button class="go-btn go-btn-secondary" id="btn-back" onclick="goBack()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            返回上页
+        </button>
     </div>
 </div>
 
-<div id="friend-circle-lite-root"></div>
+<div class="go-copy-toast" id="copy-toast">已复制！</div>
 </div>
     <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://moretti815.github.io/blog">Moretti's Blog</a></div>
 <div id="footer2">
@@ -704,21 +801,159 @@ console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 
 <script>
 document.getElementById("pathHome").setAttribute("d", IconList["home"]);
 
-// Friend Circle Lite 配置
-var fcircleApiUrl = 'https://fc-lite.268682.xyz/';
-var fcirclePageNum = parseInt('20', 10);
-var fcircleErrorImg = 'https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif';
+// SafeGo Logic
+const SAFEGO_CONFIG = {
+    countdownTime: 4,
+    enableBase64: true
+};
 
-if (typeof UserConfig === 'undefined') {
-    var UserConfig = {
-        private_api_url: fcircleApiUrl,
-        page_turning_number: fcirclePageNum,
-        error_img: fcircleErrorImg
+let targetUrl = '';
+let countdownInterval = null;
+let remainingTime = SAFEGO_CONFIG.countdownTime;
+
+function decodeUrlParam(str) {
+    if (!str) return '';
+    
+    // URL safe base64 decode
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    
+    // Add padding
+    while (str.length % 4) {
+        str += '=';
+    }
+    
+    try {
+        const decoded = atob(str);
+        return decodeURIComponent(decoded.split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    } catch (e) {
+        return decodeURIComponent(str);
     }
 }
-</script>
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/gh/willow-god/Friend-Circle-Lite/main/fclite.min.css">
-<script src="https://fastly.jsdelivr.net/gh/willow-god/Friend-Circle-Lite/main/fclite.min.js"></script>
 
+function getTargetUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const encodedUrl = params.get('u') || params.get('url') || params.get('target');
+    
+    if (!encodedUrl) {
+        return '';
+    }
+    
+    if (SAFEGO_CONFIG.enableBase64) {
+        return decodeUrlParam(encodedUrl);
+    }
+    
+    return decodeURIComponent(encodedUrl);
+}
+
+function isValidUrl(url) {
+    if (!url) return false;
+    
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch (e) {
+        return false;
+    }
+}
+
+function showContent() {
+    document.getElementById('go-loading').style.display = 'none';
+    document.getElementById('go-content').style.display = 'block';
+    document.getElementById('go-divider').style.display = 'block';
+    document.getElementById('go-warning').style.display = 'flex';
+    document.getElementById('go-target-label').style.display = 'block';
+    document.getElementById('go-target-url').style.display = 'block';
+    document.getElementById('go-target-url').textContent = targetUrl;
+    document.getElementById('go-actions').style.display = 'flex';
+    
+    if (SAFEGO_CONFIG.countdownTime > 0) {
+        document.getElementById('go-countdown').style.display = 'block';
+        startCountdown();
+    }
+}
+
+function startCountdown() {
+    remainingTime = SAFEGO_CONFIG.countdownTime;
+    document.getElementById('countdown-number').textContent = remainingTime;
+    
+    countdownInterval = setInterval(function() {
+        remainingTime--;
+        document.getElementById('countdown-number').textContent = remainingTime;
+        
+        if (remainingTime <= 0) {
+            clearInterval(countdownInterval);
+            goToTarget();
+        }
+    }, 1000);
+}
+
+function goToTarget() {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+    
+    if (isValidUrl(targetUrl)) {
+        window.location.href = targetUrl;
+    } else {
+        alert('无效的链接');
+    }
+}
+
+function copyUrl() {
+    if (!targetUrl) return;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(targetUrl).then(showCopyToast);
+    } else {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = targetUrl;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showCopyToast();
+    }
+}
+
+function showCopyToast() {
+    const toast = document.getElementById('copy-toast');
+    toast.classList.add('show');
+    setTimeout(function() {
+        toast.classList.remove('show');
+    }, 2000);
+}
+
+function goBack() {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+    
+    if (document.referrer && document.referrer.includes(window.location.hostname)) {
+        history.back();
+    } else {
+        window.location.href = 'https://moretti815.github.io/blog';
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    targetUrl = getTargetUrl();
+    
+    if (!targetUrl || !isValidUrl(targetUrl)) {
+        document.getElementById('go-loading').innerHTML = '<span style="color: var(--color-danger-fg);">未提供有效的链接</span>';
+        setTimeout(function() {
+            window.location.href = 'https://moretti815.github.io/blog';
+        }, 2000);
+        return;
+    }
+    
+    showContent();
+});
+</script>
 
 </html>
