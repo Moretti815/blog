@@ -429,10 +429,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         <div class="safego-title">Moretti's Blog</div>
         <div class="safego-subtitle">安全跳转中心</div>
         
-        <div class="safego-url-label">You are about to jump to:</div>
+        <div class="safego-url-label">您即将跳转到：</div>
         <div class="safego-url-box">
             <span class="safego-url-text" id="jump-url-text"></span>
-            <button class="safego-copy-btn" onclick="copyToClipboard()" aria-label="Copy">
+            <button class="safego-copy-btn" onclick="copyToClipboard()" aria-label="复制">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/>
                 </svg>
@@ -440,12 +440,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         </div>
         
         <div class="safego-countdown" id="countdown-text">
-            Will jump in <span class="safego-countdown-number" id="countdown">5</span> seconds
+            将在 <span class="safego-countdown-number" id="countdown">5</span> 秒后跳转，请自行确认链接安全性
         </div><div class="safego-progress-bar">
             <div class="safego-progress" id="progress"></div>
         </div><div class="safego-buttons">
-            <button class="safego-btn safego-btn-cancel" onclick="goBack()">Cancel</button>
-            <button class="safego-btn safego-btn-confirm" onclick="jumpNow()">Jump Now</button>
+            <button class="safego-btn safego-btn-cancel" onclick="goBack()">回到上页</button>
+            <button class="safego-btn safego-btn-confirm" onclick="jumpNow()">立即前往</button>
         </div>
     </div>
 </div>
@@ -982,19 +982,19 @@ if (theme === "auto") {
             clearInterval(countdownInterval);
             countdownInterval = null;
         }
-        
-        // 优先使用 document.referrer 返回来源页
-        if (document.referrer && document.referrer !== window.location.href) {
-            window.location.href = document.referrer;
-            return;
-        }
-        
-        // 其次使用 history.back()
+
+        // 优先使用 history.back() 返回来源页（最自然的返回方式）
         if (window.history.length > 1) {
             window.history.back();
             return;
         }
-        
+
+        // 其次使用 document.referrer
+        if (document.referrer && document.referrer !== window.location.href) {
+            window.location.href = document.referrer;
+            return;
+        }
+
         // 最后回到首页
         window.location.href = 'https://moretti815.github.io/blog';
     }
@@ -1019,9 +1019,9 @@ if (theme === "auto") {
         var toast = document.getElementById("copy-toast");
         
         function showToast(success) {
-            toast.textContent = success ? 
-                'Copied!' : 
-                'Copy Failed';
+            toast.textContent = success ?
+                '已复制！' :
+                '复制失败';
             toast.classList.add("show");
             setTimeout(function() {
                 toast.classList.remove("show");
