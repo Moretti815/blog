@@ -616,7 +616,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
                             <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
                             <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
                         </svg>
-                        <span><built-in method copy of dict object at 0x7f7bbf1345c0></span>
+                        <span><built-in method copy of dict object at 0x7fe6ee5745c0></span>
                     </button>
                 </div>
                 <div class="addlink-code-content"><code id="code-yml">- name: Moretti's Blog
@@ -931,55 +931,44 @@ if (theme === "auto") {
         enableBase64: true,
         goPagePath: 'https://moretti815.github.io/blog/go.html',
         domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
-        ignoreAttrs: ["data-fancybox"]
+        ignoreAttrs: ["data-fancybox"],
+        urlParamName: 'u'
     };
-    
+
     function encodeSafeUrl(url) {
         if (!SAFEGO_CONFIG.enableBase64) {
             return encodeURIComponent(url);
         }
-        
-        // Base64 encode with URL safe characters
         const base64 = btoa(encodeURIComponent(url).replace(/%([0-9A-F]{2})/g,
             function(_, p1) { return String.fromCharCode('0x' + p1); }
         ));
-        
-        // Replace URL unsafe characters
         return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
-    
+
     function isExternalLink(href) {
         if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:')) {
             return false;
         }
-        
-        // Relative links
         if (href.startsWith('/') && !href.startsWith('//')) {
             return false;
         }
-        
         try {
             const url = new URL(href, window.location.href);
             const currentHost = window.location.hostname;
-            
-            // Same domain
             if (url.hostname === currentHost) {
                 return false;
             }
-            
-            // Check whitelist
             for (let i = 0; i < SAFEGO_CONFIG.domainWhitelist.length; i++) {
                 if (url.hostname.includes(SAFEGO_CONFIG.domainWhitelist[i])) {
                     return false;
                 }
             }
-            
             return true;
         } catch (e) {
             return false;
         }
     }
-    
+
     function hasIgnoreAttr(element) {
         for (let i = 0; i < SAFEGO_CONFIG.ignoreAttrs.length; i++) {
             if (element.hasAttribute(SAFEGO_CONFIG.ignoreAttrs[i])) {
@@ -988,53 +977,35 @@ if (theme === "auto") {
         }
         return false;
     }
-    
+
     function processLinks() {
         const links = document.querySelectorAll('a[href]');
-        
         links.forEach(function(link) {
-            // Skip already processed
             if (link.hasAttribute('data-safego-processed')) {
                 return;
             }
-            
             const href = link.getAttribute('href');
-            
-            // Skip if has ignore attribute
             if (hasIgnoreAttr(link)) {
                 link.setAttribute('data-safego-processed', 'true');
                 return;
             }
-            
-            // Check if external link
             if (isExternalLink(href)) {
                 const encodedUrl = encodeSafeUrl(href);
-                const goUrl = SAFEGO_CONFIG.goPagePath + '?u=' + encodedUrl;
-                
+                const goUrl = SAFEGO_CONFIG.goPagePath + '?' + SAFEGO_CONFIG.urlParamName + '=' + encodedUrl;
                 link.setAttribute('href', goUrl);
                 link.setAttribute('data-safego-processed', 'true');
                 link.setAttribute('target', '_blank');
                 link.setAttribute('rel', 'noopener noreferrer');
-                
-                // 点击时记录来源页面到 localStorage（同源共享）
-                link.addEventListener('click', function() {
-                    try {
-                        localStorage.setItem('safego_source', window.location.href);
-                        localStorage.setItem('safego_source_time', Date.now());
-                    } catch (e) {}
-                });
             }
         });
     }
-    
-    // Process on DOM ready
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', processLinks);
     } else {
         processLinks();
     }
-    
-    // Process dynamically added links
+
     const observer = new MutationObserver(function(mutations) {
         let shouldProcess = false;
         mutations.forEach(function(mutation) {
@@ -1048,12 +1019,11 @@ if (theme === "auto") {
                 });
             }
         });
-        
         if (shouldProcess) {
             processLinks();
         }
     });
-    
+
     observer.observe(document.body, { childList: true, subtree: true });
 })();
 
