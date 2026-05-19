@@ -492,6 +492,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <!-- 树枝背景 -->
     <div id="branch-background">
         <canvas id="branch-canvas"></canvas>
+    </div><!-- 加载动画 -->
+    <div id="preloader">
+        <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
     </div><div id="header">
 <div class="postTitle">申请友链</div>
 <div class="title-right">
@@ -616,7 +619,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
                             <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
                             <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
                         </svg>
-                        <span><built-in method copy of dict object at 0x7ff2fed745c0></span>
+                        <span><built-in method copy of dict object at 0x7f1ce6a8b5c0></span>
                     </button>
                 </div>
                 <div class="addlink-code-content"><code id="code-yml">- name: Moretti's Blog
@@ -789,7 +792,38 @@ if (theme === "auto") {
     startSystemThemeListener();
 } else if (themeSettings[theme]) {
     changeTheme(...themeSettings[theme]);
-}console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+}// 加载动画控制
+(function() {
+    const preloader = document.getElementById('preloader');
+    if (!preloader) return;
+    
+    // 最小显示时间（毫秒）- 确保动画至少显示一段时间，避免闪烁
+    const minDisplayTime = 500;
+    const startTime = Date.now();
+    
+    function hidePreloader() {
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+        
+        setTimeout(function() {
+            preloader.classList.add('hidden');
+            
+            // 动画完全结束后移除元素
+            setTimeout(function() {
+                if (preloader.parentNode) {
+                    preloader.parentNode.removeChild(preloader);
+                }
+            }, 500); // 与 CSS transition 时间一致
+        }, remainingTime);
+    }
+    
+    // 页面加载完成后隐藏动画
+    if (document.readyState === 'complete') {
+        hidePreloader();
+    } else {
+        window.addEventListener('load', hidePreloader);
+    }
+})();console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
 
 // 树枝背景动画 - 参考 BackgrounRandom.astro
 (function() {

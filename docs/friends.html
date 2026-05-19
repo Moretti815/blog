@@ -455,6 +455,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <!-- 树枝背景 -->
     <div id="branch-background">
         <canvas id="branch-canvas"></canvas>
+    </div><!-- 加载动画 -->
+    <div id="preloader">
+        <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
     </div><div id="header">
 <h1 class="postTitle">友链</h1>
 <div class="title-right">
@@ -621,7 +624,38 @@ if (theme === "auto") {
     startSystemThemeListener();
 } else if (themeSettings[theme]) {
     changeTheme(...themeSettings[theme]);
-}console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+}// 加载动画控制
+(function() {
+    const preloader = document.getElementById('preloader');
+    if (!preloader) return;
+    
+    // 最小显示时间（毫秒）- 确保动画至少显示一段时间，避免闪烁
+    const minDisplayTime = 500;
+    const startTime = Date.now();
+    
+    function hidePreloader() {
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+        
+        setTimeout(function() {
+            preloader.classList.add('hidden');
+            
+            // 动画完全结束后移除元素
+            setTimeout(function() {
+                if (preloader.parentNode) {
+                    preloader.parentNode.removeChild(preloader);
+                }
+            }, 500); // 与 CSS transition 时间一致
+        }, remainingTime);
+    }
+    
+    // 页面加载完成后隐藏动画
+    if (document.readyState === 'complete') {
+        hidePreloader();
+    } else {
+        window.addEventListener('load', hidePreloader);
+    }
+})();console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
 
 // 树枝背景动画 - 参考 BackgrounRandom.astro
 (function() {
