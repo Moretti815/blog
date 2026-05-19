@@ -498,9 +498,15 @@ if (theme === "auto") {
     
     // 最小显示时间（毫秒）- 确保动画至少显示一段时间，避免闪烁
     const minDisplayTime = 500;
+    // 最大等待时间（毫秒）- 防止资源加载卡住导致动画一直显示
+    const maxWaitTime = 3000;
     const startTime = Date.now();
+    let isHidden = false;
     
     function hidePreloader() {
+        if (isHidden) return;
+        isHidden = true;
+        
         const elapsedTime = Date.now() - startTime;
         const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
         
@@ -521,6 +527,8 @@ if (theme === "auto") {
         hidePreloader();
     } else {
         window.addEventListener('load', hidePreloader);
+        // 备用：最多等待 maxWaitTime 后强制隐藏
+        setTimeout(hidePreloader, maxWaitTime);
     }
 })();
 
@@ -983,7 +991,7 @@ function waitForPreloader() {
     const preloader = document.getElementById('preloader');
     
     // 如果加载动画不存在或已隐藏，显示内容并开始倒计时
-    if (!preloader || preloader.classList.contains('hidden') || preloader.style.display === 'none') {
+    if (!preloader || preloader.classList.contains('hidden') || preloader.style.display === 'none' || preloader.style.opacity === '0') {
         showContent();
         startCountdownAfterPreloader();
         return;
@@ -992,6 +1000,15 @@ function waitForPreloader() {
     // 先显示内容（倒计时显示但不开始）
     showContent();
     
+    let countdownStarted = false;
+    
+    function startIfNotStarted() {
+        if (!countdownStarted) {
+            countdownStarted = true;
+            startCountdownAfterPreloader();
+        }
+    }
+    
     // 创建 MutationObserver 监听加载动画的隐藏
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
@@ -999,7 +1016,7 @@ function waitForPreloader() {
                 if (preloader.classList.contains('hidden') || preloader.style.display === 'none' || preloader.style.opacity === '0') {
                     observer.disconnect();
                     // 加载动画结束后才开始倒计时
-                    startCountdownAfterPreloader();
+                    startIfNotStarted();
                 }
             }
         });
@@ -1010,11 +1027,11 @@ function waitForPreloader() {
         attributeFilter: ['class', 'style'] 
     });
     
-    // 备用方案：最多等待 800ms（加载动画最小显示时间 500ms + 过渡时间 300ms）
+    // 备用方案：最多等待 3.5 秒（与 base.html 的最大等待时间一致）
     setTimeout(function() {
         observer.disconnect();
-        startCountdownAfterPreloader();
-    }, 800);
+        startIfNotStarted();
+    }, 3500);
 }
 </script>
 

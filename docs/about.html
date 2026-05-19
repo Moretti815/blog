@@ -971,7 +971,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
                     </p>
                 </div>
                 <div class="personality-svg">
-                    <img src="https://jsd.268682.xyz/gh/zsxcoder/github-img@main/img/infj.avi" alt="Personality" onerror="this.style.display='none'">
+                    <img src="https://jsd.268682.xyz/gh/zsxcoder/github-img@main/img/infj.avif" alt="Personality" onerror="this.style.display='none'">
                 </div>
             </div>
 
@@ -1314,9 +1314,15 @@ if (theme === "auto") {
     
     // 最小显示时间（毫秒）- 确保动画至少显示一段时间，避免闪烁
     const minDisplayTime = 500;
+    // 最大等待时间（毫秒）- 防止资源加载卡住导致动画一直显示
+    const maxWaitTime = 3000;
     const startTime = Date.now();
+    let isHidden = false;
     
     function hidePreloader() {
+        if (isHidden) return;
+        isHidden = true;
+        
         const elapsedTime = Date.now() - startTime;
         const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
         
@@ -1337,6 +1343,8 @@ if (theme === "auto") {
         hidePreloader();
     } else {
         window.addEventListener('load', hidePreloader);
+        // 备用：最多等待 maxWaitTime 后强制隐藏
+        setTimeout(hidePreloader, maxWaitTime);
     }
 })();
 
