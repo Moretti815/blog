@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <link href='https://moretti815.github.io/blog/fonts/chill-font.css' rel='stylesheet' />
+    <link rel="icon" href="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif"><script>
+        // 获取系统主题偏好
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        // 初始化主题：优先使用 localStorage，否则跟随系统
+        let savedTheme = localStorage.getItem("meek_theme");
+        let theme;
+        if (savedTheme === null) {
+            // 第一次访问，跟随系统
+            theme = getSystemTheme();
+            localStorage.setItem("meek_theme", theme);
+        } else {
+            theme = savedTheme;
+        }
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="课程表">
+<meta property="og:title" content="课程表">
+<meta property="og:description" content="课程安排">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moretti815.github.io/blog/timetable.html">
+<meta property="og:image" content="https://img.314926.xyz/h">
+<title>课程表 - Moretti</title>
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+/* 加载动画样式 */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-canvas-default, #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#preloader img {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+}
+
+/* 暗色模式适配 */
+[data-color-mode="dark"] #preloader {
+    background-color: var(--color-canvas-default, #0d1117);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    #preloader img {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* 树枝背景样式 */
+#branch-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+#branch-canvas {
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<style>
+/* Header Styles - same as about.html */
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+
+/* Timetable Page Styles */
+#timetable-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header Section */
+.timetable-header {
+    margin-bottom: 24px;
+}
+
+.timetable-title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.timetable-info h1 {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    color: var(--color-fg-default);
+}
+
+.timetable-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-fg-muted);
+    font-size: 14px;
+}
+
+.timetable-meta .dot {
+    color: var(--color-fg-muted);
+}
+
+/* Week Navigation */
+.week-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.week-nav-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.week-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-canvas-default);
+    color: var(--color-fg-default);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.week-btn:hover:not(:disabled) {
+    background-color: var(--color-canvas-subtle);
+    border-color: var(--color-accent-emphasis);
+}
+
+.week-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.week-display {
+    min-width: 100px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 12px;
+}
+
+.current-week-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background-color: var(--color-accent-emphasis);
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Desktop Table View */
+.timetable-desktop {
+    background-color: var(--color-canvas-default);
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.timetable-table-wrapper {
+    overflow-x: auto;
+}
+
+.timetable-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.timetable-table th,
+.timetable-table td {
+    border: 1px solid var(--color-border-default);
+    padding: 12px;
+    vertical-align: top;
+}
+
+.timetable-table th {
+    background-color: var(--color-canvas-subtle);
+    font-weight: 600;
+    font-size: 14px;
+    text-align: left;
+}
+
+.timetable-table th:first-child {
+    width: 100px;
+    min-width: 100px;
+}
+
+.node-cell {
+    background-color: var(--color-canvas-subtle);
+}
+
+.node-info .node-number {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.node-info .node-time {
+    font-size: 12px;
+    color: var(--color-fg-muted);
+}
+
+/* Course Card */
+.course-card {
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    border-left: 4px solid;
+    background-color: var(--color-canvas-subtle);
+    transition: transform 0.2s ease;
+}
+
+.course-card:last-child {
+    margin-bottom: 0;
+}
+
+.course-card:hover {
+    transform: translateX(2px);
+}
+
+.course-name {
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.course-details {
+    font-size: 12px;
+    color: var(--color-fg-muted);
+    line-height: 1.5;
+}
+
+.course-details div {
+    margin-bottom: 2px;
+}
+
+.empty-cell {
+    text-align: center;
+    color: var(--color-fg-muted);
+    font-size: 12px;
+    padding: 20px;
+}
+
+/* Mobile Card View */
+.timetable-mobile {
+    display: none;
+    space-y: 16px;
+}
+
+.day-card {
+    background-color: var(--color-canvas-default);
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.day-card-header {
+    padding: 16px;
+    background-color: var(--color-canvas-subtle);
+    border-bottom: 1px solid var(--color-border-default);
+}
+
+.day-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.day-card-content {
+    padding: 16px;
+}
+
+.day-card-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--color-fg-muted);
+    font-size: 14px;
+}
+
+.mobile-course-card {
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-left: 4px solid;
+    background-color: var(--color-canvas-subtle);
+}
+
+.mobile-course-card:last-child {
+    margin-bottom: 0;
+}
+
+.mobile-course-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.mobile-course-details {
+    font-size: 13px;
+    color: var(--color-fg-muted);
+    line-height: 1.6;
+}
+
+.mobile-course-details div {
+    margin-bottom: 4px;
+}
+
+/* Loading State */
+.timetable-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--color-fg-muted);
+}
+
+.timetable-loading svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.timetable-error {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-danger-fg, #cf222e);
+}
+
+.timetable-error svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+}
+
+/* Mobile Adaptation */
+@media (max-width: 768px) {
+    .timetable-desktop {
+        display: none;
+    }
+
+    .timetable-mobile {
+        display: block;
+    }
+
+    .timetable-title-section {
+        flex-direction: column;
+    }
+
+    .timetable-info h1 {
+        font-size: 24px;
+    }
+
+    .week-nav {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+
+<body>
+    <!-- 树枝背景 -->
+    <div id="branch-background">
+        <canvas id="branch-canvas"></canvas>
+    </div>
+    <!-- 加载动画 -->
+    <div id="preloader">
+        <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
+    </div>
+    <div id="header">
+<h1 class="postTitle">课程表</h1>
+<div class="title-right">
+    <a href="https://moretti815.github.io/blog" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+</div>
+</div>
+    <div id="content">
+<div id="timetable-container">
+    <div class="timetable-header">
+        <div class="timetable-title-section">
+            <div class="timetable-info">
+                <h1 id="table-name">加载中...</h1>
+                <div class="timetable-meta">
+                    <span id="max-week">加载中...</span>
+                    <span class="dot">·</span>
+                    <span id="page-views"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="week-nav">
+            <div class="week-nav-buttons">
+                <button class="week-btn" id="prev-week" onclick="goToPreviousWeek()" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <span class="week-display" id="week-display">加载中...</span>
+                <button class="week-btn" id="next-week" onclick="goToNextWeek()" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+            <span class="current-week-badge" id="current-week-badge" style="display: none;">
+                当前周
+            </span>
+        </div>
+    </div>
+
+    <!-- Desktop Table View -->
+    <div class="timetable-desktop" id="timetable-desktop">
+        <div class="timetable-table-wrapper">
+            <table class="timetable-table" id="timetable-table">
+                <thead>
+                    <tr id="table-header">
+                        <th>节次</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="timetable-mobile" id="timetable-mobile">
+    </div>
+</div>
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://moretti815.github.io/blog">Moretti's Blog</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("11/01/2024"!=""){
+    var startSite=new Date("11/01/2024");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+
+// 当前主题模式：light / dark / auto
+let currentThemeMode = theme;
+
+// 系统主题监听器
+let systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+let systemThemeListener = null;
+
+function getSystemTheme() {
+    return systemThemeMediaQuery.matches ? 'dark' : 'light';
+}
+
+function startSystemThemeListener() {
+    // 移除旧的监听器
+    if (systemThemeListener) {
+        systemThemeMediaQuery.removeEventListener('change', systemThemeListener);
+    }
+    // 添加新的监听器
+    systemThemeListener = (e) => {
+        let newSystemTheme = e.matches ? 'dark' : 'light';
+        document.documentElement.setAttribute("data-color-mode", newSystemTheme);
+        // 更新图标
+        if (themeSettings[newSystemTheme]) {
+            let icon = themeSettings[newSystemTheme][1];
+            let color = themeSettings[newSystemTheme][2];
+            document.getElementById("themeSwitch").setAttribute("d", IconList[icon]);
+            document.getElementById("themeSwitch").parentNode.style.color = color;
+        }
+    };
+    systemThemeMediaQuery.addEventListener('change', systemThemeListener);
+}
+
+function stopSystemThemeListener() {
+    if (systemThemeListener) {
+        systemThemeMediaQuery.removeEventListener('change', systemThemeListener);
+        systemThemeListener = null;
+    }
+}
+
+function applyTheme(mode) {
+    // 应用主题设置，更新图标和颜色
+    if (themeSettings[mode]) {
+        let icon = themeSettings[mode][1];
+        let color = themeSettings[mode][2];
+        document.getElementById("themeSwitch").setAttribute("d", IconList[icon]);
+        document.getElementById("themeSwitch").parentNode.style.color = color;
+    }
+}
+
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode", mode);
+    document.getElementById("themeSwitch").setAttribute("d", value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color = color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+
+function modeSwitch(){
+    let newMode;
+    
+    // 循环：light -> dark -> auto -> light
+    if (currentThemeMode === "light") {
+        newMode = "dark";
+    } else if (currentThemeMode === "dark") {
+        newMode = "auto";
+    } else {
+        newMode = "light";
+    }
+    
+    // 更新当前模式
+    currentThemeMode = newMode;
+    localStorage.setItem("meek_theme", newMode);
+    
+    if (newMode === "auto") {
+        // 切换到 auto 模式，立即应用当前系统主题
+        stopSystemThemeListener();
+        let systemTheme = getSystemTheme();
+        document.documentElement.setAttribute("data-color-mode", systemTheme);
+        applyTheme("auto");
+        startSystemThemeListener();
+    } else if (themeSettings[newMode]) {
+        stopSystemThemeListener();
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+
+// 初始化主题
+if (theme === "auto") {
+    // 如果是 auto 模式，应用当前系统主题并启动监听
+    let systemTheme = getSystemTheme();
+    document.documentElement.setAttribute("data-color-mode", systemTheme);
+    applyTheme("auto");
+    startSystemThemeListener();
+} else if (themeSettings[theme]) {
+    changeTheme(...themeSettings[theme]);
+}
+
+// 加载动画控制
+(function() {
+    const preloader = document.getElementById('preloader');
+    if (!preloader) return;
+    
+    // 最小显示时间（毫秒）- 确保动画至少显示一段时间，避免闪烁
+    const minDisplayTime = 500;
+    const startTime = Date.now();
+    
+    function hidePreloader() {
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+        
+        setTimeout(function() {
+            preloader.classList.add('hidden');
+            
+            // 动画完全结束后移除元素
+            setTimeout(function() {
+                if (preloader.parentNode) {
+                    preloader.parentNode.removeChild(preloader);
+                }
+            }, 500); // 与 CSS transition 时间一致
+        }, remainingTime);
+    }
+    
+    // 页面加载完成后隐藏动画
+    if (document.readyState === 'complete') {
+        hidePreloader();
+    } else {
+        window.addEventListener('load', hidePreloader);
+    }
+})();
+
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+
+// 树枝背景动画 - 参考 BackgrounRandom.astro
+(function() {
+    const canvas = document.getElementById('branch-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    const r180 = Math.PI;
+    const r90 = Math.PI / 2;
+    const r15 = Math.PI / 12;
+    const MIN_BRANCH = 30;
+    const len = 6;
+    
+    let steps = [];
+    let prevSteps = [];
+    let size = { width: window.innerWidth, height: window.innerHeight };
+    
+    function randomMiddle() {
+        return Math.random() * 0.6 + 0.2;
+    }
+    
+    function initCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = size.width + 'px';
+        canvas.style.height = size.height + 'px';
+        canvas.width = dpr * size.width;
+        canvas.height = dpr * size.height;
+        ctx.scale(dpr, dpr);
+    }
+    
+    function polar2cart(x, y, r, theta) {
+        const dx = r * Math.cos(theta);
+        const dy = r * Math.sin(theta);
+        return [x + dx, y + dy];
+    }
+    
+    function step(x, y, rad, counter) {
+        counter = counter || { value: 0 };
+        const length = Math.random() * len;
+        counter.value += 1;
+        
+        const [nx, ny] = polar2cart(x, y, length, rad);
+        
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(nx, ny);
+        ctx.stroke();
+        
+        const rad1 = rad + Math.random() * r15;
+        const rad2 = rad - Math.random() * r15;
+        
+        if (nx < -100 || nx > size.width + 100 || ny < -100 || ny > size.height + 100) return;
+        
+        const rate = counter.value <= MIN_BRANCH ? 0.8 : 0.5;
+        
+        if (Math.random() < rate) steps.push(function() { step(nx, ny, rad1, counter); });
+        if (Math.random() < rate) steps.push(function() { step(nx, ny, rad2, counter); });
+    }
+    
+    function frame() {
+        prevSteps = steps;
+        steps = [];
+        
+        if (!prevSteps.length) return;
+        
+        prevSteps.forEach(function(i) {
+            if (Math.random() < 0.5) steps.push(i);
+            else i();
+        });
+        
+        requestAnimationFrame(frame);
+    }
+    
+    function getBranchColor() {
+        const isDark = document.documentElement.getAttribute('data-color-mode') === 'dark';
+        // 使用 CSS 变量获取主题色，适配明暗模式
+        const style = getComputedStyle(document.documentElement);
+        const accent = style.getPropertyValue('--color-accent-fg').trim() || (isDark ? '#58a6ff' : '#0969da');
+        // 解析 HSL 并降低透明度
+        if (accent.startsWith('#')) {
+            const r = parseInt(accent.slice(1, 3), 16);
+            const g = parseInt(accent.slice(3, 5), 16);
+            const b = parseInt(accent.slice(5, 7), 16);
+            return 'rgba(' + r + ', ' + g + ', ' + b + ', 0.12)';
+        }
+        return isDark ? 'rgba(88, 166, 255, 0.12)' : 'rgba(9, 105, 218, 0.12)';
+    }
+    
+    function start() {
+        const color = getBranchColor();
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = color;
+        prevSteps = [];
+        steps = [
+            function() { step(randomMiddle() * size.width, -5, r90); },
+            function() { step(randomMiddle() * size.width, size.height + 5, -r90); },
+            function() { step(-5, randomMiddle() * size.height, 0); },
+            function() { step(size.width + 5, randomMiddle() * size.height, r180); }
+        ];
+        if (size.width < 500) steps = steps.slice(0, 2);
+        requestAnimationFrame(frame);
+    }
+    
+    initCanvas();
+    start();
+    
+    // 窗口大小改变时重新绘制
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (window.innerWidth === size.width) return;
+            size.width = window.innerWidth;
+            size.height = window.innerHeight;
+            initCanvas();
+            start();
+        }, 200);
+    });
+    
+    // 主题切换时更新颜色
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'data-color-mode') {
+                start();
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+})();
+</script>
+
+<script>
+// Timetable Data URL
+const TIMETABLE_DATA_URL = 'https://moretti815.github.io/blog/%E5%A4%A7%E4%B8%89%E4%B8%8B.json';
+
+// State
+let timetableData = null;
+let currentWeek = 1;
+let maxWeek = 1;
+let actualCurrentWeek = 1;
+
+// Weekday labels
+const WEEKDAY_LABELS = {
+    1: '周一',
+    2: '周二',
+    3: '周三',
+    4: '周四',
+    5: '周五',
+    6: '周六',
+    7: '周日'
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', initTimetable);
+
+// Set header icons
+document.getElementById("pathHome").setAttribute("d", IconList["home"]);
+document.getElementById("themeSwitch").setAttribute("d", IconList["sun"]);
+
+async function initTimetable() {
+    try {
+        const response = await fetch(TIMETABLE_DATA_URL + '?_t=' + Date.now());
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        timetableData = await response.json();
+        
+        // Calculate current week
+        actualCurrentWeek = resolveCurrentWeek(timetableData.settings.startDate, timetableData.settings.maxWeek);
+        maxWeek = timetableData.settings.maxWeek;
+        
+        // Get week from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedWeek = parseInt(urlParams.get('week'));
+        if (requestedWeek && requestedWeek >= 1 && requestedWeek <= maxWeek) {
+            currentWeek = requestedWeek;
+        } else {
+            currentWeek = actualCurrentWeek;
+        }
+        
+        renderTimetable();
+    } catch (error) {
+        console.error('Failed to load timetable:', error);
+        document.getElementById('timetable-desktop').innerHTML = `
+            <div class="timetable-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12.884 2.532c-.346-.654-1.422-.654-1.768 0l-9 17A1 1 0 0 0 3 21h18a.998.998 0 0 0 .883-1.467zM13 18h-2v-2h2zm-2-4V9h2l.001 5z"/>
+                </svg>
+                <p>加载课程表失败</p>
+            </div>
+        `;
+    }
+}
+
+function resolveCurrentWeek(startDateText, maxWeek) {
+    const startDate = parseDate(startDateText);
+    if (!startDate) return 1;
+    
+    const now = new Date();
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const diffDays = Math.floor((now.getTime() - startDate.getTime()) / msPerDay);
+    const week = Math.floor(diffDays / 7) + 1;
+    
+    if (week < 1) return 1;
+    if (week > maxWeek) return maxWeek;
+    return week;
+}
+
+function parseDate(ymd) {
+    const parts = ymd.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(isNaN)) return null;
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function shouldShowWeekend(week) {
+    const weekendConfig = timetableData.settings.weekendDisplay;
+    if (!weekendConfig || !weekendConfig.enabled) {
+        return {
+            showSat: timetableData.settings.showSat,
+            showSun: timetableData.settings.showSun
+        };
+    }
+    
+    const showSat = weekendConfig.weeks.includes(week) && weekendConfig.days.includes('sat');
+    const showSun = weekendConfig.weeks.includes(week) && weekendConfig.days.includes('sun');
+    
+    return { showSat, showSun };
+}
+
+function renderTimetable() {
+    if (!timetableData) return;
+    
+    const settings = timetableData.settings;
+    const { showSat, showSun } = shouldShowWeekend(currentWeek);
+    
+    // Update header info
+    document.getElementById('table-name').textContent = settings.tableName || '课程表';
+    document.getElementById('max-week').textContent = '共 ' + maxWeek + ' 周';
+    document.getElementById('week-display').textContent = '第 ' + currentWeek;
+    
+    // Update current week badge
+    const badge = document.getElementById('current-week-badge');
+    if (currentWeek === actualCurrentWeek) {
+        badge.style.display = 'inline-flex';
+    } else {
+        badge.style.display = 'none';
+    }
+    
+    // Update navigation buttons
+    document.getElementById('prev-week').disabled = currentWeek <= 1;
+    document.getElementById('next-week').disabled = currentWeek >= maxWeek;
+    
+    // Build day columns
+    const dayColumns = [
+        { day: 1, label: WEEKDAY_LABELS[1] },
+        { day: 2, label: WEEKDAY_LABELS[2] },
+        { day: 3, label: WEEKDAY_LABELS[3] },
+        { day: 4, label: WEEKDAY_LABELS[4] },
+        { day: 5, label: WEEKDAY_LABELS[5] }
+    ];
+    if (showSat) dayColumns.push({ day: 6, label: WEEKDAY_LABELS[6] });
+    if (showSun) dayColumns.push({ day: 7, label: WEEKDAY_LABELS[7] });
+    
+    // Build node rows (show every 2 nodes)
+    const nodeRows = timetableData.timeTable
+        .filter(item => item.node % 2 === 1)
+        .map(item => ({
+            node: item.node,
+            startTime: item.startTime,
+            endTime: timetableData.timeTable.find(n => n.node === Math.min(item.node + 1, timetableData.timeTable.length))?.endTime || item.endTime
+        }));
+    
+    // Build course map
+    const courseMap = new Map(timetableData.courses.map(c => [c.id, c]));
+    
+    // Group courses by day
+    const coursesByDay = {};
+    dayColumns.forEach(col => coursesByDay[col.day] = []);
+    
+    timetableData.schedules.forEach(schedule => {
+        if (schedule.day < 1 || schedule.day > 7) return;
+        if (currentWeek < schedule.startWeek || currentWeek > schedule.endWeek) return;
+        if (!(schedule.day in coursesByDay)) return;
+        
+        const course = courseMap.get(schedule.id);
+        const courseName = course?.courseName || '未知课程 #' + schedule.id;
+        const color = parseColor(course?.color) || generateColor(courseName, schedule.id);
+        
+        coursesByDay[schedule.day].push({
+            ...schedule,
+            courseName,
+            color,
+            endNode: Math.min(schedule.startNode + schedule.step - 1, timetableData.timeTable.length)
+        });
+    });
+    
+    // Sort courses by start node
+    Object.keys(coursesByDay).forEach(day => {
+        coursesByDay[day].sort((a, b) => a.startNode - b.startNode);
+    });
+    
+    // Render desktop table
+    renderDesktopTable(dayColumns, nodeRows, coursesByDay);
+    
+    // Render mobile cards
+    renderMobileCards(dayColumns, coursesByDay, nodeRows);
+    
+    // Update URL
+    updateUrl();
+}
+
+function renderDesktopTable(dayColumns, nodeRows, coursesByDay) {
+    const headerRow = document.getElementById('table-header');
+    headerRow.innerHTML = '<th>节次</th>';
+    dayColumns.forEach(day => {
+        headerRow.innerHTML += `<th>${day.label}</th>`;
+    });
+    
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+    
+    nodeRows.forEach(row => {
+        const tr = document.createElement('tr');
+        
+        // Node cell
+        tr.innerHTML = `
+            <td class="node-cell">
+                <div class="node-info">
+                    <div class="node-number">第 ${row.node}-${Math.min(row.node + 1, row.node + 1)}</div>
+                    <div class="node-time">${row.startTime} - ${row.endTime}</div>
+                </div>
+            </td>
+        `;
+        
+        // Day cells
+        dayColumns.forEach(day => {
+            const courses = coursesByDay[day.day].filter(c => c.startNode === row.node);
+            let cellHtml = '';
+            
+            if (courses.length > 0) {
+                courses.forEach(course => {
+                    cellHtml += `
+                        <div class="course-card" style="border-color: ${course.color}; background: color-mix(in srgb, ${course.color} 10%, var(--color-canvas-subtle))">
+                            <div class="course-name">${escapeHtml(course.courseName)}</div>
+                            <div class="course-details">
+                                <div>${course.startWeek}-${course.endWeek} 周</div>
+                                <div>教室: ${escapeHtml(course.room || '未填写')}</div>
+                                <div>教师: ${escapeHtml(course.teacher || '未填写')}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                cellHtml = '<div class="empty-cell">—</div>';
+            }
+            
+            tr.innerHTML += `<td>${cellHtml}</td>`;
+        });
+        
+        tbody.appendChild(tr);
+    });
+}
+
+function renderMobileCards(dayColumns, coursesByDay, nodeRows) {
+    const container = document.getElementById('timetable-mobile');
+    container.innerHTML = '';
+    
+    dayColumns.forEach(day => {
+        const courses = coursesByDay[day.day];
+        
+        const dayCard = document.createElement('div');
+        dayCard.className = 'day-card';
+        
+        let contentHtml = `
+            <div class="day-card-header">
+                <h3 class="day-card-title">${day.label}</h3>
+            </div>
+            <div class="day-card-content">
+        `;
+        
+        if (courses.length > 0) {
+            courses.forEach(course => {
+                const nodeInfo = nodeRows.find(n => n.node === course.startNode);
+                const timeText = nodeInfo ? `${nodeInfo.startTime} - ${nodeInfo.endTime}` : '';
+                
+                contentHtml += `
+                    <div class="mobile-course-card" style="border-color: ${course.color}; background: color-mix(in srgb, ${course.color} 10%, var(--color-canvas-subtle))">
+                        <div class="mobile-course-name">${escapeHtml(course.courseName)}</div>
+                        <div class="mobile-course-details">
+                            <div>时间: ${timeText}</div>
+                            <div>周: ${course.startWeek}-${course.endWeek}</div>
+                            <div>教室: ${escapeHtml(course.room || '未填写')}</div>
+                            <div>教师: ${escapeHtml(course.teacher || '未填写')}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            contentHtml += '<div class="day-card-empty">本周暂无课程</div>';
+        }
+        
+        contentHtml += '</div>';
+        dayCard.innerHTML = contentHtml;
+        container.appendChild(dayCard);
+    });
+}
+
+function parseColor(raw) {
+    if (!raw || !raw.startsWith('#') || raw.length !== 9) return null;
+    const r = raw.slice(3, 5);
+    const g = raw.slice(5, 7);
+    const b = raw.slice(7, 9);
+    return `#${r}${g}${b}`;
+}
+
+function generateColor(courseName, courseId) {
+    const seed = hashText(`${courseName}-${courseId}`);
+    const hue = seed % 360;
+    return `hsl(${hue} 78% 68%)`;
+}
+
+function hashText(input) {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+        hash = (hash * 31 + input.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash);
+}
+
+function goToPreviousWeek() {
+    if (currentWeek > 1) {
+        currentWeek--;
+        renderTimetable();
+    }
+}
+
+function goToNextWeek() {
+    if (currentWeek < maxWeek) {
+        currentWeek++;
+        renderTimetable();
+    }
+}
+
+function updateUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('week', currentWeek);
+    window.history.replaceState({}, '', url);
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
+
+</html>

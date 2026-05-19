@@ -62,8 +62,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 }
 
 #preloader img {
-    width: 80px;
-    height: 80px;
+    width: 160px;
+    height: 160px;
     object-fit: contain;
 }
 
@@ -75,9 +75,26 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 /* 移动端适配 */
 @media (max-width: 768px) {
     #preloader img {
-        width: 60px;
-        height: 60px;
+        width: 120px;
+        height: 120px;
     }
+}
+
+/* 树枝背景样式 */
+#branch-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+#branch-canvas {
+    width: 100%;
+    height: 100%;
 }
 </style>
 
@@ -104,11 +121,160 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     #buttonRSS{display:none;}
     .LabelTime{display:none;}
 }
+
+/* Memos Timeline Styles - Reference bbTimeList */
+.memos-timeline-container {
+    backdrop-filter: blur(15px);
+    background-color: var(--color-canvas-default);
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+    display: flex;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    height: 50px;
+    width: 100%;
+    justify-content: space-between;
+    user-select: none;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.memos-timeline-container:hover {
+    border-color: var(--color-accent-emphasis);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.memos-timeline-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.memos-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--color-accent-fg);
+    animation: memos-pulse 2s ease-in-out infinite;
+    transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.memos-timeline-container:hover .memos-icon {
+    opacity: 0.8;
+    color: var(--color-accent-emphasis);
+}
+
+@keyframes memos-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes memos-slideIn {
+    0% { 
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.memos-timeline-content {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    color: var(--color-fg-default);
+    line-height: 25px;
+    height: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.memos-loading {
+    color: var(--color-fg-muted);
+}
+
+.memos-item {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: 25px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+    align-items: center;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.memos-timeline-container:hover .memos-item {
+    color: var(--color-accent-fg);
+}
+
+.memos-item-text {
+    color: inherit;
+}
+
+.memos-item-image {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 4px;
+    color: var(--color-accent-fg);
+    font-size: 12px;
+}
+
+.memos-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--color-fg-muted);
+    transition: transform 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+.memos-arrow:hover {
+    opacity: 0.8;
+    color: var(--color-accent-emphasis);
+}
+
+.memos-timeline-container:hover .memos-arrow {
+    transform: translateX(4px);
+    color: var(--color-accent-fg);
+}
+
+@media (max-width: 600px) {
+    .memos-timeline-container {
+        margin: 0;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .memos-timeline-content {
+        font-size: 13px;
+    }
+}
 </style>
 
 
 
 <body>
+    <!-- 树枝背景 -->
+    <div id="branch-background">
+        <canvas id="branch-canvas"></canvas>
+    </div>
     <!-- 加载动画 -->
     <div id="preloader">
         <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
@@ -146,6 +312,22 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
     <div id="content">
 <div style="margin-bottom: 16px;">这是最好的时代，也是最坏的时代。</div>
+
+<!-- Memos Timeline -->
+<div class="memos-timeline-container" id="memos-timeline">
+    <div class="memos-timeline-inner">
+        <svg class="memos-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+        <div class="memos-timeline-content" id="memos-timeline-content">
+            <span class="memos-loading">加载中...</span>
+        </div>
+        <svg class="memos-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+        </svg>
+    </div>
+</div>
+
 <nav class="SideNav border">
 <a class="SideNav-item d-flex flex-items-center flex-justify-between" href="post/Hello%20World.html">
     <div class="d-flex flex-items-center">
@@ -323,6 +505,139 @@ if (theme === "auto") {
 })();
 
 console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+
+// 树枝背景动画 - 参考 BackgrounRandom.astro
+(function() {
+    const canvas = document.getElementById('branch-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    const r180 = Math.PI;
+    const r90 = Math.PI / 2;
+    const r15 = Math.PI / 12;
+    const MIN_BRANCH = 30;
+    const len = 6;
+    
+    let steps = [];
+    let prevSteps = [];
+    let size = { width: window.innerWidth, height: window.innerHeight };
+    
+    function randomMiddle() {
+        return Math.random() * 0.6 + 0.2;
+    }
+    
+    function initCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = size.width + 'px';
+        canvas.style.height = size.height + 'px';
+        canvas.width = dpr * size.width;
+        canvas.height = dpr * size.height;
+        ctx.scale(dpr, dpr);
+    }
+    
+    function polar2cart(x, y, r, theta) {
+        const dx = r * Math.cos(theta);
+        const dy = r * Math.sin(theta);
+        return [x + dx, y + dy];
+    }
+    
+    function step(x, y, rad, counter) {
+        counter = counter || { value: 0 };
+        const length = Math.random() * len;
+        counter.value += 1;
+        
+        const [nx, ny] = polar2cart(x, y, length, rad);
+        
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(nx, ny);
+        ctx.stroke();
+        
+        const rad1 = rad + Math.random() * r15;
+        const rad2 = rad - Math.random() * r15;
+        
+        if (nx < -100 || nx > size.width + 100 || ny < -100 || ny > size.height + 100) return;
+        
+        const rate = counter.value <= MIN_BRANCH ? 0.8 : 0.5;
+        
+        if (Math.random() < rate) steps.push(function() { step(nx, ny, rad1, counter); });
+        if (Math.random() < rate) steps.push(function() { step(nx, ny, rad2, counter); });
+    }
+    
+    function frame() {
+        prevSteps = steps;
+        steps = [];
+        
+        if (!prevSteps.length) return;
+        
+        prevSteps.forEach(function(i) {
+            if (Math.random() < 0.5) steps.push(i);
+            else i();
+        });
+        
+        requestAnimationFrame(frame);
+    }
+    
+    function getBranchColor() {
+        const isDark = document.documentElement.getAttribute('data-color-mode') === 'dark';
+        // 使用 CSS 变量获取主题色，适配明暗模式
+        const style = getComputedStyle(document.documentElement);
+        const accent = style.getPropertyValue('--color-accent-fg').trim() || (isDark ? '#58a6ff' : '#0969da');
+        // 解析 HSL 并降低透明度
+        if (accent.startsWith('#')) {
+            const r = parseInt(accent.slice(1, 3), 16);
+            const g = parseInt(accent.slice(3, 5), 16);
+            const b = parseInt(accent.slice(5, 7), 16);
+            return 'rgba(' + r + ', ' + g + ', ' + b + ', 0.12)';
+        }
+        return isDark ? 'rgba(88, 166, 255, 0.12)' : 'rgba(9, 105, 218, 0.12)';
+    }
+    
+    function start() {
+        const color = getBranchColor();
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = color;
+        prevSteps = [];
+        steps = [
+            function() { step(randomMiddle() * size.width, -5, r90); },
+            function() { step(randomMiddle() * size.width, size.height + 5, -r90); },
+            function() { step(-5, randomMiddle() * size.height, 0); },
+            function() { step(size.width + 5, randomMiddle() * size.height, r180); }
+        ];
+        if (size.width < 500) steps = steps.slice(0, 2);
+        requestAnimationFrame(frame);
+    }
+    
+    initCanvas();
+    start();
+    
+    // 窗口大小改变时重新绘制
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (window.innerWidth === size.width) return;
+            size.width = window.innerWidth;
+            size.height = window.innerHeight;
+            initCanvas();
+            start();
+        }, 200);
+    });
+    
+    // 主题切换时更新颜色
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'data-color-mode') {
+                start();
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+})();
 </script>
 
 <script>
@@ -341,6 +656,123 @@ for(var i=0;i<iconPost.length;i++){
 
 
 document.getElementById("关于").setAttribute("d",value=IconList["about"]);document.getElementById("友链").setAttribute("d",value=IconList["friends"]);
+
+// Memos Timeline
+const MEMOS_API_URL = 'https://m.314926.xyz/api/v1/memos';
+const MEMOS_PAGE_URL = 'https://moretti815.github.io/blog/memos.html';
+
+let memosCarouselInterval = null;
+let currentMemoIndex = 0;
+let publicMemos = [];
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatMemoContent(memo) {
+    let text = memo.content || '';
+    
+    // Strip HTML tags and markdown
+    text = text.replace(/<[^>]*>/g, '').replace(/!\[.*?\]\(.*?\)/g, '[图片]').replace(/\[.*?\]\(.*?\)/g, '$1');
+    
+    // Truncate text
+    if (text.length > 60) {
+        text = text.substring(0, 60) + '...';
+    }
+    
+    const hasImage = memo.resources && memo.resources.some(r => r.type && r.type.startsWith('image/'));
+    
+    return {
+        text: escapeHtml(text),
+        hasImage: hasImage
+    };
+}
+
+function renderMemoItem(memo, index) {
+    const contentEl = document.getElementById('memos-timeline-content');
+    const formatted = formatMemoContent(memo);
+    
+    contentEl.innerHTML = `
+        <span class="memos-item memos-item-slide" style="animation: memos-slideIn 0.5s ease;">
+            <span class="memos-item-text">${formatted.text}</span>
+            ${formatted.hasImage ? '<span class="memos-item-image"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>图片</span>' : ''}
+        </span>
+    `;
+}
+
+function startCarousel() {
+    if (publicMemos.length <= 1) return;
+    
+    if (memosCarouselInterval) {
+        clearInterval(memosCarouselInterval);
+    }
+    
+    memosCarouselInterval = setInterval(() => {
+        currentMemoIndex = (currentMemoIndex + 1) % publicMemos.length;
+        renderMemoItem(publicMemos[currentMemoIndex], currentMemoIndex);
+    }, 4000); // 每4秒切换
+}
+
+async function loadMemosTimeline() {
+    const container = document.getElementById('memos-timeline');
+    const contentEl = document.getElementById('memos-timeline-content');
+    
+    if (!container || !contentEl) return;
+    
+    try {
+        const response = await fetch(`${MEMOS_API_URL}?limit=5&_t=${Date.now()}`);
+        if (!response.ok) throw new Error('Failed to fetch');
+        
+        const data = await response.json();
+        const memos = data.memos || [];
+        
+        if (memos.length === 0) {
+            contentEl.innerHTML = '<span class="memos-loading">暂无动态</span>';
+            return;
+        }
+        
+        // Filter only public memos
+        publicMemos = memos.filter(m => m.visibility === 'PUBLIC');
+        
+        if (publicMemos.length === 0) {
+            contentEl.innerHTML = '<span class="memos-loading">暂无公开动态</span>';
+            return;
+        }
+        
+        // Display first memo
+        currentMemoIndex = 0;
+        renderMemoItem(publicMemos[0], 0);
+        
+        // Start carousel
+        startCarousel();
+        
+        // Click to navigate
+        container.addEventListener('click', () => {
+            window.location.href = MEMOS_PAGE_URL;
+        });
+        
+        // Pause on hover
+        container.addEventListener('mouseenter', () => {
+            if (memosCarouselInterval) {
+                clearInterval(memosCarouselInterval);
+                memosCarouselInterval = null;
+            }
+        });
+        
+        container.addEventListener('mouseleave', () => {
+            startCarousel();
+        });
+        
+    } catch (error) {
+        console.error('Failed to load memos:', error);
+        contentEl.innerHTML = '<span class="memos-loading">加载失败</span>';
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', loadMemosTimeline);
 </script>
 
 
