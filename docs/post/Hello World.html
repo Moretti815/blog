@@ -286,6 +286,23 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     gap: 6px;
 }
 
+/* 文章底部元信息区域 */
+.post-meta-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-size: small;
+}
+
+.page-view-count {
+    color: var(--color-fg-muted);
+}
+
+.bottom-text {
+    color: var(--color-fg-muted);
+}
+
 /* 移动端适配 */
 @media (max-width: 600px) {
     body {padding: 12px;}
@@ -314,6 +331,11 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         margin: 0 -14px -12px;
         padding: 8px 14px;
         border-radius: 0 0 9px 9px;
+    }
+    .post-meta-footer {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px 12px;
     }
 }
 .copy-feedback {
@@ -465,7 +487,14 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     </div>
 </div>
 
-<div style="font-size:small;margin-top:8px;float:right;">转载请注明出处</div>
+<div class="post-meta-footer">
+    <div id="busuanzi_container_page_pv" class="page-view-count" style="display:none;">
+        <span class="page-view-label">本文浏览量</span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span class="page-view-unit">次</span>
+    </div>
+    <div class="bottom-text">转载请注明出处</div>
+</div>
 
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
