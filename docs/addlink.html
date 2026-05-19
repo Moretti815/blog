@@ -555,7 +555,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
                             <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
                             <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
                         </svg>
-                        <span><built-in method copy of dict object at 0x7fed1d7745c0></span>
+                        <span><built-in method copy of dict object at 0x7f4a8e3f4580></span>
                     </button>
                 </div>
                 <div class="addlink-code-content"><code id="code-yml">- name: Moretti's Blog
@@ -629,6 +629,9 @@ let themeSettings={
     "auto": ["auto","sync","","preferred-color-scheme"]
 };
 
+// 当前主题模式：light / dark / auto
+let currentThemeMode = theme;
+
 // 系统主题监听器
 let systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 let systemThemeListener = null;
@@ -664,41 +667,48 @@ function stopSystemThemeListener() {
     }
 }
 
-function changeTheme(mode, icon, color, utheme){
-    document.documentElement.setAttribute("data-color-mode",mode);
-    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
-    document.getElementById("themeSwitch").parentNode.style.color=color;
-    if(utterancesLoad==1){utterancesTheme(utheme);}
-    
-    // 如果是 auto 模式，启动系统主题监听
-    if (mode === "auto") {
-        startSystemThemeListener();
-    } else {
-        stopSystemThemeListener();
+function applyTheme(mode) {
+    // 应用主题设置，更新图标和颜色
+    if (themeSettings[mode]) {
+        let icon = themeSettings[mode][1];
+        let color = themeSettings[mode][2];
+        document.getElementById("themeSwitch").setAttribute("d", IconList[icon]);
+        document.getElementById("themeSwitch").parentNode.style.color = color;
     }
 }
 
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode", mode);
+    document.getElementById("themeSwitch").setAttribute("d", value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color = color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+
 function modeSwitch(){
-    let currentMode=document.documentElement.getAttribute('data-color-mode');
     let newMode;
     
     // 循环：light -> dark -> auto -> light
-    if (currentMode === "light") {
+    if (currentThemeMode === "light") {
         newMode = "dark";
-    } else if (currentMode === "dark") {
+    } else if (currentThemeMode === "dark") {
         newMode = "auto";
     } else {
         newMode = "light";
     }
     
+    // 更新当前模式
+    currentThemeMode = newMode;
     localStorage.setItem("meek_theme", newMode);
     
     if (newMode === "auto") {
         // 切换到 auto 模式，立即应用当前系统主题
+        stopSystemThemeListener();
         let systemTheme = getSystemTheme();
-        changeTheme("auto", "sync", "", "preferred-color-scheme");
         document.documentElement.setAttribute("data-color-mode", systemTheme);
+        applyTheme("auto");
+        startSystemThemeListener();
     } else if (themeSettings[newMode]) {
+        stopSystemThemeListener();
         changeTheme(...themeSettings[newMode]);
     }
 }
@@ -714,7 +724,8 @@ if (theme === "auto") {
     // 如果是 auto 模式，应用当前系统主题并启动监听
     let systemTheme = getSystemTheme();
     document.documentElement.setAttribute("data-color-mode", systemTheme);
-    changeTheme("auto", "sync", "", "preferred-color-scheme");
+    applyTheme("auto");
+    startSystemThemeListener();
 } else if (themeSettings[theme]) {
     changeTheme(...themeSettings[theme]);
 }
