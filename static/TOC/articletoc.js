@@ -1,44 +1,47 @@
 function loadResource(type, attributes) {
-    if (type === 'style') {
-        const style = document.createElement('style');
-        style.textContent = attributes.css;
-        document.head.appendChild(style);
-    }
+  if (type === "style") {
+    const style = document.createElement("style");
+    style.textContent = attributes.css;
+    document.head.appendChild(style);
+  }
 }
 
 function createTOC() {
-    const tocElement = document.createElement('div');
-    tocElement.className = 'toc';
-    const contentContainer = document.querySelector('.markdown-body');
-    contentContainer.appendChild(tocElement);
+  const tocElement = document.createElement("div");
+  tocElement.className = "toc";
+  const contentContainer = document.querySelector(".markdown-body");
+  contentContainer.appendChild(tocElement);
 
-    const headings = contentContainer.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    headings.forEach(heading => {
-        if (!heading.id) {
-            heading.id = heading.textContent.trim().replace(/\s+/g, '-').toLowerCase();
-        }
-        const link = document.createElement('a');
-        link.href = '#' + heading.id;
-        link.textContent = heading.textContent;
-        link.className = 'toc-link';
-        link.style.paddingLeft = `${(parseInt(heading.tagName.charAt(1)) - 1) * 10}px`;
-        tocElement.appendChild(link);
-    });
+  const headings = contentContainer.querySelectorAll("h1, h2, h3, h4, h5, h6");
+  headings.forEach((heading) => {
+    if (!heading.id) {
+      heading.id = heading.textContent
+        .trim()
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+    }
+    const link = document.createElement("a");
+    link.href = "#" + heading.id;
+    link.textContent = heading.textContent;
+    link.className = "toc-link";
+    link.style.paddingLeft = `${(parseInt(heading.tagName.charAt(1)) - 1) * 10}px`;
+    tocElement.appendChild(link);
+  });
 }
 
 function toggleTOC() {
-    const tocElement = document.querySelector('.toc');
-    const tocIcon = document.querySelector('.toc-icon');
-    if (tocElement) {
-        tocElement.classList.toggle('show');
-        tocIcon.classList.toggle('active');
-        tocIcon.textContent = tocElement.classList.contains('show') ? '✖' : '☰';
-    }
+  const tocElement = document.querySelector(".toc");
+  const tocIcon = document.querySelector(".toc-icon");
+  if (tocElement) {
+    tocElement.classList.toggle("show");
+    tocIcon.classList.toggle("active");
+    tocIcon.textContent = tocElement.classList.contains("show") ? "✖" : "☰";
+  }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    createTOC();
-    const css = `
+document.addEventListener("DOMContentLoaded", function () {
+  createTOC();
+  const css = `
         :root {
             --toc-bg: #fff;
             --toc-border: #e1e4e8;
@@ -50,8 +53,21 @@ document.addEventListener("DOMContentLoaded", function() {
             --toc-icon-active-color: #fff;
         }
 
+        /* 适配博客的暗色模式 - 通过 data-color-mode 属性 */
+        [data-color-mode="dark"] {
+            --toc-bg: #2d333b;
+            --toc-border: #444c56;
+            --toc-text: #adbac7;
+            --toc-hover: #373e47;
+            --toc-icon-bg: #22272e;
+            --toc-icon-color: #ad6598;
+            --toc-icon-active-bg: #813c85;
+            --toc-icon-active-color: #adbac7;
+        }
+
+        /* 系统暗色模式作为后备 */
         @media (prefers-color-scheme: dark) {
-            :root {
+            :root:not([data-color-mode="light"]) {
                 --toc-bg: #2d333b;
                 --toc-border: #444c56;
                 --toc-text: #adbac7;
@@ -138,21 +154,26 @@ document.addEventListener("DOMContentLoaded", function() {
             transform: rotate(90deg);
         }
     `;
-    loadResource('style', {css: css});
+  loadResource("style", { css: css });
 
-    const tocIcon = document.createElement('div');
-    tocIcon.className = 'toc-icon';
-    tocIcon.textContent = '☰';
-    tocIcon.onclick = (e) => {
-        e.stopPropagation();
-        toggleTOC();
-    };
-    document.body.appendChild(tocIcon);
+  const tocIcon = document.createElement("div");
+  tocIcon.className = "toc-icon";
+  tocIcon.textContent = "☰";
+  tocIcon.onclick = (e) => {
+    e.stopPropagation();
+    toggleTOC();
+  };
+  document.body.appendChild(tocIcon);
 
-    document.addEventListener('click', (e) => {
-        const tocElement = document.querySelector('.toc');
-        if (tocElement && tocElement.classList.contains('show') && !tocElement.contains(e.target) && !e.target.classList.contains('toc-icon')) {
-            toggleTOC();
-        }
-    });
+  document.addEventListener("click", (e) => {
+    const tocElement = document.querySelector(".toc");
+    if (
+      tocElement &&
+      tocElement.classList.contains("show") &&
+      !tocElement.contains(e.target) &&
+      !e.target.classList.contains("toc-icon")
+    ) {
+      toggleTOC();
+    }
+  });
 });
