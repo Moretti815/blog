@@ -616,7 +616,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         if (countdownInterval) {
             clearInterval(countdownInterval);
         }
-        if (window.history.length > 1) {
+        // 优先使用 document.referrer 返回来源页面
+        if (document.referrer && document.referrer !== window.location.href) {
+            window.location.href = document.referrer;
+        } else if (window.history.length > 1) {
             window.history.back();
         } else {
             window.location.href = 'https://moretti815.github.io/blog';
@@ -1032,8 +1035,7 @@ if (theme === "auto") {
                 const goUrl = SAFEGO_CONFIG.goPagePath + '?' + SAFEGO_CONFIG.urlParamName + '=' + encodedUrl;
                 link.setAttribute('href', goUrl);
                 link.setAttribute('data-safego-processed', 'true');
-                link.setAttribute('target', '_blank');
-                link.setAttribute('rel', 'noopener noreferrer');
+                // 不设置 target="_blank"，在当前页打开中转页，以便正确返回
             }
         });
     }
