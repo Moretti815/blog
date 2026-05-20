@@ -161,5 +161,8 @@
         "avatar": "https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif",
         "domainWhitelist": ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
         "ignoreAttrs": ["data-fancybox"]
-    }
+    },
+    "subscribeIssue": 1,
+    "subscribeTitle": "🎉 Moretti's Blog 更新订阅",
+    "subscribeDesc": "订阅本 Issue，每当博客有新文章发布时，你将收到 GitHub 邮件通知。"
 }

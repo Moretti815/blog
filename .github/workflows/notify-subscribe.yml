@@ -1,0 +1,121 @@
+name: Notify Blog Update
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened, edited, labeled]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.repository.owner.id == github.event.sender.id || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Issue Info and Post Notification
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            
+            // 检查是否是博客文章（有特定标签或排除某些标签）
+            // Gmeek 通常会给文章 issue 打标签，talk 标签通常是说说/短内容，不需要通知
+            const labels = issue.labels.map(l => l.name);
+            
+            // 如果 issue 被关闭或者是 talk 标签，不发送通知
+            if (issue.state === 'closed' || labels.includes('talk')) {
+              console.log('Issue is closed or is a talk post, skipping notification.');
+              return;
+            }
+            
+            // 获取 issue 内容的前 150 字符作为预览
+            let preview = '';
+            if (issue.body) {
+              // 移除 markdown 格式，获取纯文本预览
+              preview = issue.body
+                .replace(/^#+\s+/gm, '')  // 移除标题标记
+                .replace(/!\[.*?\]\(.*?\)/g, '[图片]')  // 替换图片
+                .replace(/\[.*?\]\(.*?\)/g, '$1')  // 替换链接
+                .replace(/[*_~`#]/g, '')  // 移除格式符号
+                .replace(/\n+/g, ' ')  // 替换换行
+                .trim();
+              
+              if (preview.length > 150) {
+                preview = preview.substring(0, 150) + '...';
+              }
+            }
+            
+            // 构建文章 URL
+            // Gmeek 的文章 URL 格式通常是: homeUrl/post/文章标题.html
+            // 需要从 config.json 获取 homeUrl
+            const fs = require('fs');
+            let homeUrl = 'https://moretti815.github.io/blog';
+            try {
+              const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+              homeUrl = config.homeUrl || homeUrl;
+            } catch (e) {
+              console.log('Could not read config.json, using default homeUrl');
+            }
+            
+            // 生成文章 slug（URL 友好的标题）
+            // Gmeek 使用 issue title 作为文章标题
+            const title = issue.title;
+            let slug = title;
+            
+            // 根据 urlMode 处理 slug
+            // pinyin 模式：将中文转为拼音
+            // 这里简化处理，直接使用 encodeURIComponent
+            slug = encodeURIComponent(title);
+            
+            const postUrl = `${homeUrl}/post/${slug}.html`;
+            const issueUrl = issue.html_url;
+            
+            // 获取当前时间
+            const now = new Date();
+            const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+            const timeStr = beijingTime.toISOString().replace('T', ' ').substring(0, 19);
+            
+            // 构建通知内容
+            let body = '## 🎉 Moretti\'s Blog 更新啦！\n\n';
+            body += `**${title}**\n\n`;
+            
+            if (preview) {
+              body += `> ${preview}\n\n`;
+            }
+            
+            body += `📖 [点击阅读文章](${postUrl})\n\n`;
+            body += `💬 [在 GitHub 上查看](${issueUrl})\n\n`;
+            
+            if (labels.length > 0 && !labels.includes('todo')) {
+              body += `🏷️ 标签：${labels.join(', ')}\n\n`;
+            }
+            
+            body += `📅 发布时间：${timeStr} (UTC+8)\n\n`;
+            body += '---\n';
+            body += '*此通知由 GitHub Actions 自动发布*\n';
+            
+            // 从 config.json 读取订阅 Issue 编号
+            let subscribeIssueNumber = 1; // 默认值
+            try {
+              const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+              subscribeIssueNumber = config.subscribeIssue || subscribeIssueNumber;
+            } catch (e) {
+              console.log('Could not read subscribeIssue from config.json, using default value');
+            }
+            
+            // 发布评论到订阅 Issue
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: subscribeIssueNumber,
+              body: body
+            });
+            
+            console.log(`Notification posted to issue #${subscribeIssueNumber}`);
+            console.log(`Article: ${title}`);
+            console.log(`URL: ${postUrl}`);
