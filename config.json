@@ -164,5 +164,6 @@
     },
     "subscribeIssue": 2,
     "subscribeTitle": "🎉 Moretti's Blog 更新订阅",
-    "subscribeDesc": "订阅本 Issue，每当博客有新文章发布时，你将收到 GitHub 邮件通知。"
+    "subscribeDesc": "订阅本 Issue，每当博客有新文章发布时，你将收到 GitHub 邮件通知。",
+    "subscribeUrl": "https://github.com/moretti815/blog/issues/2"
 }
