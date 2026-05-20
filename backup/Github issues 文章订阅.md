@@ -39,7 +39,7 @@ name: Notify Blog Update
 on:
   workflow_dispatch:
   issues:
-    types: [opened, edited, labeled]
+    types: [labeled]
 
 jobs:
   notify:
@@ -121,7 +121,14 @@ jobs:
 
 **关于触发时机**
 
-Gmeek 这类基于 GitHub Issues 的博客，文章就是 Issue。所以工作流监听 `issues` 事件，新文章发布时自动触发。
+Gmeek 这类基于 GitHub Issues 的博客，文章就是 Issue。但这里有个坑：Issue 的创建、编辑、添加标签都会触发事件，如果监听 `[opened, edited, labeled]`，会导致一篇文章发布时触发多次通知。
+
+解决方法是只监听 `labeled`。Gmeek 的工作流程是：
+1. 用户创建 Issue
+2. 用户编辑完善内容
+3. Gmeek Actions 生成文章并给 Issue 添加标签
+
+所以只在 `labeled` 时触发，就能确保文章完全生成后再发送通知，而且只发送一次。
 
 如果你用的是 Hexo、VitePress 这类静态博客，文章是 Markdown 文件，那就改成监听 `push` 事件，检测 `src/content/posts/` 目录的变更。
 

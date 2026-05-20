@@ -868,7 +868,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="pl-ent">on</span>:
   <span class="pl-ent">workflow_dispatch</span>:
   <span class="pl-ent">issues</span>:
-    <span class="pl-ent">types</span>: <span class="pl-s">[opened, edited, labeled]</span>
+    <span class="pl-ent">types</span>: <span class="pl-s">[labeled]</span>
 
 <span class="pl-ent">jobs</span>:
   <span class="pl-ent">notify</span>:
@@ -939,7 +939,14 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>然后在模板里读取这个配置生成链接。</p>
 <h2>一些细节</h2>
 <p><strong>关于触发时机</strong></p>
-<p>Gmeek 这类基于 GitHub Issues 的博客，文章就是 Issue。所以工作流监听 <code class="notranslate">issues</code> 事件，新文章发布时自动触发。</p>
+<p>Gmeek 这类基于 GitHub Issues 的博客，文章就是 Issue。但这里有个坑：Issue 的创建、编辑、添加标签都会触发事件，如果监听 <code class="notranslate">[opened, edited, labeled]</code>，会导致一篇文章发布时触发多次通知。</p>
+<p>解决方法是只监听 <code class="notranslate">labeled</code>。Gmeek 的工作流程是：</p>
+<ol>
+<li>用户创建 Issue</li>
+<li>用户编辑完善内容</li>
+<li>Gmeek Actions 生成文章并给 Issue 添加标签</li>
+</ol>
+<p>所以只在 <code class="notranslate">labeled</code> 时触发，就能确保文章完全生成后再发送通知，而且只发送一次。</p>
 <p>如果你用的是 Hexo、VitePress 这类静态博客，文章是 Markdown 文件，那就改成监听 <code class="notranslate">push</code> 事件，检测 <code class="notranslate">src/content/posts/</code> 目录的变更。</p>
 <p><strong>关于过滤</strong></p>
 <ul>
