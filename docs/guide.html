@@ -24,13 +24,14 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="这是最好的时代，也是最坏的时代。">
-<meta property="og:title" content="Moretti's Blog">
-<meta property="og:description" content="这是最好的时代，也是最坏的时代。">
-<meta property="og:type" content="blog">
-<meta property="og:url" content="https://moretti815.github.io/blog">
+<meta name="description" content="本站提供的实用导航入口，点击即可跳转使用。">
+<meta property="og:title" content="导航">
+<meta property="og:description" content="本站提供的实用导航入口，点击即可跳转使用。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://moretti815.github.io/blog/guide.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
-<title>Moretti's Blog</title>
+<title>导航</title>
+
 
 </head>
 <style>
@@ -99,175 +100,136 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </style>
 
 <style>
-.avatar {transition: 0.8s;width:64px;height:64px;object-fit: cover;}
-.avatar:hover{transform: scale(1.15) rotate(360deg);}
-.title-left a{color:inherit;text-decoration:none;vertical-align: bottom;font-size:40px;font-weight: bold;font-family:Monaco;margin-left:8px;}
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
 .title-right{display:flex;margin:auto 0 0 auto;}
-.title-right button{margin-right:8px;padding:16px;}
-.title-right .circle{padding: 14px 16px;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
 
-.SideNav{min-width: 360px;}
-.SideNav-icon{margin-right: 16px}
-.SideNav-item .Label{color: #fff;margin-left:4px;}
-.d-flex{min-width:0;}
-.listTitle{overflow:hidden;white-space:nowrap;text-overflow: ellipsis;max-width: 100%;}
-.listLabels{white-space:nowrap;display:flex;}
-.listLabels object{max-height:16px;max-width:24px;}
-
-@media (max-width: 600px) {
-    body {padding: 8px;}
-    .avatar {width:40px;height:40px;}
-    .blogTitle{display:none;}
-    #buttonRSS{display:none;}
-    .LabelTime{display:none;}
+/* Guide Page Styles - 复刻 tools.astro 布局 */
+.guide-container {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--color-border-muted);
 }
 
-/* Memos Timeline Styles - Reference bbTimeList */
-.memos-timeline-container {
-    backdrop-filter: blur(15px);
-    background-color: var(--color-canvas-default);
-    border: 1px solid var(--color-border-default);
-    border-radius: 12px;
+@media (max-width: 768px) {
+    .guide-container {
+        padding: 20px 16px;
+    }
+}
+
+/* Header Section */
+.guide-header {
     display: flex;
-    white-space: nowrap;
-    overflow: hidden;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    height: 50px;
-    width: 100%;
-    justify-content: space-between;
-    user-select: none;
     align-items: center;
-    padding: 0.5rem 1rem;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
+    gap: 8px;
+    margin-bottom: 24px;
 }
 
-.memos-timeline-container:hover {
-    border-color: var(--color-accent-emphasis);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+.guide-header-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--color-accent-fg);
+    flex-shrink: 0;
 }
 
-.memos-timeline-inner {
+.guide-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-fg-default);
+    margin: 0;
+}
+
+/* Description */
+.guide-description {
+    font-size: 14px;
+    color: var(--color-fg-muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+/* Tools List */
+.guide-list {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tool Item */
+.guide-item {
+    display: block;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid var(--color-border-muted);
+    transition: background-color 0.2s ease;
+}
+
+.guide-item:last-child {
+    border-bottom: none;
+}
+
+.guide-item:hover {
+    background-color: var(--color-canvas-subtle);
+}
+
+/* Tool Header (Icon + Title) */
+.guide-item-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
+    margin-bottom: 4px;
 }
 
-.memos-icon {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
+.guide-item-icon {
+    width: 24px;
+    height: 24px;
     color: var(--color-accent-fg);
-    animation: memos-pulse 2s ease-in-out infinite;
-    transition: opacity 0.3s ease, color 0.3s ease;
+    flex-shrink: 0;
 }
 
-.memos-timeline-container:hover .memos-icon {
-    opacity: 0.8;
-    color: var(--color-accent-emphasis);
+/* Custom icon image styling */
+.guide-item-icon-custom {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    filter: brightness(0) saturate(100%) invert(34%) sepia(74%) saturate(1628%) hue-rotate(197deg) brightness(95%) contrast(101%);
 }
 
-@keyframes memos-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+[data-color-mode="dark"] .guide-item-icon-custom {
+    filter: brightness(0) saturate(100%) invert(58%) sepia(85%) saturate(1410%) hue-rotate(185deg) brightness(103%) contrast(101%);
 }
 
-@keyframes memos-slideIn {
-    0% { 
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    100% { 
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.memos-timeline-content {
-    flex: 1;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 14px;
+.guide-item-title {
+    font-size: 18px;
+    font-weight: bold;
     color: var(--color-fg-default);
-    line-height: 25px;
-    height: 25px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    transition: color 0.2s ease;
 }
 
-.memos-loading {
+.guide-item:hover .guide-item-title {
+    color: var(--color-accent-fg);
+}
+
+/* Tool Description */
+.guide-item-desc {
+    font-size: 14px;
+    color: var(--color-fg-muted);
+    margin-left: 36px;
+    line-height: 1.5;
+}
+
+/* Empty State */
+.guide-empty {
+    text-align: center;
+    padding: 48px 20px;
     color: var(--color-fg-muted);
 }
 
-.memos-item {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    height: 25px;
-    text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: color 0.3s ease;
-    align-items: center;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.memos-timeline-container:hover .memos-item {
-    color: var(--color-accent-fg);
-}
-
-.memos-item-text {
-    color: inherit;
-}
-
-.memos-item-image {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-left: 4px;
-    color: var(--color-accent-fg);
-    font-size: 12px;
-}
-
-.memos-arrow {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    color: var(--color-fg-muted);
-    transition: transform 0.3s ease, color 0.3s ease;
-    cursor: pointer;
-}
-
-.memos-arrow:hover {
-    opacity: 0.8;
-    color: var(--color-accent-emphasis);
-}
-
-.memos-timeline-container:hover .memos-arrow {
-    transform: translateX(4px);
-    color: var(--color-accent-fg);
-}
-
-@media (max-width: 600px) {
-    .memos-timeline-container {
-        margin: 0;
-        margin-bottom: 0.5rem;
-        padding: 0.5rem 0.75rem;
-    }
-    
-    .memos-timeline-content {
-        font-size: 13px;
-    }
+.guide-empty-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
 }
 </style>
-
 
 
 <body><!-- 访客欢迎通知组件 -->
@@ -753,83 +715,83 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <div id="preloader">
         <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
     </div><div id="header">
-<div class="title-left">
-    <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif" class="avatar circle" id="avatarImg" alt="avatar"><a class="blogTitle">Moretti</a></div>
+<h1 class="postTitle">导航</h1>
 <div class="title-right">
-    <a href="https://moretti815.github.io/blog/tag.html" id="buttonSearch" class="btn btn-invisible circle" title="搜索">
-        <svg class="octicon" width="16" height="16" >
-            <path id="pathSearch" fill-rule="evenodd"></path>
-        </svg>
+    <a href="https://moretti815.github.io/blog" class="circle" aria-label="home">
+        <svg class="octicon" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z"></path></svg>
     </a>
-    
-    <a href="https://moretti815.github.io/blog/about.html" class="btn btn-invisible circle" title="关于">
-        <svg class="octicon" width="16" height="16" >
-            <path id="关于" fill-rule="evenodd"></path>
-        </svg>
-    </a><a href="https://moretti815.github.io/blog/friends.html" class="btn btn-invisible circle" title="友链">
-        <svg class="octicon" width="16" height="16" >
-            <path id="友链" fill-rule="evenodd"></path>
-        </svg>
-    </a><a href="https://moretti815.github.io/blog/guide.html" class="btn btn-invisible circle" title="导航">
-        <svg class="octicon" width="16" height="16" >
-            <path id="导航" fill-rule="evenodd"></path>
-        </svg>
-    </a>
-    <a href="https://moretti815.github.io/blog/rss.xml" target="_blank" id="buttonRSS" class="btn btn-invisible circle" title="RSS">
-        <svg class="octicon" width="16" height="16" >
-            <path id="pathRSS" fill-rule="evenodd"></path>
-        </svg>
-    </a>
-    <a class="btn btn-invisible circle" onclick="modeSwitch()" title="切换主题">
-        <svg class="octicon" width="16" height="16" >
-            <path id="themeSwitch" fill-rule="evenodd"></path>
-        </svg>
+    <a class="circle" id="themeSwitch" aria-label="switchTheme">
+        <svg class="octicon" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z"></path></svg>
     </a>
 </div>
 </div>
     <div id="content">
-<div style="margin-bottom: 16px;">这是最好的时代，也是最坏的时代。</div>
+<div class="guide-container">
+    <div class="guide-header">
+        <svg class="guide-header-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+        <h1>导航</h1>
+    </div>
+    
+    <p class="guide-description">
+        本站提供的实用导航入口，点击即可跳转使用。
+    </p>
 
-<!-- Memos Timeline -->
-<div class="memos-timeline-container" id="memos-timeline">
-    <div class="memos-timeline-inner">
-        <svg class="memos-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-        </svg>
-        <div class="memos-timeline-content" id="memos-timeline-content">
-            <span class="memos-loading">加载中...</span>
-        </div>
-        <svg class="memos-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6"/>
-        </svg>
+    <div class="guide-list">
+        
+            
+            <a href="https://moretti815.github.io/blog" class="guide-item" >
+                <div class="guide-item-header">
+                    
+                    <svg class="guide-item-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                    
+                    <span class="guide-item-title">博客首页</span>
+                </div>
+                <p class="guide-item-desc">返回博客主页，浏览最新文章</p>
+            </a>
+            
+            <a href="https://github.com/moretti815" class="guide-item" target="_blank" rel="noopener noreferrer">
+                <div class="guide-item-header">
+                    
+                    <svg class="guide-item-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                    
+                    <span class="guide-item-title">GitHub</span>
+                </div>
+                <p class="guide-item-desc">访问我的 GitHub 主页，查看开源项目</p>
+            </a>
+            
+            <a href="https://moretti815.github.io/blog/about.html" class="guide-item" >
+                <div class="guide-item-header">
+                    
+                    <svg class="guide-item-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    
+                    <span class="guide-item-title">关于我</span>
+                </div>
+                <p class="guide-item-desc">了解更多关于我的信息</p>
+            </a>
+            
+            <a href="https://moretti815.github.io/blog/friends.html" class="guide-item" >
+                <div class="guide-item-header">
+                    
+                    <svg class="guide-item-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                    </svg>
+                    
+                    <span class="guide-item-title">友情链接</span>
+                </div>
+                <p class="guide-item-desc">查看我的朋友们</p>
+            </a>
+            
+        
     </div>
 </div>
-
-<nav class="SideNav border">
-<a class="SideNav-item d-flex flex-items-center flex-justify-between" href="post/Github%20issues%20-wen-zhang-ding-yue.html">
-    <div class="d-flex flex-items-center">
-        <svg class="SideNav-icon octicon" style="width:16px;height:16px"><path class="svgTop0" d=""></path>
-        </svg>
-        <span class="listTitle">Github issues 文章订阅</span>
-    </div>
-    <div class="listLabels">
-        
-        <span class="Label LabelName" style="background-color:#6d99ec"><object><a style="color:#fff" href="tag.html#Gmeek">Gmeek</a></object></span><span class="Label LabelName" style="background-color:#5d624b"><object><a style="color:#fff" href="tag.html#订阅">订阅</a></object></span>
-        <span class="Label LabelTime" style="background-color:#1f883d">2026-05-20</span>
-    </div>
-</a><a class="SideNav-item d-flex flex-items-center flex-justify-between" href="post/Hello%20World.html">
-    <div class="d-flex flex-items-center">
-        <svg class="SideNav-icon octicon" style="width:16px;height:16px"><path class="svgTop0" d=""></path>
-        </svg>
-        <span class="listTitle">Hello World</span>
-    </div>
-    <div class="listLabels">
-        <span class="Label" style="background-color:#006b75">2</span>
-        <span class="Label LabelName" style="background-color:#dab885"><object><a style="color:#fff" href="tag.html#测试">测试</a></object></span>
-        <span class="Label LabelTime" style="background-color:#1f883d">2026-05-17</span>
-    </div>
-</a>
-</nav>
 </div>
     <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://moretti815.github.io/blog">Moretti's Blog</a></div>
 <div id="footer2">
@@ -849,7 +811,7 @@ if("11/01/2024"!=""){
 </script></div>
 </body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'search': 'M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z', 'rss': 'M2.002 2.725a.75.75 0 0 1 .797-.699C8.79 2.42 13.58 7.21 13.974 13.201a.75.75 0 0 1-1.497.098 10.502 10.502 0 0 0-9.776-9.776.747.747 0 0 1-.7-.798ZM2.84 7.05h-.002a7.002 7.002 0 0 1 6.113 6.111.75.75 0 0 1-1.49.178 5.503 5.503 0 0 0-4.8-4.8.75.75 0 0 1 .179-1.489ZM2 13a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z', 'upload': 'M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z M11.78 4.72a.749.749 0 1 1-1.06 1.06L8.75 3.811V9.5a.75.75 0 0 1-1.5 0V3.811L5.28 5.78a.749.749 0 1 1-1.06-1.06l3.25-3.25a.749.749 0 0 1 1.06 0l3.25 3.25Z', 'post': 'M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25Zm1.75-.25a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25ZM3.5 6.25a.75.75 0 0 1 .75-.75h7a.75.75 0 0 1 0 1.5h-7a.75.75 0 0 1-.75-.75Zm.75 2.25h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1 0-1.5Z', 'about': 'M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z', 'friends': 'm7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z', 'guide': 'm220.8 256l-71.2 80l71.1 80H768V256zm-14.4-64H800a32 32 0 0 1 32 32v224a32 32 0 0 1-32 32H206.4a32 32 0 0 1-24-10.8L83 357.2a32 32 0 0 1 0-42.4l99.6-112a32 32 0 0 1 23.9-10.8m678.8 496L814 768H266.8V608H814zm-56.8-144H235a32 32 0 0 0-32 32v224a32 32 0 0 0 32 32h593.6a32 32 0 0 0 24-10.8l99.5-112a32 32 0 0 0 0-42.4l-99.6-112a32 32 0 0 0-24-10.8'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -1266,139 +1228,7 @@ if (theme === "auto") {
 </script>
 
 <script>
-document.getElementById("pathSearch").setAttribute("d",IconList["search"]);
-document.getElementById("pathRSS").setAttribute("d",IconList["rss"]);
-iconTOP=document.getElementsByClassName("svgTop1");
-iconPost=document.getElementsByClassName("svgTop0");
-for(var i=0;i<iconTOP.length;i++){
-    iconTOP[i].setAttribute("d",IconList["upload"]);
-    iconTOP[i].parentNode.style.color="red";
-}
-for(var i=0;i<iconPost.length;i++){
-    iconPost[i].setAttribute("d",IconList["post"]);
-}
-
-
-
-document.getElementById("关于").setAttribute("d",value=IconList["about"]);document.getElementById("友链").setAttribute("d",value=IconList["friends"]);document.getElementById("导航").setAttribute("d",value=IconList["guide"]);
-
-// Memos Timeline
-const MEMOS_API_URL = 'https://m.314926.xyz/api/v1/memos';
-const MEMOS_PAGE_URL = 'https://moretti815.github.io/blog/memos.html';
-
-let memosCarouselInterval = null;
-let currentMemoIndex = 0;
-let publicMemos = [];
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function formatMemoContent(memo) {
-    let text = memo.content || '';
-    
-    // Strip HTML tags and markdown
-    text = text.replace(/<[^>]*>/g, '').replace(/!\[.*?\]\(.*?\)/g, '[图片]').replace(/\[.*?\]\(.*?\)/g, '$1');
-    
-    // Truncate text
-    if (text.length > 60) {
-        text = text.substring(0, 60) + '...';
-    }
-    
-    const hasImage = memo.resources && memo.resources.some(r => r.type && r.type.startsWith('image/'));
-    
-    return {
-        text: escapeHtml(text),
-        hasImage: hasImage
-    };
-}
-
-function renderMemoItem(memo, index) {
-    const contentEl = document.getElementById('memos-timeline-content');
-    const formatted = formatMemoContent(memo);
-    
-    contentEl.innerHTML = `
-        <span class="memos-item memos-item-slide" style="animation: memos-slideIn 0.5s ease;">
-            <span class="memos-item-text">${formatted.text}</span>
-            ${formatted.hasImage ? '<span class="memos-item-image"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>图片</span>' : ''}
-        </span>
-    `;
-}
-
-function startCarousel() {
-    if (publicMemos.length <= 1) return;
-    
-    if (memosCarouselInterval) {
-        clearInterval(memosCarouselInterval);
-    }
-    
-    memosCarouselInterval = setInterval(() => {
-        currentMemoIndex = (currentMemoIndex + 1) % publicMemos.length;
-        renderMemoItem(publicMemos[currentMemoIndex], currentMemoIndex);
-    }, 4000); // 每4秒切换
-}
-
-async function loadMemosTimeline() {
-    const container = document.getElementById('memos-timeline');
-    const contentEl = document.getElementById('memos-timeline-content');
-    
-    if (!container || !contentEl) return;
-    
-    try {
-        const response = await fetch(`${MEMOS_API_URL}?limit=5&_t=${Date.now()}`);
-        if (!response.ok) throw new Error('Failed to fetch');
-        
-        const data = await response.json();
-        const memos = data.memos || [];
-        
-        if (memos.length === 0) {
-            contentEl.innerHTML = '<span class="memos-loading">暂无动态</span>';
-            return;
-        }
-        
-        // Filter only public memos
-        publicMemos = memos.filter(m => m.visibility === 'PUBLIC');
-        
-        if (publicMemos.length === 0) {
-            contentEl.innerHTML = '<span class="memos-loading">暂无公开动态</span>';
-            return;
-        }
-        
-        // Display first memo
-        currentMemoIndex = 0;
-        renderMemoItem(publicMemos[0], 0);
-        
-        // Start carousel
-        startCarousel();
-        
-        // Click to navigate
-        container.addEventListener('click', () => {
-            window.location.href = MEMOS_PAGE_URL;
-        });
-        
-        // Pause on hover
-        container.addEventListener('mouseenter', () => {
-            if (memosCarouselInterval) {
-                clearInterval(memosCarouselInterval);
-                memosCarouselInterval = null;
-            }
-        });
-        
-        container.addEventListener('mouseleave', () => {
-            startCarousel();
-        });
-        
-    } catch (error) {
-        console.error('Failed to load memos:', error);
-        contentEl.innerHTML = '<span class="memos-loading">加载失败</span>';
-    }
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', loadMemosTimeline);
+// 页面特定的脚本（如有需要）
 </script>
-
 
 </html>
