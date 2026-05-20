@@ -3,7 +3,7 @@ name: Notify Blog Update
 on:
   workflow_dispatch:
   issues:
-    types: [opened, edited, labeled]
+    types: [labeled]
 
 jobs:
   notify:
