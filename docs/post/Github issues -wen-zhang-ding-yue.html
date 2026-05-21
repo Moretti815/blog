@@ -386,11 +386,11 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 .post-meta-container {
     margin-bottom: 24px;
     padding: 12px 16px;
-    background-color: var(--color-canvas-subtle, #f6f8fa);
-    border: 1px solid var(--color-border-default, #d0d7de);
+    background-color: var(--color-canvas-subtle);
+    border: 1px solid var(--color-border-default);
     border-radius: 8px;
     font-size: 14px;
-    color: var(--color-fg-muted, #656d76);
+    color: var(--color-fg-muted);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -399,24 +399,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 .post-meta-container time {
     font-weight: 500;
-    color: var(--color-fg-default, #1f2328);
+    color: var(--color-fg-default);
 }
 
 .post-view-count {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-}
-
-/* 暗色模式适配 */
-[data-color-mode="dark"] .post-meta-container {
-    background-color: var(--color-canvas-subtle, #161b22);
-    border-color: var(--color-border-default, #30363d);
-    color: var(--color-fg-muted, #8b949e);
-}
-
-[data-color-mode="dark"] .post-meta-container time {
-    color: var(--color-fg-default, #c9d1d9);
 }
 
 /* 移动端适配 */
@@ -460,9 +449,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 .post-pagination .pagination {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 16px;
 }
 
 .post-pagination .previous_page,
@@ -495,6 +483,14 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 .post-pagination .previous_page svg,
 .post-pagination .next_page svg {
     flex-shrink: 0;
+}
+
+.post-pagination .previous_page {
+    margin-right: auto;
+}
+
+.post-pagination .next_page {
+    margin-left: auto;
 }
 
 /* 暗色模式适配 */
@@ -1247,7 +1243,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
                 <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
             Hello World
-        </a></div>
+        </a><span class="next_page" aria-disabled="true"></span></div>
 </nav>
 
 
