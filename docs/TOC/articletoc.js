@@ -126,6 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
       --toc-icon-color: #ad6598;
       --toc-icon-active-bg: #813c85;
       --toc-icon-active-color: #fff;
+      --toc-active-bg: #b6e3ff;
+      --toc-active-text: #24292e;
     }
 
     /* 适配博客的暗色模式 - 通过 data-color-mode 属性 */
@@ -139,6 +141,8 @@ document.addEventListener("DOMContentLoaded", function () {
       --toc-icon-color: #ad6598;
       --toc-icon-active-bg: #813c85;
       --toc-icon-active-color: #adbac7;
+      --toc-active-bg: #316dca;
+      --toc-active-text: #adbac7;
     }
 
     /* 系统暗色模式作为后备 */
@@ -153,6 +157,8 @@ document.addEventListener("DOMContentLoaded", function () {
         --toc-icon-color: #ad6598;
         --toc-icon-active-bg: #813c85;
         --toc-icon-active-color: #adbac7;
+        --toc-active-bg: #316dca;
+        --toc-active-text: #adbac7;
       }
     }
 
@@ -215,6 +221,13 @@ document.addEventListener("DOMContentLoaded", function () {
         padding-left: 5px;
       }
 
+      /* 当前高亮的目录项 */
+      .toc-link.active {
+        font-weight: bold;
+        background-color: var(--toc-active-bg);
+        color: var(--toc-active-text);
+      }
+
       /* 隐藏移动端按钮 */
       .toc-icon {
         display: none !important;
@@ -274,6 +287,13 @@ document.addEventListener("DOMContentLoaded", function () {
       .toc a:hover {
         background-color: var(--toc-hover);
         padding-left: 5px;
+      }
+
+      /* 当前高亮的目录项 */
+      .toc-link.active {
+        font-weight: bold;
+        background-color: var(--toc-active-bg);
+        color: var(--toc-active-text);
       }
 
       .toc-icon {
@@ -339,8 +359,79 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   }
 
+  // 添加目录高亮功能
+  setupTOCHighlight();
+
   console.log(
     "\n %c ArticleTOC Plugins https://github.com/Meekdai/Gmeek \n",
     "padding:5px 0;background:#ad6598;color:#fff",
   );
 });
+
+// 设置目录高亮
+function setupTOCHighlight() {
+  const tocElement = document.querySelector(".toc");
+  if (!tocElement) return;
+
+  const tocLinks = tocElement.querySelectorAll(".toc-link");
+  if (tocLinks.length === 0) return;
+
+  // 获取所有标题元素
+  const headingIds = Array.from(tocLinks)
+    .map((link) => link.getAttribute("href"))
+    .filter((href) => href && href.startsWith("#"))
+    .map((href) => href.substring(1));
+
+  const headings = headingIds
+    .map((id) => document.getElementById(id))
+    .filter((heading) => heading !== null);
+
+  if (headings.length === 0) return;
+
+  // 使用 IntersectionObserver 监听标题进入视口
+  const observerOptions = {
+    rootMargin: "-10% 0px -70% 0px",
+    threshold: 0,
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        // 移除所有高亮
+        tocLinks.forEach((link) => link.classList.remove("active"));
+
+        // 高亮当前目录项
+        const activeLink = tocElement.querySelector(
+          `a[href="#${entry.target.id}"]`,
+        );
+        if (activeLink) {
+          activeLink.classList.add("active");
+          // 将当前项滚动到可视区域中间
+          activeLink.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+      }
+    });
+  }, observerOptions);
+
+  headings.forEach((heading) => observer.observe(heading));
+
+  // 处理点击事件
+  tocLinks.forEach((link) => {
+    link.addEventListener("click", function (event) {
+      event.preventDefault();
+      const targetId = this.getAttribute("href").substring(1);
+      const targetElement = document.getElementById(targetId);
+
+      if (targetElement) {
+        // 移除所有高亮
+        tocLinks.forEach((l) => l.classList.remove("active"));
+        // 高亮当前点击的项
+        this.classList.add("active");
+        // 平滑滚动到目标
+        targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        // 更新 URL hash
+        history.pushState(null, null, "#" + targetId);
+      }
+    });
+  });
+}
