@@ -24,19 +24,19 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程。主要思路是利用 AI API，在文章发布或更新时生成摘要并显示在文章顶部。具体实现包括编写调用 AI API 的模块、在博客处理逻辑中集成摘要生成、修改前端模板以显示摘要，以及通过 GitHub Actions 配置环境变量传递 API 参数。在实现过程中，作者解决了环境变量未正确传递、API 调用超时和摘要过长等问题，同时提出了后续优化方向，如支持按需生成摘要、缓存摘要结果和允许手动编辑摘要。
+<meta name="description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示以及相关配置。主要流程是文章发布或更新时调用 AI 接口生成摘要，将其显示在文章顶部。实现细节包括编写调用 AI API 的模块、在主程序中集成摘要生成逻辑、前端模板的调整以及 GitHub Actions 的环境变量配置。作者还分享了开发中遇到的挑战，如环境变量未传递、API 调用超时和摘要过长等问题，并通过增加超时限制、显式传递变量和设置 token 限制等方式解决。此外，作者提出了优化方向，包括支持自定义生成摘要、缓存摘要结果和手动编辑摘要。
 
-改进建议：
-1. 在生成摘要时，可以进一步优化 prompt，以提高摘要的准确性和简洁性。
-2. 添加日志记录功能，便于排查生成摘要失败的原因。
-3. 对摘要的长度进行动态控制，根据文章长度调整摘要的字数限制，使摘要更贴合实际需求。">
+建议改进点：
+1. 在摘要生成逻辑中增加对文章内容长度的预处理，避免发送过长文本导致性能问题。
+2. 为前端摘要区域增加样式选项，提升可读性和用户体验。
+3. 考虑使用异步方式生成摘要，进一步优化构建速度。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程。主要思路是利用 AI API，在文章发布或更新时生成摘要并显示在文章顶部。具体实现包括编写调用 AI API 的模块、在博客处理逻辑中集成摘要生成、修改前端模板以显示摘要，以及通过 GitHub Actions 配置环境变量传递 API 参数。在实现过程中，作者解决了环境变量未正确传递、API 调用超时和摘要过长等问题，同时提出了后续优化方向，如支持按需生成摘要、缓存摘要结果和允许手动编辑摘要。
+<meta property="og:description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示以及相关配置。主要流程是文章发布或更新时调用 AI 接口生成摘要，将其显示在文章顶部。实现细节包括编写调用 AI API 的模块、在主程序中集成摘要生成逻辑、前端模板的调整以及 GitHub Actions 的环境变量配置。作者还分享了开发中遇到的挑战，如环境变量未传递、API 调用超时和摘要过长等问题，并通过增加超时限制、显式传递变量和设置 token 限制等方式解决。此外，作者提出了优化方向，包括支持自定义生成摘要、缓存摘要结果和手动编辑摘要。
 
-改进建议：
-1. 在生成摘要时，可以进一步优化 prompt，以提高摘要的准确性和简洁性。
-2. 添加日志记录功能，便于排查生成摘要失败的原因。
-3. 对摘要的长度进行动态控制，根据文章长度调整摘要的字数限制，使摘要更贴合实际需求。">
+建议改进点：
+1. 在摘要生成逻辑中增加对文章内容长度的预处理，避免发送过长文本导致性能问题。
+2. 为前端摘要区域增加样式选项，提升可读性和用户体验。
+3. 考虑使用异步方式生成摘要，进一步优化构建速度。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://moretti815.github.io/blog/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -327,28 +327,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     }
 }
 
-.previous_page {
-    text-align: left;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.next_page {
-    text-align: right;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.previous_page::before {
-    content: "‹";
-    font-size: 1.2em;
-    line-height: 1;
-}
-.next_page::after {
-    content: "›";
-    font-size: 1.2em;
-    line-height: 1;
-}
+.previous_page {text-align: left;}
+.next_page {text-align: right;}
 
 /* 代码块折叠复制按钮样式 */
 .code-block-wrapper {
@@ -932,12 +912,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程。主要思路是利用 AI API，在文章发布或更新时生成摘要并显示在文章顶部。具体实现包括编写调用 AI API 的模块、在博客处理逻辑中集成摘要生成、修改前端模板以显示摘要，以及通过 GitHub Actions 配置环境变量传递 API 参数。在实现过程中，作者解决了环境变量未正确传递、API 调用超时和摘要过长等问题，同时提出了后续优化方向，如支持按需生成摘要、缓存摘要结果和允许手动编辑摘要。
+    <strong>AI总结:</strong> 本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示以及相关配置。主要流程是文章发布或更新时调用 AI 接口生成摘要，将其显示在文章顶部。实现细节包括编写调用 AI API 的模块、在主程序中集成摘要生成逻辑、前端模板的调整以及 GitHub Actions 的环境变量配置。作者还分享了开发中遇到的挑战，如环境变量未传递、API 调用超时和摘要过长等问题，并通过增加超时限制、显式传递变量和设置 token 限制等方式解决。此外，作者提出了优化方向，包括支持自定义生成摘要、缓存摘要结果和手动编辑摘要。
 
-改进建议：
-1. 在生成摘要时，可以进一步优化 prompt，以提高摘要的准确性和简洁性。
-2. 添加日志记录功能，便于排查生成摘要失败的原因。
-3. 对摘要的长度进行动态控制，根据文章长度调整摘要的字数限制，使摘要更贴合实际需求。
+建议改进点：
+1. 在摘要生成逻辑中增加对文章内容长度的预处理，避免发送过长文本导致性能问题。
+2. 为前端摘要区域增加样式选项，提升可读性和用户体验。
+3. 考虑使用异步方式生成摘要，进一步优化构建速度。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1059,7 +1039,9 @@ else:
 <hr />
 <p>实现过程中参考了 <a href="https://github.com/anaer/blog">anaer/blog</a> 的做法，感谢前辈踩坑。  </p>
 </article>
-</div><!-- 文章版权信息 -->
+</div><nav class="paginate-container" aria-label="Pagination">
+    <div class="pagination"><a class="previous_page" rel="previous" href="https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html" aria-label="Previous Page">Github issues 文章订阅</a><!-- <span style="width:200px" aria-disabled="true"></span> --></div>
+</nav><!-- 文章版权信息 -->
 <div class="post-copyright">
     <div class="post-copyright-header">
         <div class="post-copyright-title">本博客的 ai 总结</div>

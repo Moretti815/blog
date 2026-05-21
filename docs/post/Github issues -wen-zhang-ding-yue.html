@@ -24,19 +24,13 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了利用 GitHub Issues 实现博客更新订阅的方案。通过创建一个专门的订阅 Issue，用户可以通过 GitHub 的订阅功能接收博客更新的邮件通知。该方法的优点包括零成本、邮件高可信度、操作便捷以及更新记录清晰。具体实现步骤包括创建订阅 Issue、配置 GitHub Actions 工作流以自动发送通知评论，以及在博客中添加订阅入口链接。文章还提供了触发时机、过滤条件和邮件内容优化的建议。
+<meta name="description" content="本文介绍了如何利用 GitHub Issues 实现博客订阅通知的方案，通过创建一个专门的通知 Issue，结合 GitHub Actions 自动在博客更新时发送评论，订阅者即可收到更新邮件。该方法的优势包括零成本、高邮件可信度、操作简单以及清晰的更新历史。具体步骤包括创建订阅 Issue、编写 GitHub Actions 工作流实现自动通知、以及在博客中添加订阅入口链接。同时，文章还探讨了触发时机的优化、通知内容的过滤以及邮件内容的设计，确保通知精准且不重复。
 
-改进建议：
-1. 可进一步阐述如何处理潜在的订阅量过大导致的 GitHub 限制问题。
-2. 增加对该方法可能的局限性或适用场景的讨论，例如用户需要 GitHub 账号的前提。
-3. 提供更多代码注释或解释，以便初学者更易理解和应用。">
+改进建议：可以增加对潜在问题的讨论，例如订阅人数过多可能带来的性能或管理问题，以及对非 GitHub 用户的替代方案说明，以进一步提升方案的适用性和全面性。">
 <meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="本文介绍了利用 GitHub Issues 实现博客更新订阅的方案。通过创建一个专门的订阅 Issue，用户可以通过 GitHub 的订阅功能接收博客更新的邮件通知。该方法的优点包括零成本、邮件高可信度、操作便捷以及更新记录清晰。具体实现步骤包括创建订阅 Issue、配置 GitHub Actions 工作流以自动发送通知评论，以及在博客中添加订阅入口链接。文章还提供了触发时机、过滤条件和邮件内容优化的建议。
+<meta property="og:description" content="本文介绍了如何利用 GitHub Issues 实现博客订阅通知的方案，通过创建一个专门的通知 Issue，结合 GitHub Actions 自动在博客更新时发送评论，订阅者即可收到更新邮件。该方法的优势包括零成本、高邮件可信度、操作简单以及清晰的更新历史。具体步骤包括创建订阅 Issue、编写 GitHub Actions 工作流实现自动通知、以及在博客中添加订阅入口链接。同时，文章还探讨了触发时机的优化、通知内容的过滤以及邮件内容的设计，确保通知精准且不重复。
 
-改进建议：
-1. 可进一步阐述如何处理潜在的订阅量过大导致的 GitHub 限制问题。
-2. 增加对该方法可能的局限性或适用场景的讨论，例如用户需要 GitHub 账号的前提。
-3. 提供更多代码注释或解释，以便初学者更易理解和应用。">
+改进建议：可以增加对潜在问题的讨论，例如订阅人数过多可能带来的性能或管理问题，以及对非 GitHub 用户的替代方案说明，以进一步提升方案的适用性和全面性。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -327,28 +321,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     }
 }
 
-.previous_page {
-    text-align: left;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.next_page {
-    text-align: right;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.previous_page::before {
-    content: "‹";
-    font-size: 1.2em;
-    line-height: 1;
-}
-.next_page::after {
-    content: "›";
-    font-size: 1.2em;
-    line-height: 1;
-}
+.previous_page {text-align: left;}
+.next_page {text-align: right;}
 
 /* 代码块折叠复制按钮样式 */
 .code-block-wrapper {
@@ -934,12 +908,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 实现博客更新订阅的方案。通过创建一个专门的订阅 Issue，用户可以通过 GitHub 的订阅功能接收博客更新的邮件通知。该方法的优点包括零成本、邮件高可信度、操作便捷以及更新记录清晰。具体实现步骤包括创建订阅 Issue、配置 GitHub Actions 工作流以自动发送通知评论，以及在博客中添加订阅入口链接。文章还提供了触发时机、过滤条件和邮件内容优化的建议。
+    <strong>AI总结:</strong> 本文介绍了如何利用 GitHub Issues 实现博客订阅通知的方案，通过创建一个专门的通知 Issue，结合 GitHub Actions 自动在博客更新时发送评论，订阅者即可收到更新邮件。该方法的优势包括零成本、高邮件可信度、操作简单以及清晰的更新历史。具体步骤包括创建订阅 Issue、编写 GitHub Actions 工作流实现自动通知、以及在博客中添加订阅入口链接。同时，文章还探讨了触发时机的优化、通知内容的过滤以及邮件内容的设计，确保通知精准且不重复。
 
-改进建议：
-1. 可进一步阐述如何处理潜在的订阅量过大导致的 GitHub 限制问题。
-2. 增加对该方法可能的局限性或适用场景的讨论，例如用户需要 GitHub 账号的前提。
-3. 提供更多代码注释或解释，以便初学者更易理解和应用。
+改进建议：可以增加对潜在问题的讨论，例如订阅人数过多可能带来的性能或管理问题，以及对非 GitHub 用户的替代方案说明，以进一步提升方案的适用性和全面性。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1064,7 +1035,7 @@ jobs:
 <p>对于个人博客来说，完全够用了。  </p>
 </article>
 </div><nav class="paginate-container" aria-label="Pagination">
-    <div class="pagination"><a class="previous_page" rel="previous" href="https://moretti815.github.io/blog/post/Hello%20World.html" aria-label="Previous Page">Hello World</a><!-- <span style="width:200px" aria-disabled="true"></span> --></div>
+    <div class="pagination"><a class="previous_page" rel="previous" href="https://moretti815.github.io/blog/post/Hello%20World.html" aria-label="Previous Page">Hello World</a><!-- <span style="width:200px" aria-disabled="true"></span> --><a class="next_page" rel="next" href="https://moretti815.github.io/blog/post/ben-bo-ke-de-%20ai%20-zong-jie.html" aria-label="Next Page">本博客的 ai 总结</a></div>
 </nav><!-- 文章版权信息 -->
 <div class="post-copyright">
     <div class="post-copyright-header">
