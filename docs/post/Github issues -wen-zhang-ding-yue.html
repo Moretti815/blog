@@ -24,13 +24,13 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="博客写久了，总会想：读者怎么知道我更新了？
+<meta name="description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，替代传统的 RSS 或自建邮件订阅方式。通过创建一个专门的订阅 Issue，每次博客更新时在该 Issue 下添加评论，订阅者即可通过 GitHub 的邮件通知获知更新。此方法的优势在于零成本、高邮件可信度、操作简便以及更新历史清晰可查。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发送通知，以及在博客页面提供订阅链接。文中还详细讨论了触发时机、过滤条件和邮件内容生成的细节，适用于 GitHub Issues 博客和静态博客两种场景。
 
-RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。">
+改进建议：可以进一步说明如何处理订阅人数较多时的性能问题，以及如何应对 GitHub API 调用的限制。此外，可补充更多关于邮件内容优化的技巧，以提升读者体验。">
 <meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="博客写久了，总会想：读者怎么知道我更新了？
+<meta property="og:description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，替代传统的 RSS 或自建邮件订阅方式。通过创建一个专门的订阅 Issue，每次博客更新时在该 Issue 下添加评论，订阅者即可通过 GitHub 的邮件通知获知更新。此方法的优势在于零成本、高邮件可信度、操作简便以及更新历史清晰可查。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发送通知，以及在博客页面提供订阅链接。文中还详细讨论了触发时机、过滤条件和邮件内容生成的细节，适用于 GitHub Issues 博客和静态博客两种场景。
 
-RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。">
+改进建议：可以进一步说明如何处理订阅人数较多时的性能问题，以及如何应对 GitHub API 调用的限制。此外，可补充更多关于邮件内容优化的技巧，以提升读者体验。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -881,9 +881,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 博客写久了，总会想：读者怎么知道我更新了？
+    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，替代传统的 RSS 或自建邮件订阅方式。通过创建一个专门的订阅 Issue，每次博客更新时在该 Issue 下添加评论，订阅者即可通过 GitHub 的邮件通知获知更新。此方法的优势在于零成本、高邮件可信度、操作简便以及更新历史清晰可查。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发送通知，以及在博客页面提供订阅链接。文中还详细讨论了触发时机、过滤条件和邮件内容生成的细节，适用于 GitHub Issues 博客和静态博客两种场景。
 
-RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。
+改进建议：可以进一步说明如何处理订阅人数较多时的性能问题，以及如何应对 GitHub API 调用的限制。此外，可补充更多关于邮件内容优化的技巧，以提升读者体验。
 </div>
 
 <div class="markdown-body" id="postBody"><p>博客写久了，总会想：读者怎么知道我更新了？</p>

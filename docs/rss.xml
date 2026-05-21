@@ -1,41 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Moretti's Blog</title><link>https://moretti815.github.io/blog</link><description>这是最好的时代，也是最坏的时代。</description><copyright>Moretti's Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif</url><title>avatar</title><link>https://moretti815.github.io/blog</link></image><lastBuildDate>Thu, 21 May 2026 10:53:59 +0000</lastBuildDate><managingEditor>Moretti's Blog</managingEditor><ttl>60</ttl><webMaster>Moretti's Blog</webMaster><item><title>Github issues 文章订阅</title><link>https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html</link><description>博客写久了，总会想：读者怎么知道我更新了？
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Moretti's Blog</title><link>https://moretti815.github.io/blog</link><description>这是最好的时代，也是最坏的时代。</description><copyright>Moretti's Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif</url><title>avatar</title><link>https://moretti815.github.io/blog</link></image><lastBuildDate>Thu, 21 May 2026 11:02:36 +0000</lastBuildDate><managingEditor>Moretti's Blog</managingEditor><ttl>60</ttl><webMaster>Moretti's Blog</webMaster><item><title>Github issues 文章订阅</title><link>https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html</link><description>本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，替代传统的 RSS 或自建邮件订阅方式。通过创建一个专门的订阅 Issue，每次博客更新时在该 Issue 下添加评论，订阅者即可通过 GitHub 的邮件通知获知更新。此方法的优势在于零成本、高邮件可信度、操作简便以及更新历史清晰可查。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发送通知，以及在博客页面提供订阅链接。文中还详细讨论了触发时机、过滤条件和邮件内容生成的细节，适用于 GitHub Issues 博客和静态博客两种场景。
 
-RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。</description><guid isPermaLink="true">https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html</guid><pubDate>Wed, 20 May 2026 04:01:45 +0000</pubDate></item><item><title>Hello World</title><link>https://moretti815.github.io/blog/post/Hello%20World.html</link><description>欢迎来到我的博客！
-
-# 一级标题
-## 二级标题
-### 三级标题
-
-测试**粗体**，测试*斜体*
-
-测试[链接](https://www.kemiaosw.top)
-
-测试图片:
-![](https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif)
-
-- 无序
-- 列表
-
-1. 有序
-2. 列表
-
-- [ ] todo
--  [x] 待办列表
-
-| 标题 | 第一 | 第二 |
-| :--- | :---: | ---: |
-| 左对齐 | 居中 | 右对齐 |
-
-```mermaid
-graph TD
-    A[开始] --&gt; B{条件判断}
-    B --&gt;|Yes| C[执行操作A]
-    B --&gt;|No| D[执行操作B]
-    C --&gt; E[结束]
-    D --&gt; E
-```
-
-$$E = mc^2$$
-
-$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$。</description><guid isPermaLink="true">https://moretti815.github.io/blog/post/Hello%20World.html</guid><pubDate>Sun, 17 May 2026 07:37:53 +0000</pubDate></item><item><title>导航</title><link>https://moretti815.github.io/blog/guide.html</link><description>本站提供的实用导航入口，点击即可跳转使用。</description><guid isPermaLink="true">https://moretti815.github.io/blog/guide.html</guid><pubDate>Thu, 21 May 2026 10:53:59 +0000</pubDate></item><item><title>友链</title><link>https://moretti815.github.io/blog/friends.html</link><description>亦师亦友 · 给予帮助的人最可爱！</description><guid isPermaLink="true">https://moretti815.github.io/blog/friends.html</guid><pubDate>Thu, 21 May 2026 10:53:59 +0000</pubDate></item><item><title>关于</title><link>https://moretti815.github.io/blog/about.html</link><guid isPermaLink="true">https://moretti815.github.io/blog/about.html</guid><pubDate>Thu, 21 May 2026 10:53:59 +0000</pubDate></item></channel></rss>
+改进建议：可以进一步说明如何处理订阅人数较多时的性能问题，以及如何应对 GitHub API 调用的限制。此外，可补充更多关于邮件内容优化的技巧，以提升读者体验。</description><guid isPermaLink="true">https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html</guid><pubDate>Wed, 20 May 2026 04:01:45 +0000</pubDate></item><item><title>Hello World</title><link>https://moretti815.github.io/blog/post/Hello%20World.html</link><description>本文介绍了一个博客内容展示的示例，涵盖了多种排版和格式功能，包括标题层级、文本样式（粗体、斜体）、超链接、图片嵌入、无序和有序列表、任务清单、表格排版、流程图代码示例（Mermaid语法），以及数学公式的展示。改进建议：可以增加实际内容或主题描述，使博客更具实用性和吸引力，同时提供更详细的上下文说明以便读者理解示例的用途。</description><guid isPermaLink="true">https://moretti815.github.io/blog/post/Hello%20World.html</guid><pubDate>Sun, 17 May 2026 07:37:53 +0000</pubDate></item><item><title>导航</title><link>https://moretti815.github.io/blog/guide.html</link><description>本站提供的实用导航入口，点击即可跳转使用。</description><guid isPermaLink="true">https://moretti815.github.io/blog/guide.html</guid><pubDate>Thu, 21 May 2026 11:02:36 +0000</pubDate></item><item><title>友链</title><link>https://moretti815.github.io/blog/friends.html</link><description>亦师亦友 · 给予帮助的人最可爱！</description><guid isPermaLink="true">https://moretti815.github.io/blog/friends.html</guid><pubDate>Thu, 21 May 2026 11:02:36 +0000</pubDate></item><item><title>关于</title><link>https://moretti815.github.io/blog/about.html</link><guid isPermaLink="true">https://moretti815.github.io/blog/about.html</guid><pubDate>Thu, 21 May 2026 11:02:36 +0000</pubDate></item></channel></rss>
