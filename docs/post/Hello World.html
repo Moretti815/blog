@@ -24,14 +24,14 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了一个博客内容展示的示例，涵盖了多种排版和格式功能，包括标题层级、文本样式（粗体、斜体）、超链接、图片嵌入、无序和有序列表、任务清单、表格排版、流程图代码示例（Mermaid语法），以及数学公式的展示。改进建议：可以增加实际内容或主题描述，使博客更具实用性和吸引力，同时提供更详细的上下文说明以便读者理解示例的用途。">
+<meta name="description" content="本文介绍了一个博客页面的内容结构和格式示例，包括多级标题、文本样式（粗体、斜体）、超链接、图片展示、无序和有序列表、待办事项清单、表格对齐方式、流程图代码，以及数学公式的展示。改进建议：可以增加一些实际内容或主题说明，使博客更具吸引力和实用性，同时补充相关描述以增强可读性。">
 <meta property="og:title" content="Hello World">
-<meta property="og:description" content="本文介绍了一个博客内容展示的示例，涵盖了多种排版和格式功能，包括标题层级、文本样式（粗体、斜体）、超链接、图片嵌入、无序和有序列表、任务清单、表格排版、流程图代码示例（Mermaid语法），以及数学公式的展示。改进建议：可以增加实际内容或主题描述，使博客更具实用性和吸引力，同时提供更详细的上下文说明以便读者理解示例的用途。">
+<meta property="og:description" content="本文介绍了一个博客页面的内容结构和格式示例，包括多级标题、文本样式（粗体、斜体）、超链接、图片展示、无序和有序列表、待办事项清单、表格对齐方式、流程图代码，以及数学公式的展示。改进建议：可以增加一些实际内容或主题说明，使博客更具吸引力和实用性，同时补充相关描述以增强可读性。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://moretti815.github.io/blog/post/Hello%20World.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
 <title>Hello World</title>
-<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
 <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 <link href='https://moretti815.github.io/blog/fonts/chill-font.css' rel='stylesheet' />
 
@@ -339,17 +339,64 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     font-size: 1.2em;
     line-height: 1;
 }
-.copy-feedback {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 50px;
-    color: var(--color-fg-on-emphasis);
-    background-color: var(--color-fg-muted);
-    border-radius: 3px;
-    padding: 5px 8px;
-    font-size: 12px;
+
+/* 代码块折叠复制按钮样式 */
+.code-block-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
 }
+.code-block-controls {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.code-block-wrapper:hover .code-block-controls {
+    opacity: 1;
+}
+.fold-btn, .copy-btn {
+    border: none;
+    background: var(--color-canvas-subtle, #f6f8fa);
+    color: var(--color-fg-muted, #656d76);
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fold-btn:hover, .copy-btn:hover {
+    background: var(--color-btn-hover-bg, #f3f4f6);
+    color: var(--color-fg-default, #1f2328);
+}
+.fold-btn:active, .copy-btn:active {
+    transform: scale(0.95);
+}
+/* 暗色模式适配 */
+[data-color-mode="dark"] .code-block-controls {
+    opacity: 0.8;
+}
+[data-color-mode="dark"] .fold-btn,
+[data-color-mode="dark"] .copy-btn {
+    background: var(--color-canvas-subtle, #21262d);
+    color: var(--color-fg-muted, #848d97);
+}
+[data-color-mode="dark"] .fold-btn:hover,
+[data-color-mode="dark"] .copy-btn:hover {
+    background: var(--color-btn-hover-bg, #30363d);
+    color: var(--color-fg-default, #c9d1d9);
+}
+
+
 </style>
 
 
@@ -875,53 +922,62 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 11:05:10</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了一个博客内容展示的示例，涵盖了多种排版和格式功能，包括标题层级、文本样式（粗体、斜体）、超链接、图片嵌入、无序和有序列表、任务清单、表格排版、流程图代码示例（Mermaid语法），以及数学公式的展示。改进建议：可以增加实际内容或主题描述，使博客更具实用性和吸引力，同时提供更详细的上下文说明以便读者理解示例的用途。
+    <strong>AI总结:</strong> 本文介绍了一个博客页面的内容结构和格式示例，包括多级标题、文本样式（粗体、斜体）、超链接、图片展示、无序和有序列表、待办事项清单、表格对齐方式、流程图代码，以及数学公式的展示。改进建议：可以增加一些实际内容或主题说明，使博客更具吸引力和实用性，同时补充相关描述以增强可读性。
 </div>
 
-<div class="markdown-body" id="postBody"><p>欢迎来到我的博客！</p>
-<h1>一级标题</h1>
-<h2>二级标题</h2>
-<h3>三级标题</h3>
-<p>测试<strong>粗体</strong>，测试<em>斜体</em></p>
-<p>测试<a href="https://www.kemiaosw.top" rel="nofollow">链接</a></p>
-<p>测试图片:<br>
-<a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/c87fa628e816d5873cbe854347bfb9477f94cc143b9e4e1f271c40c8eedf2866/68747470733a2f2f6a73642e3236383638322e78797a2f67682f4b656d656f77303831352f696d67406d61696e2f696d672f6b656d69616f2e676966"><img src="https://camo.githubusercontent.com/c87fa628e816d5873cbe854347bfb9477f94cc143b9e4e1f271c40c8eedf2866/68747470733a2f2f6a73642e3236383638322e78797a2f67682f4b656d656f77303831352f696d67406d61696e2f696d672f6b656d69616f2e676966" alt="" data-canonical-src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif" style="max-width: 100%;"></a></p>
+<div class="markdown-body" id="postBody">
+<article class="markdown-body">
+<p>欢迎来到我的博客！  </p>
+<h1 id="_1">一级标题</h1>
+<h2 id="_2">二级标题</h2>
+<h3 id="_3">三级标题</h3>
+<p>测试<strong>粗体</strong>，测试<em>斜体</em>  </p>
+<p>测试<a href="https://www.kemiaosw.top">链接</a>  </p>
+<p>测试图片:<br />
+<img alt="" src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif" />  </p>
 <ul>
-<li>无序</li>
-<li>列表</li>
+<li>无序  </li>
+<li>
+<p>列表  </p>
+</li>
+<li>
+<p>有序  </p>
+</li>
+<li>
+<p>列表  </p>
+</li>
+<li>
+<p>[ ] todo  </p>
+</li>
+<li>[x] 待办列表  </li>
 </ul>
-<ol>
-<li>有序</li>
-<li>列表</li>
-</ol>
-<ul class="contains-task-list">
-<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Incomplete task"> todo</li>
-<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 待办列表</li>
-</ul>
-<markdown-accessiblity-table><table role="table">
+<table>
 <thead>
 <tr>
-<th align="left">标题</th>
-<th align="center">第一</th>
-<th align="right">第二</th>
+<th style="text-align: left;">标题</th>
+<th style="text-align: center;">第一</th>
+<th style="text-align: right;">第二</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">左对齐</td>
-<td align="center">居中</td>
-<td align="right">右对齐</td>
+<td style="text-align: left;">左对齐</td>
+<td style="text-align: center;">居中</td>
+<td style="text-align: right;">右对齐</td>
 </tr>
 </tbody>
-</table></markdown-accessiblity-table>
-<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">graph</span> <span class="pl-c1">TD</span>
-    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>开始<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>条件判断<span class="pl-pds"><span class="pl-sg">}</span></span></span>
-    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">Yes</span><span class="pl-k">|</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>执行操作A<span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">No</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>执行操作B<span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>结束<span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span></pre></div>
-<p>$$E = mc^2$$</p>
-<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p></div><nav class="paginate-container" aria-label="Pagination">
+</table>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-mermaid">graph TD  
+    A[开始] --&gt; B{条件判断}  
+    B --&gt;|Yes| C[执行操作A]  
+    B --&gt;|No| D[执行操作B]  
+    C --&gt; E[结束]  
+    D --&gt; E  </code></pre></div>
+<p>$$E = mc^2$$  </p>
+<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$  </p>
+</article>
+</div><nav class="paginate-container" aria-label="Pagination">
     <div class="pagination"><!-- <span style="width:200px" aria-disabled="true"></span> --><a class="next_page" rel="next" href="https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html" aria-label="Next Page">Github issues 文章订阅</a></div>
 </nav><!-- 文章版权信息 -->
 <div class="post-copyright">
@@ -1198,7 +1254,7 @@ if("11/01/2024"!=""){
 }
 </script></div></body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -1696,72 +1752,49 @@ function toggleQRCode(){
     }
 }
 
+
+
+
+// 代码块折叠复制功能
 document.addEventListener('DOMContentLoaded', () => {
-    const createClipboardHTML = (codeContent, additionalClasses = '') => `
-        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
-        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
-            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
-                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
-                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
-            </clipboard-copy>
-            <div class="copy-feedback">Copied!</div>
-        </div>
-    `;
-
-    const handleCodeElements = (selector = '') => {
-        document.querySelectorAll(selector).forEach(codeElement => {
-            const codeContent = codeElement.innerHTML;
-            const newStructure = document.createElement('div');
-            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
-            newStructure.innerHTML = createClipboardHTML(codeContent);
-
-            const parentElement = codeElement.parentElement;
-            if (selector.includes('highlight')) {
-                parentElement.insertBefore(newStructure, codeElement.nextSibling);
-                parentElement.removeChild(codeElement);
-            } else {
-                parentElement.parentElement.replaceChild(newStructure, parentElement);
-            }
+    // 复制功能
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const code = btn.parentElement.parentElement.querySelector('pre code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                // 复制成功，显示对勾图标
+                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><path fill="var(--color-success-fg, #1f883d)" d="M7.629 15.314l-4.243-4.243 1.414-1.414 2.829 2.828 6.364-6.364 1.414 1.414z"/></svg>';
+                setTimeout(() => {
+                    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg>';
+                }, 1500);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                // 降级方案
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            });
         });
-    };
+    });
 
-    handleCodeElements('pre.notranslate > code.notranslate');
-    handleCodeElements('div.highlight > pre.notranslate');
-
-    let currentFeedback = null;
-    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
-        copyButton.addEventListener('click', () => {
-            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = codeContent;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextArea);
-
-            const copyIcon = copyButton.querySelector('.octicon-copy');
-            const checkIcon = copyButton.querySelector('.octicon-check');
-            const copyFeedback = copyButton.nextElementSibling;
-
-            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
-            currentFeedback = copyFeedback;
-
-            copyIcon.classList.add('d-none');
-            checkIcon.classList.remove('d-none');
-            copyFeedback.style.display = 'block';
-            copyButton.style.borderColor = 'var(--color-success-fg)';
-
-            setTimeout(() => {
-                copyIcon.classList.remove('d-none');
-                checkIcon.classList.add('d-none');
-                copyFeedback.style.display = 'none';
-                copyButton.style.borderColor = '';
-            }, 2000);
-        });
+    // 折叠功能
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('fold-btn')) {
+            const code = e.target.parentElement.parentElement.querySelector('pre code');
+            const collapsed = code.style.display === 'none';
+            code.style.display = collapsed ? 'block' : 'none';
+            e.target.textContent = collapsed ? '▲' : '▼';
+            e.target.title = collapsed ? '折叠' : '展开';
+        }
     });
 });
 
 </script>
-<script src='https://moretti815.github.io/blog/TOC/articletoc.js'></script><script src='https://moretti815.github.io/blog/Lightbox/lightbox.js'></script><script src='https://moretti815.github.io/blog/GmeekVercount.js'></script><script src='https://moretti815.github.io/blog/oneko.js/oneko.js'></script><script src='https://moretti815.github.io/blog/Mermaid/GmeekMermaid.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src='https://moretti815.github.io/blog/TOC/articletoc.js'></script><script src='https://moretti815.github.io/blog/Lightbox/lightbox.js'></script><script src='https://moretti815.github.io/blog/GmeekVercount.js'></script><script src='https://moretti815.github.io/blog/oneko.js/oneko.js'></script><script src='https://moretti815.github.io/blog/Mermaid/GmeekMermaid.js'></script>
 
 </html>

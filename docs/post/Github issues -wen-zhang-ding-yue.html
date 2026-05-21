@@ -24,18 +24,24 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，替代传统的 RSS 或自建邮件订阅方式。通过创建一个专门的订阅 Issue，每次博客更新时在该 Issue 下添加评论，订阅者即可通过 GitHub 的邮件通知获知更新。此方法的优势在于零成本、高邮件可信度、操作简便以及更新历史清晰可查。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发送通知，以及在博客页面提供订阅链接。文中还详细讨论了触发时机、过滤条件和邮件内容生成的细节，适用于 GitHub Issues 博客和静态博客两种场景。
+<meta name="description" content="本文介绍了利用 GitHub Issues 实现博客更新订阅的方案。通过创建一个专门的订阅 Issue，用户可以通过 GitHub 的订阅功能接收博客更新的邮件通知。该方法的优点包括零成本、邮件高可信度、操作便捷以及更新记录清晰。具体实现步骤包括创建订阅 Issue、配置 GitHub Actions 工作流以自动发送通知评论，以及在博客中添加订阅入口链接。文章还提供了触发时机、过滤条件和邮件内容优化的建议。
 
-改进建议：可以进一步说明如何处理订阅人数较多时的性能问题，以及如何应对 GitHub API 调用的限制。此外，可补充更多关于邮件内容优化的技巧，以提升读者体验。">
+改进建议：
+1. 可进一步阐述如何处理潜在的订阅量过大导致的 GitHub 限制问题。
+2. 增加对该方法可能的局限性或适用场景的讨论，例如用户需要 GitHub 账号的前提。
+3. 提供更多代码注释或解释，以便初学者更易理解和应用。">
 <meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，替代传统的 RSS 或自建邮件订阅方式。通过创建一个专门的订阅 Issue，每次博客更新时在该 Issue 下添加评论，订阅者即可通过 GitHub 的邮件通知获知更新。此方法的优势在于零成本、高邮件可信度、操作简便以及更新历史清晰可查。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发送通知，以及在博客页面提供订阅链接。文中还详细讨论了触发时机、过滤条件和邮件内容生成的细节，适用于 GitHub Issues 博客和静态博客两种场景。
+<meta property="og:description" content="本文介绍了利用 GitHub Issues 实现博客更新订阅的方案。通过创建一个专门的订阅 Issue，用户可以通过 GitHub 的订阅功能接收博客更新的邮件通知。该方法的优点包括零成本、邮件高可信度、操作便捷以及更新记录清晰。具体实现步骤包括创建订阅 Issue、配置 GitHub Actions 工作流以自动发送通知评论，以及在博客中添加订阅入口链接。文章还提供了触发时机、过滤条件和邮件内容优化的建议。
 
-改进建议：可以进一步说明如何处理订阅人数较多时的性能问题，以及如何应对 GitHub API 调用的限制。此外，可补充更多关于邮件内容优化的技巧，以提升读者体验。">
+改进建议：
+1. 可进一步阐述如何处理潜在的订阅量过大导致的 GitHub 限制问题。
+2. 增加对该方法可能的局限性或适用场景的讨论，例如用户需要 GitHub 账号的前提。
+3. 提供更多代码注释或解释，以便初学者更易理解和应用。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
 <title>Github issues 文章订阅</title>
-<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
 <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 <link href='https://moretti815.github.io/blog/fonts/chill-font.css' rel='stylesheet' />
 
@@ -343,17 +349,64 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     font-size: 1.2em;
     line-height: 1;
 }
-.copy-feedback {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 50px;
-    color: var(--color-fg-on-emphasis);
-    background-color: var(--color-fg-muted);
-    border-radius: 3px;
-    padding: 5px 8px;
-    font-size: 12px;
+
+/* 代码块折叠复制按钮样式 */
+.code-block-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
 }
+.code-block-controls {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.code-block-wrapper:hover .code-block-controls {
+    opacity: 1;
+}
+.fold-btn, .copy-btn {
+    border: none;
+    background: var(--color-canvas-subtle, #f6f8fa);
+    color: var(--color-fg-muted, #656d76);
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fold-btn:hover, .copy-btn:hover {
+    background: var(--color-btn-hover-bg, #f3f4f6);
+    color: var(--color-fg-default, #1f2328);
+}
+.fold-btn:active, .copy-btn:active {
+    transform: scale(0.95);
+}
+/* 暗色模式适配 */
+[data-color-mode="dark"] .code-block-controls {
+    opacity: 0.8;
+}
+[data-color-mode="dark"] .fold-btn,
+[data-color-mode="dark"] .copy-btn {
+    background: var(--color-canvas-subtle, #21262d);
+    color: var(--color-fg-muted, #848d97);
+}
+[data-color-mode="dark"] .fold-btn:hover,
+[data-color-mode="dark"] .copy-btn:hover {
+    background: var(--color-btn-hover-bg, #30363d);
+    color: var(--color-fg-default, #c9d1d9);
+}
+
+
 </style>
 
 
@@ -881,129 +934,136 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，替代传统的 RSS 或自建邮件订阅方式。通过创建一个专门的订阅 Issue，每次博客更新时在该 Issue 下添加评论，订阅者即可通过 GitHub 的邮件通知获知更新。此方法的优势在于零成本、高邮件可信度、操作简便以及更新历史清晰可查。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发送通知，以及在博客页面提供订阅链接。文中还详细讨论了触发时机、过滤条件和邮件内容生成的细节，适用于 GitHub Issues 博客和静态博客两种场景。
+    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 实现博客更新订阅的方案。通过创建一个专门的订阅 Issue，用户可以通过 GitHub 的订阅功能接收博客更新的邮件通知。该方法的优点包括零成本、邮件高可信度、操作便捷以及更新记录清晰。具体实现步骤包括创建订阅 Issue、配置 GitHub Actions 工作流以自动发送通知评论，以及在博客中添加订阅入口链接。文章还提供了触发时机、过滤条件和邮件内容优化的建议。
 
-改进建议：可以进一步说明如何处理订阅人数较多时的性能问题，以及如何应对 GitHub API 调用的限制。此外，可补充更多关于邮件内容优化的技巧，以提升读者体验。
+改进建议：
+1. 可进一步阐述如何处理潜在的订阅量过大导致的 GitHub 限制问题。
+2. 增加对该方法可能的局限性或适用场景的讨论，例如用户需要 GitHub 账号的前提。
+3. 提供更多代码注释或解释，以便初学者更易理解和应用。
 </div>
 
-<div class="markdown-body" id="postBody"><p>博客写久了，总会想：读者怎么知道我更新了？</p>
-<p>RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。自建邮件订阅又麻烦，还要处理 SMTP、退订逻辑，搞不好整域都被标记成垃圾邮件发送者。</p>
-<p>最近看到一个思路：用 GitHub Issues 做订阅。</p>
-<h2>原理很简单</h2>
-<p>GitHub Issues 自带订阅功能。你创建一个专门的通知 Issue，每次博客更新时自动往下面发一条评论，订阅了这个 Issue 的人就会收到 GitHub 的邮件通知。</p>
-<p>好处很明显：</p>
+<div class="markdown-body" id="postBody">
+<article class="markdown-body">
+<p>博客写久了，总会想：读者怎么知道我更新了？  </p>
+<p>RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。自建邮件订阅又麻烦，还要处理 SMTP、退订逻辑，搞不好整域都被标记成垃圾邮件发送者。  </p>
+<p>最近看到一个思路：用 GitHub Issues 做订阅。  </p>
+<h2 id="_1">原理很简单</h2>
+<p>GitHub Issues 自带订阅功能。你创建一个专门的通知 Issue，每次博客更新时自动往下面发一条评论，订阅了这个 Issue 的人就会收到 GitHub 的邮件通知。  </p>
+<p>好处很明显：  </p>
 <ul>
-<li>零成本，用 GitHub 自带功能</li>
-<li>GitHub 的邮件可信度远高于第三方服务，基本不会被拦截</li>
-<li>读者只需要点一下 Subscribe，有 GitHub 账号就行</li>
-<li>所有更新历史都在 Issue 评论里，一目了然</li>
+<li>零成本，用 GitHub 自带功能  </li>
+<li>GitHub 的邮件可信度远高于第三方服务，基本不会被拦截  </li>
+<li>读者只需要点一下 Subscribe，有 GitHub 账号就行  </li>
+<li>所有更新历史都在 Issue 评论里，一目了然  </li>
 </ul>
-<h2>具体怎么搞</h2>
-<h3>第一步：创建订阅 Issue</h3>
-<p>在你的博客仓库里新建一个 Issue，标题随便写，比如「博客更新订阅」。内容可以写清楚这是干嘛用的：</p>
-<pre class="notranslate"><code class="notranslate">订阅本 Issue，每当博客有新文章发布时，你将收到 GitHub 邮件通知。
+<h2 id="_2">具体怎么搞</h2>
+<h3 id="issue">第一步：创建订阅 Issue</h3>
+<p>在你的博客仓库里新建一个 Issue，标题随便写，比如「博客更新订阅」。内容可以写清楚这是干嘛用的：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code>订阅本 Issue，每当博客有新文章发布时，你将收到 GitHub 邮件通知。  
 
-点击右侧 Subscribe 按钮即可订阅。
-</code></pre>
-<p>创建后记住 Issue 编号，比如 <code class="notranslate">#2</code>。</p>
-<h3>第二步：写 GitHub Actions 工作流</h3>
-<p>在 <code class="notranslate">.github/workflows/</code> 下创建一个 <code class="notranslate">notify-subscribe.yml</code>：</p>
-<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">name</span>: <span class="pl-s">Notify Blog Update</span>
+点击右侧 Subscribe 按钮即可订阅。  </code></pre></div>
+<p>创建后记住 Issue 编号，比如 <code>#2</code>。  </p>
+<h3 id="github-actions">第二步：写 GitHub Actions 工作流</h3>
+<p>在 <code>.github/workflows/</code> 下创建一个 <code>notify-subscribe.yml</code>：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-yaml">name: Notify Blog Update  
 
-<span class="pl-ent">on</span>:
-  <span class="pl-ent">workflow_dispatch</span>:
-  <span class="pl-ent">issues</span>:
-    <span class="pl-ent">types</span>: <span class="pl-s">[labeled]</span>
+on:  
+  workflow_dispatch:  
+  issues:  
+    types: [labeled]  
 
-<span class="pl-ent">jobs</span>:
-  <span class="pl-ent">notify</span>:
-    <span class="pl-ent">runs-on</span>: <span class="pl-s">ubuntu-latest</span>
-    <span class="pl-ent">if</span>: <span class="pl-s">${{ github.event.repository.owner.id == github.event.sender.id || github.event_name == 'workflow_dispatch' }}</span>
-    <span class="pl-ent">permissions</span>:
-      <span class="pl-ent">issues</span>: <span class="pl-s">write</span>
-      <span class="pl-ent">contents</span>: <span class="pl-s">read</span>
-    <span class="pl-ent">steps</span>:
-      - <span class="pl-ent">name</span>: <span class="pl-s">Checkout</span>
-        <span class="pl-ent">uses</span>: <span class="pl-s">actions/checkout@v4</span>
+jobs:  
+  notify:  
+    runs-on: ubuntu-latest  
+    if: ${{ github.event.repository.owner.id == github.event.sender.id || github.event_name == 'workflow_dispatch' }}  
+    permissions:  
+      issues: write  
+      contents: read  
+    steps:  
+      - name: Checkout  
+        uses: actions/checkout@v4  
 
-      - <span class="pl-ent">name</span>: <span class="pl-s">Get Issue Info and Post Notification</span>
-        <span class="pl-ent">uses</span>: <span class="pl-s">actions/github-script@v7</span>
-        <span class="pl-ent">with</span>:
-          <span class="pl-ent">github-token</span>: <span class="pl-s">${{ secrets.GITHUB_TOKEN }}</span>
-          <span class="pl-ent">script</span>: <span class="pl-s">|</span>
-<span class="pl-s">            const issue = context.payload.issue;</span>
-<span class="pl-s">            const labels = issue.labels.map(l =&gt; l.name);</span>
-<span class="pl-s">            </span>
-<span class="pl-s">            // 跳过已关闭的 issue 和 talk 标签</span>
-<span class="pl-s">            if (issue.state === 'closed' || labels.includes('talk')) {</span>
-<span class="pl-s">              console.log('Skipping notification.');</span>
-<span class="pl-s">              return;</span>
-<span class="pl-s">            }</span>
-<span class="pl-s">            </span>
-<span class="pl-s">            // 生成文章预览</span>
-<span class="pl-s">            let preview = '';</span>
-<span class="pl-s">            if (issue.body) {</span>
-<span class="pl-s">              preview = issue.body</span>
-<span class="pl-s">                .replace(/^#+\s+/gm, '')</span>
-<span class="pl-s">                .replace(/!\[.*?\]\(.*?\)/g, '[图片]')</span>
-<span class="pl-s">                .replace(/\[.*?\]\(.*?\)/g, '$1')</span>
-<span class="pl-s">                .replace(/[*_~`#]/g, '')</span>
-<span class="pl-s">                .replace(/\n+/g, ' ')</span>
-<span class="pl-s">                .trim()</span>
-<span class="pl-s">                .substring(0, 150);</span>
-<span class="pl-s">              if (issue.body.length &gt; 150) preview += '...';</span>
-<span class="pl-s">            }</span>
-<span class="pl-s">            </span>
-<span class="pl-s">            // 构建通知内容</span>
-<span class="pl-s">            const title = issue.title;</span>
-<span class="pl-s">            const issueUrl = issue.html_url;</span>
-<span class="pl-s">            const timeStr = new Date().toISOString().replace('T', ' ').substring(0, 19);</span>
-<span class="pl-s">            </span>
-<span class="pl-s">            let body = '## 🎉 博客更新啦！\n\n';</span>
-<span class="pl-s">            body += `**${title}**\n\n`;</span>
-<span class="pl-s">            if (preview) body += `&gt; ${preview}\n\n`;</span>
-<span class="pl-s">            body += `💬 [查看原文](${issueUrl})\n\n`;</span>
-<span class="pl-s">            if (labels.length &gt; 0) body += `🏷️ ${labels.join(', ')}\n\n`;</span>
-<span class="pl-s">            body += `📅 ${timeStr}\n\n`;</span>
-<span class="pl-s">            body += '---\n*自动发布*';</span>
-<span class="pl-s">            </span>
-<span class="pl-s">            // 这里填你的订阅 Issue 编号</span>
-<span class="pl-s">            await github.rest.issues.createComment({</span>
-<span class="pl-s">              owner: context.repo.owner,</span>
-<span class="pl-s">              repo: context.repo.repo,</span>
-<span class="pl-s">              issue_number: 2,</span>
-<span class="pl-s">              body: body</span>
-<span class="pl-s">            });</span></pre></div>
-<h3>第三步：配置博客显示订阅入口</h3>
-<p>在博客页脚或者其他显眼位置加个订阅链接，指向你创建的订阅 Issue。</p>
-<p>比如在我的 Gmeek 博客里，修改 <code class="notranslate">config.json</code>：</p>
-<div class="highlight highlight-source-json"><pre class="notranslate">{
-  <span class="pl-ent">"subscribeIssue"</span>: <span class="pl-c1">2</span>,
-  <span class="pl-ent">"subscribeUrl"</span>: <span class="pl-s"><span class="pl-pds">"</span>https://github.com/moretti815/blog/issues/2<span class="pl-pds">"</span></span>
-}</pre></div>
-<p>然后在模板里读取这个配置生成链接。</p>
-<h2>一些细节</h2>
-<p><strong>关于触发时机</strong></p>
-<p>Gmeek 这类基于 GitHub Issues 的博客，文章就是 Issue。但这里有个坑：Issue 的创建、编辑、添加标签都会触发事件，如果监听 <code class="notranslate">[opened, edited, labeled]</code>，会导致一篇文章发布时触发多次通知。</p>
-<p>解决方法是只监听 <code class="notranslate">labeled</code>。Gmeek 的工作流程是：</p>
-<ol>
-<li>用户创建 Issue</li>
-<li>用户编辑完善内容</li>
-<li>Gmeek Actions 生成文章并给 Issue 添加标签</li>
-</ol>
-<p>所以只在 <code class="notranslate">labeled</code> 时触发，就能确保文章完全生成后再发送通知，而且只发送一次。</p>
-<p>如果你用的是 Hexo、VitePress 这类静态博客，文章是 Markdown 文件，那就改成监听 <code class="notranslate">push</code> 事件，检测 <code class="notranslate">src/content/posts/</code> 目录的变更。</p>
-<p><strong>关于过滤</strong></p>
+      - name: Get Issue Info and Post Notification  
+        uses: actions/github-script@v7  
+        with:  
+          github-token: ${{ secrets.GITHUB_TOKEN }}  
+          script: |  
+            const issue = context.payload.issue;  
+            const labels = issue.labels.map(l =&gt; l.name);  
+
+            // 跳过已关闭的 issue 和 talk 标签  
+            if (issue.state === 'closed' || labels.includes('talk')) {  
+              console.log('Skipping notification.');  
+              return;  
+            }  
+
+            // 生成文章预览  
+            let preview = '';  
+            if (issue.body) {  
+              preview = issue.body  
+                .replace(/^#+\s+/gm, '')  
+                .replace(/!\[.*?\]\(.*?\)/g, '[图片]')  
+                .replace(/\[.*?\]\(.*?\)/g, '$1')  
+                .replace(/[*_~`#]/g, '')  
+                .replace(/\n+/g, ' ')  
+                .trim()  
+                .substring(0, 150);  
+              if (issue.body.length &gt; 150) preview += '...';  
+            }  
+
+            // 构建通知内容  
+            const title = issue.title;  
+            const issueUrl = issue.html_url;  
+            const timeStr = new Date().toISOString().replace('T', ' ').substring(0, 19);  
+
+            let body = '## 🎉 博客更新啦！\n\n';  
+            body += `**${title}**\n\n`;  
+            if (preview) body += `&gt; ${preview}\n\n`;  
+            body += `💬 [查看原文](${issueUrl})\n\n`;  
+            if (labels.length &gt; 0) body += `🏷️ ${labels.join(', ')}\n\n`;  
+            body += `📅 ${timeStr}\n\n`;  
+            body += '---\n*自动发布*';  
+
+            // 这里填你的订阅 Issue 编号  
+            await github.rest.issues.createComment({  
+              owner: context.repo.owner,  
+              repo: context.repo.repo,  
+              issue_number: 2,  
+              body: body  
+            });  </code></pre></div>
+<h3 id="_3">第三步：配置博客显示订阅入口</h3>
+<p>在博客页脚或者其他显眼位置加个订阅链接，指向你创建的订阅 Issue。  </p>
+<p>比如在我的 Gmeek 博客里，修改 <code>config.json</code>：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-json">{  
+  "subscribeIssue": 2,  
+  "subscribeUrl": "https://github.com/moretti815/blog/issues/2"  
+}  </code></pre></div>
+<p>然后在模板里读取这个配置生成链接。  </p>
+<h2 id="_4">一些细节</h2>
+<p><strong>关于触发时机</strong>  </p>
+<p>Gmeek 这类基于 GitHub Issues 的博客，文章就是 Issue。但这里有个坑：Issue 的创建、编辑、添加标签都会触发事件，如果监听 <code>[opened, edited, labeled]</code>，会导致一篇文章发布时触发多次通知。  </p>
+<p>解决方法是只监听 <code>labeled</code>。Gmeek 的工作流程是：<br />
+1. 用户创建 Issue<br />
+2. 用户编辑完善内容<br />
+3. Gmeek Actions 生成文章并给 Issue 添加标签  </p>
+<p>所以只在 <code>labeled</code> 时触发，就能确保文章完全生成后再发送通知，而且只发送一次。  </p>
+<p>如果你用的是 Hexo、VitePress 这类静态博客，文章是 Markdown 文件，那就改成监听 <code>push</code> 事件，检测 <code>src/content/posts/</code> 目录的变更。  </p>
+<p><strong>关于过滤</strong>  </p>
 <ul>
-<li><code class="notranslate">talk</code> 标签的 Issue 通常是短内容/说说，不需要发通知</li>
-<li>已关闭的 Issue 不发通知</li>
-<li>可以根据自己的需求加其他过滤条件</li>
+<li><code>talk</code> 标签的 Issue 通常是短内容/说说，不需要发通知  </li>
+<li>已关闭的 Issue 不发通知  </li>
+<li>可以根据自己的需求加其他过滤条件  </li>
 </ul>
-<p><strong>关于邮件内容</strong></p>
-<p>GitHub 的邮件通知会包含评论的完整内容，所以读者在邮件里就能看到文章标题和预览，决定要不要点进去看全文。</p>
-<h2>总结</h2>
-<p>这个方案最大的优点就是简单。不需要第三方服务，不需要维护邮件列表，不需要处理退订逻辑。GitHub 帮你做了所有脏活累活，你只需要写几行工作流配置。</p>
-<p>对于个人博客来说，完全够用了。</p></div><nav class="paginate-container" aria-label="Pagination">
+<p><strong>关于邮件内容</strong>  </p>
+<p>GitHub 的邮件通知会包含评论的完整内容，所以读者在邮件里就能看到文章标题和预览，决定要不要点进去看全文。  </p>
+<h2 id="_5">总结</h2>
+<p>这个方案最大的优点就是简单。不需要第三方服务，不需要维护邮件列表，不需要处理退订逻辑。GitHub 帮你做了所有脏活累活，你只需要写几行工作流配置。  </p>
+<p>对于个人博客来说，完全够用了。  </p>
+</article>
+</div><nav class="paginate-container" aria-label="Pagination">
     <div class="pagination"><a class="previous_page" rel="previous" href="https://moretti815.github.io/blog/post/Hello%20World.html" aria-label="Previous Page">Hello World</a><!-- <span style="width:200px" aria-disabled="true"></span> --></div>
 </nav><!-- 文章版权信息 -->
 <div class="post-copyright">
@@ -1280,7 +1340,7 @@ if("11/01/2024"!=""){
 }
 </script></div></body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -1774,68 +1834,45 @@ function toggleQRCode(){
     }
 }
 
+
+
+
+// 代码块折叠复制功能
 document.addEventListener('DOMContentLoaded', () => {
-    const createClipboardHTML = (codeContent, additionalClasses = '') => `
-        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
-        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
-            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
-                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
-                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
-            </clipboard-copy>
-            <div class="copy-feedback">Copied!</div>
-        </div>
-    `;
-
-    const handleCodeElements = (selector = '') => {
-        document.querySelectorAll(selector).forEach(codeElement => {
-            const codeContent = codeElement.innerHTML;
-            const newStructure = document.createElement('div');
-            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
-            newStructure.innerHTML = createClipboardHTML(codeContent);
-
-            const parentElement = codeElement.parentElement;
-            if (selector.includes('highlight')) {
-                parentElement.insertBefore(newStructure, codeElement.nextSibling);
-                parentElement.removeChild(codeElement);
-            } else {
-                parentElement.parentElement.replaceChild(newStructure, parentElement);
-            }
+    // 复制功能
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const code = btn.parentElement.parentElement.querySelector('pre code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                // 复制成功，显示对勾图标
+                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><path fill="var(--color-success-fg, #1f883d)" d="M7.629 15.314l-4.243-4.243 1.414-1.414 2.829 2.828 6.364-6.364 1.414 1.414z"/></svg>';
+                setTimeout(() => {
+                    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg>';
+                }, 1500);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                // 降级方案
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            });
         });
-    };
+    });
 
-    handleCodeElements('pre.notranslate > code.notranslate');
-    handleCodeElements('div.highlight > pre.notranslate');
-
-    let currentFeedback = null;
-    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
-        copyButton.addEventListener('click', () => {
-            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = codeContent;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextArea);
-
-            const copyIcon = copyButton.querySelector('.octicon-copy');
-            const checkIcon = copyButton.querySelector('.octicon-check');
-            const copyFeedback = copyButton.nextElementSibling;
-
-            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
-            currentFeedback = copyFeedback;
-
-            copyIcon.classList.add('d-none');
-            checkIcon.classList.remove('d-none');
-            copyFeedback.style.display = 'block';
-            copyButton.style.borderColor = 'var(--color-success-fg)';
-
-            setTimeout(() => {
-                copyIcon.classList.remove('d-none');
-                checkIcon.classList.add('d-none');
-                copyFeedback.style.display = 'none';
-                copyButton.style.borderColor = '';
-            }, 2000);
-        });
+    // 折叠功能
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('fold-btn')) {
+            const code = e.target.parentElement.parentElement.querySelector('pre code');
+            const collapsed = code.style.display === 'none';
+            code.style.display = collapsed ? 'block' : 'none';
+            e.target.textContent = collapsed ? '▲' : '▼';
+            e.target.title = collapsed ? '折叠' : '展开';
+        }
     });
 });
 
