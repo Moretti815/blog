@@ -1119,8 +1119,169 @@ if("11/01/2024"!=""){
     var diffDay=Math.floor(diff/(1000*60*60*24));
     document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
 }
-</script></div>
-</body>
+</script></div><!-- 回到顶部按钮 - 参考 BackToTop.astro -->
+<div id="back-to-top-wrapper" class="back-to-top-wrapper">
+    <button id="back-to-top-btn" class="back-to-top-btn" aria-label="Back to Top" onclick="backToTop()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+            <g fill="none" fill-rule="evenodd">
+                <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/>
+                <path fill="currentColor" d="M11.293 8.293a1 1 0 0 1 1.414 0l5.657 5.657a1 1 0 0 1-1.414 1.414L12 10.414l-4.95 4.95a1 1 0 0 1-1.414-1.414z"/>
+            </g>
+        </svg>
+    </button>
+</div>
+
+<style>
+/* 回到顶部按钮样式 */
+.back-to-top-wrapper {
+    position: fixed;
+    right: 24px;
+    bottom: 80px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.back-to-top-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border-default, #d0d7de);
+    background-color: var(--color-canvas-default, #ffffff);
+    color: var(--color-accent-fg, #0969da);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.9);
+    pointer-events: auto;
+}
+
+.back-to-top-btn:hover {
+    background-color: var(--color-canvas-subtle, #f6f8fa);
+    border-color: var(--color-accent-emphasis, #0969da);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.back-to-top-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.back-to-top-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* 显示状态 */
+.back-to-top-wrapper.visible .back-to-top-btn {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* 暗色模式适配 */
+[data-color-mode="dark"] .back-to-top-btn {
+    border-color: var(--color-border-default, #30363d);
+    background-color: var(--color-canvas-default, #0d1117);
+    color: var(--color-accent-fg, #58a6ff);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-color-mode="dark"] .back-to-top-btn:hover {
+    background-color: var(--color-canvas-subtle, #161b22);
+    border-color: var(--color-accent-emphasis, #1f6feb);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .back-to-top-wrapper {
+        right: 16px;
+        bottom: 72px;
+    }
+
+    .back-to-top-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+    }
+
+    .back-to-top-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* 小屏幕移动端 */
+@media (max-width: 480px) {
+    .back-to-top-wrapper {
+        right: 12px;
+        bottom: 68px;
+    }
+
+    .back-to-top-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+    }
+
+    .back-to-top-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+</style>
+
+<script>
+(function() {
+    // 回到顶部功能
+    function backToTop() {
+        window.scroll({ top: 0, behavior: 'smooth' });
+    }
+
+    // 滚动监听，控制按钮显示/隐藏
+    function handleScroll() {
+        const wrapper = document.getElementById('back-to-top-wrapper');
+        if (!wrapper) return;
+
+        // 当滚动超过 300px 时显示按钮
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > 300) {
+            wrapper.classList.add('visible');
+        } else {
+            wrapper.classList.remove('visible');
+        }
+    }
+
+    // 节流函数，优化性能
+    function throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(function() {
+                    inThrottle = false;
+                }, limit);
+            }
+        };
+    }
+
+    // 绑定滚动事件（节流处理，每 100ms 执行一次）
+    window.addEventListener('scroll', throttle(handleScroll, 100));
+
+    // 初始化一次
+    handleScroll();
+
+    // 暴露到全局
+    window.backToTop = backToTop;
+})();
+</script></body>
 <script>
 var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z'};
 var utterancesLoad=0;
