@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <link href='https://moretti815.github.io/blog/fonts/chill-font.css' rel='stylesheet' />
+    <link rel="icon" href="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif"><script>
+        // 获取系统主题偏好
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        
+        // 初始化主题：优先使用 localStorage，否则跟随系统
+        let savedTheme = localStorage.getItem("meek_theme");
+        let theme;
+        if (savedTheme === null) {
+            // 第一次访问，跟随系统
+            theme = getSystemTheme();
+            localStorage.setItem("meek_theme", theme);
+        } else {
+            theme = savedTheme;
+        }
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程。主要思路是利用 AI API，在文章发布或更新时生成摘要并显示在文章顶部。具体实现包括编写调用 AI API 的模块、在博客处理逻辑中集成摘要生成、修改前端模板以显示摘要，以及通过 GitHub Actions 配置环境变量传递 API 参数。在实现过程中，作者解决了环境变量未正确传递、API 调用超时和摘要过长等问题，同时提出了后续优化方向，如支持按需生成摘要、缓存摘要结果和允许手动编辑摘要。
+
+改进建议：
+1. 在生成摘要时，可以进一步优化 prompt，以提高摘要的准确性和简洁性。
+2. 添加日志记录功能，便于排查生成摘要失败的原因。
+3. 对摘要的长度进行动态控制，根据文章长度调整摘要的字数限制，使摘要更贴合实际需求。">
+<meta property="og:title" content="本博客的 ai 总结">
+<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程。主要思路是利用 AI API，在文章发布或更新时生成摘要并显示在文章顶部。具体实现包括编写调用 AI API 的模块、在博客处理逻辑中集成摘要生成、修改前端模板以显示摘要，以及通过 GitHub Actions 配置环境变量传递 API 参数。在实现过程中，作者解决了环境变量未正确传递、API 调用超时和摘要过长等问题，同时提出了后续优化方向，如支持按需生成摘要、缓存摘要结果和允许手动编辑摘要。
+
+改进建议：
+1. 在生成摘要时，可以进一步优化 prompt，以提高摘要的准确性和简洁性。
+2. 添加日志记录功能，便于排查生成摘要失败的原因。
+3. 对摘要的长度进行动态控制，根据文章长度调整摘要的字数限制，使摘要更贴合实际需求。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://moretti815.github.io/blog/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
+<meta property="og:image" content="https://img.314926.xyz/h">
+<title>本博客的 ai 总结</title>
+
+<script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
+<link href='https://moretti815.github.io/blog/fonts/chill-font.css' rel='stylesheet' />
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+/* 加载动画样式 */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-canvas-default, #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#preloader img {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+}
+
+/* 暗色模式适配 */
+[data-color-mode="dark"] #preloader {
+    background-color: var(--color-canvas-default, #0d1117);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    #preloader img {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* 树枝背景样式 */
+#branch-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+#branch-canvas {
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+
+/* 文章底部版权信息 */
+.post-copyright {
+    margin: 32px 0;
+    padding: 16px 20px;
+    background-color: var(--color-canvas-default);
+    border: 1px solid var(--color-border-default);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 右上角装饰性版权图标 */
+.post-copyright::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    width: 64px;
+    height: 64px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 24 24'%3E%3Cpath fill='%23d1d5db' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8'/%3E%3Cpath fill='%23d1d5db' d='M13.88 13.23c-.4.32-.83.48-1.28.48c-.53 0-.96-.17-1.29-.52c-.33-.35-.5-.8-.5-1.36s.17-1.02.5-1.38c.33-.36.76-.54 1.29-.54c.45 0 .88.16 1.28.49l.72-.87c-.57-.48-1.23-.72-1.98-.72c-.87 0-1.58.28-2.14.84s-.84 1.3-.84 2.18s.28 1.59.84 2.15s1.27.84 2.14.84c.78 0 1.46-.26 2.04-.78z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* 标题和链接区域 */
+.post-copyright-header {
+    margin-bottom: 12px;
+}
+
+.post-copyright-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-fg-default);
+    line-height: 1.5;
+}
+
+.post-copyright-url {
+    font-size: 13px;
+    color: var(--color-fg-muted);
+    line-height: 1.5;
+    word-break: break-all;
+}
+
+/* 信息行 - 横向排列 */
+.post-copyright-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    margin-bottom: 16px;
+}
+
+.post-copyright-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.post-copyright-info-item .label {
+    font-size: 13px;
+    color: var(--color-fg-muted);
+    line-height: 1.4;
+}
+
+.post-copyright-info-item .value {
+    font-size: 13px;
+    color: var(--color-fg-default);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.post-copyright-info-item a {
+    color: var(--color-fg-default);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.post-copyright-info-item a:hover {
+    text-decoration: underline;
+}
+
+/* 功能按钮区域 */
+.post-copyright-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.post-copyright-actions .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--color-canvas-subtle);
+    color: var(--color-fg-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    text-decoration: none;
+}
+
+.post-copyright-actions .btn-icon:hover {
+    background-color: var(--color-border-muted);
+    color: var(--color-fg-default);
+    transform: translateY(-1px);
+}
+
+/* 二维码容器 */
+.qrcode-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
+    margin-bottom: 0;
+    padding: 0;
+    display: block;
+}
+
+.qrcode-container.expanded {
+    max-height: 180px;
+    margin-bottom: 12px;
+    padding: 8px 0;
+}
+
+#qrcode {
+    display: inline-block;
+    background-color: white;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border-default);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.qrcode-container canvas,
+.qrcode-container img {
+    display: block;
+    width: 128px;
+    height: 128px;
+}
+
+/* 赞赏区域 */
+.post-copyright-reward {
+    margin: 0 -20px -16px;
+    padding: 10px 20px;
+    border-top: 1px solid var(--color-border-default);
+    background-color: var(--color-canvas-subtle);
+    border-radius: 0 0 11px 11px;
+}
+
+.post-copyright-reward a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-fg-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s ease;
+}
+
+.post-copyright-reward a:hover {
+    color: var(--color-fg-default);
+}
+
+.post-copyright-reward .reward-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+    body {padding: 12px;}
+    .postTitle{font-size:24px;}
+    .post-copyright {
+        padding: 12px 14px;
+        margin: 20px 0;
+        border-radius: 10px;
+    }
+    .post-copyright-info {
+        flex-direction: row;
+        gap: 10px 14px;
+    }
+    .post-copyright-info-item {
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+    }
+    .post-copyright-info-item .label {
+        font-size: 13px;
+    }
+    .post-copyright-info-item .value {
+        font-size: 13px;
+    }
+    .post-copyright-reward {
+        margin: 0 -14px -12px;
+        padding: 8px 14px;
+        border-radius: 0 0 9px 9px;
+    }
+}
+
+.previous_page {
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.next_page {
+    text-align: right;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.previous_page::before {
+    content: "‹";
+    font-size: 1.2em;
+    line-height: 1;
+}
+.next_page::after {
+    content: "›";
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+/* 代码块折叠复制按钮样式 */
+.code-block-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.code-block-controls {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.code-block-wrapper:hover .code-block-controls {
+    opacity: 1;
+}
+.fold-btn, .copy-btn {
+    border: none;
+    background: var(--color-canvas-subtle, #f6f8fa);
+    color: var(--color-fg-muted, #656d76);
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fold-btn:hover, .copy-btn:hover {
+    background: var(--color-btn-hover-bg, #f3f4f6);
+    color: var(--color-fg-default, #1f2328);
+}
+.fold-btn:active, .copy-btn:active {
+    transform: scale(0.95);
+}
+/* 暗色模式适配 */
+[data-color-mode="dark"] .code-block-controls {
+    opacity: 0.8;
+}
+[data-color-mode="dark"] .fold-btn,
+[data-color-mode="dark"] .copy-btn {
+    background: var(--color-canvas-subtle, #21262d);
+    color: var(--color-fg-muted, #848d97);
+}
+[data-color-mode="dark"] .fold-btn:hover,
+[data-color-mode="dark"] .copy-btn:hover {
+    background: var(--color-btn-hover-bg, #30363d);
+    color: var(--color-fg-default, #c9d1d9);
+}
+
+
+</style>
+
+
+
+
+<body><!-- 访客欢迎通知组件 -->
+<script>
+(function() {
+    const VISIT_KEY = 'blog_welcome_shown';
+    const VISIT_EXPIRY_KEY = 'blog_welcome_expiry';
+    // 24小时的毫秒数
+    const EXPIRY_TIME = 24 * 60 * 60 * 1000;
+    let hasShownToast = false;
+    
+    function createWelcomeToast() {
+        const toast = document.createElement('div');
+        toast.id = 'welcome-toast';
+        toast.className = 'welcome-toast';
+        toast.innerHTML = `
+            <div class="welcome-toast-inner">
+                <div class="welcome-toast-content">
+                    <div class="welcome-toast-icon">👋</div>
+                    <div class="welcome-toast-body">
+                        <p id="welcome-message" class="welcome-toast-title">正在加载...</p>
+                        <p id="welcome-stats" class="welcome-toast-stats"></p>
+                        <p class="welcome-toast-quote">在茫茫互联网的大海中 感谢遇见你🙏</p>
+                        <div class="welcome-toast-links">
+                            <a href="https://t.me/kemiaochat" target="_blank" rel="noopener noreferrer" class="welcome-toast-link welcome-toast-link-blue">
+                                👆加群
+                            </a>
+                            <span class="welcome-toast-divider">|</span>
+                            <a href="https://github.com/moretti815/blog/issues/2" class="welcome-toast-link welcome-toast-link-green">
+                                📬订阅更新
+                            </a>
+                            <span class="welcome-toast-divider">|</span>
+                            <a href="javascript:void(0)" onclick="copyRssLink()" class="welcome-toast-link welcome-toast-link-orange">
+                                📋RSS
+                            </a>
+                        </div>
+                        <p id="rss-copy-msg" class="welcome-toast-copy-msg hidden">已复制到剪贴板~</p>
+                    </div>
+                    <button onclick="closeWelcomeToast()" class="welcome-toast-close" aria-label="关闭">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        return toast;
+    }
+    
+    window.closeWelcomeToast = function() {
+        const toast = document.getElementById('welcome-toast');
+        if (toast) {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 500);
+        }
+    };
+    
+    window.copyRssLink = async function() {
+        const msg = document.getElementById('rss-copy-msg');
+        const rssUrl = window.location.origin + '/rss.xml';
+        try {
+            await navigator.clipboard.writeText(rssUrl);
+            msg.classList.remove('hidden');
+            setTimeout(() => msg.classList.add('hidden'), 2000);
+        } catch (e) {
+            const input = document.createElement('input');
+            input.value = rssUrl;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            msg.classList.remove('hidden');
+            setTimeout(() => msg.classList.add('hidden'), 2000);
+        }
+    };
+    
+    async function fetchLocation() {
+        try {
+            const response = await fetch('https://v2.xxapi.cn/api/ip');
+            const data = await response.json();
+            
+            if (data.code === 200 && data.data) {
+                const location = data.data;
+                const locationText = `HI 来自${location.address}的朋友`;
+                
+                const messageEl = document.getElementById('welcome-message');
+                if (messageEl) {
+                    messageEl.textContent = locationText;
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch location:', error);
+            const messageEl = document.getElementById('welcome-message');
+            if (messageEl) {
+                messageEl.textContent = 'HI 来自远方的朋友';
+            }
+        }
+    }
+    
+    async function fetchStats() {
+        // 等待 Vercount 脚本加载完成
+        let attempts = 0;
+        const maxAttempts = 30; // 最多等待3秒
+        
+        while (attempts < maxAttempts) {
+            const sitePvEl = document.getElementById('busuanzi_value_site_pv');
+            if (sitePvEl && sitePvEl.textContent) {
+                const pageviews = sitePvEl.textContent.trim();
+                const statsText = `欢迎 我是 Moretti 你是本站迎来的第${pageviews}次访问`;
+                
+                const statsEl = document.getElementById('welcome-stats');
+                if (statsEl) {
+                    statsEl.textContent = statsText;
+                }
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        // 超时后显示默认文本
+        const statsEl = document.getElementById('welcome-stats');
+        if (statsEl) {
+            statsEl.textContent = '欢迎 我是 Moretti';
+        }
+    }
+    
+    async function showWelcomeToast() {
+        if (hasShownToast) return;
+        
+        const toast = createWelcomeToast();
+        
+        // 强制重绘以确保过渡动画生效
+        toast.offsetHeight;
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
+        hasShownToast = true;
+        
+        await Promise.all([fetchLocation(), fetchStats()]);
+        
+        // 5秒后自动关闭
+        setTimeout(() => {
+            closeWelcomeToast();
+        }, 5000);
+    }
+    
+    function shouldShowWelcome() {
+        const now = Date.now();
+        const expiry = localStorage.getItem(VISIT_EXPIRY_KEY);
+        
+        // 如果存在过期时间且未过期，则不显示
+        if (expiry && now < parseInt(expiry)) {
+            return false;
+        }
+        
+        // 如果已过期或不存在，清除旧数据
+        localStorage.removeItem(VISIT_KEY);
+        localStorage.removeItem(VISIT_EXPIRY_KEY);
+        return true;
+    }
+    
+    function markAsVisited() {
+        const now = Date.now();
+        localStorage.setItem(VISIT_KEY, 'true');
+        localStorage.setItem(VISIT_EXPIRY_KEY, (now + EXPIRY_TIME).toString());
+    }
+    
+    // 等待页面加载完成后再显示
+    function init() {
+        if (shouldShowWelcome()) {
+            markAsVisited();
+            // 延迟显示，等待页面其他元素加载
+            setTimeout(() => {
+                showWelcomeToast();
+            }, 1000);
+        }
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+
+<style>
+/* 欢迎通知样式 - 适配 Gmeek 主题 */
+.welcome-toast {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 10000;
+    max-width: 360px;
+    width: calc(100% - 32px);
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    pointer-events: none;
+}
+
+.welcome-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.welcome-toast-inner {
+    background: linear-gradient(135deg, 
+        rgba(239, 246, 255, 0.95) 0%, 
+        rgba(236, 252, 253, 0.95) 100%);
+    border: 1px solid var(--color-accent-muted, rgba(9, 105, 218, 0.2));
+    border-radius: 12px;
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.1),
+        0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.welcome-toast-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.welcome-toast-icon {
+    flex-shrink: 0;
+    font-size: 24px;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.welcome-toast-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.welcome-toast-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-fg-default, #1f2328);
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+}
+
+.welcome-toast-stats {
+    font-size: 12px;
+    color: var(--color-fg-muted, #656d76);
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+}
+
+.welcome-toast-quote {
+    font-size: 11px;
+    color: var(--color-fg-muted, #656d76);
+    font-style: italic;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+}
+
+.welcome-toast-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.welcome-toast-link {
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+}
+
+.welcome-toast-link:hover {
+    text-decoration: underline;
+}
+
+.welcome-toast-link-blue {
+    color: var(--color-accent-fg, #0969da);
+}
+
+.welcome-toast-link-blue:hover {
+    color: var(--color-accent-emphasis, #0550ae);
+}
+
+.welcome-toast-link-green {
+    color: #1a7f37;
+}
+
+.welcome-toast-link-green:hover {
+    color: #116329;
+}
+
+.welcome-toast-link-orange {
+    color: #cf4a02;
+}
+
+.welcome-toast-link-orange:hover {
+    color: #a03500;
+}
+
+.welcome-toast-divider {
+    color: var(--color-border-default, #d0d7de);
+    font-size: 12px;
+    user-select: none;
+}
+
+.welcome-toast-copy-msg {
+    font-size: 11px;
+    color: #1a7f37;
+    margin: 6px 0 0 0;
+    transition: opacity 0.3s ease;
+}
+
+.welcome-toast-copy-msg.hidden {
+    opacity: 0;
+}
+
+.welcome-toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 4px;
+    margin: -4px -4px 0 0;
+    cursor: pointer;
+    color: var(--color-fg-muted, #656d76);
+    border-radius: 6px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-toast-close:hover {
+    color: var(--color-fg-default, #1f2328);
+    background-color: var(--color-neutral-subtle, rgba(175, 184, 193, 0.2));
+}
+
+/* 暗色模式适配 */
+[data-color-mode="dark"] .welcome-toast-inner {
+    background: linear-gradient(135deg, 
+        rgba(31, 111, 235, 0.15) 0%, 
+        rgba(9, 180, 200, 0.15) 100%);
+    border-color: rgba(56, 139, 253, 0.3);
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.3),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-color-mode="dark"] .welcome-toast-title {
+    color: var(--color-fg-default, #c9d1d9);
+}
+
+[data-color-mode="dark"] .welcome-toast-stats,
+[data-color-mode="dark"] .welcome-toast-quote {
+    color: var(--color-fg-muted, #8b949e);
+}
+
+[data-color-mode="dark"] .welcome-toast-link-blue {
+    color: #58a6ff;
+}
+
+[data-color-mode="dark"] .welcome-toast-link-blue:hover {
+    color: #79c0ff;
+}
+
+[data-color-mode="dark"] .welcome-toast-link-green {
+    color: #3fb950;
+}
+
+[data-color-mode="dark"] .welcome-toast-link-green:hover {
+    color: #56d364;
+}
+
+[data-color-mode="dark"] .welcome-toast-link-orange {
+    color: #f0883e;
+}
+
+[data-color-mode="dark"] .welcome-toast-link-orange:hover {
+    color: #ffa657;
+}
+
+[data-color-mode="dark"] .welcome-toast-divider {
+    color: var(--color-border-default, #30363d);
+}
+
+[data-color-mode="dark"] .welcome-toast-close {
+    color: var(--color-fg-muted, #8b949e);
+}
+
+[data-color-mode="dark"] .welcome-toast-close:hover {
+    color: var(--color-fg-default, #c9d1d9);
+    background-color: var(--color-neutral-subtle, rgba(110, 118, 129, 0.2));
+}
+
+[data-color-mode="dark"] .welcome-toast-copy-msg {
+    color: #3fb950;
+}
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+    .welcome-toast {
+        left: 50%;
+        right: auto;
+        bottom: 12px;
+        transform: translateX(-50%) translateY(100%);
+        width: calc(100% - 24px);
+        max-width: none;
+    }
+    
+    .welcome-toast.show {
+        transform: translateX(-50%) translateY(0);
+    }
+    
+    .welcome-toast-inner {
+        padding: 14px;
+    }
+    
+    .welcome-toast-icon {
+        font-size: 22px;
+    }
+    
+    .welcome-toast-title {
+        font-size: 13px;
+    }
+    
+    .welcome-toast-stats {
+        font-size: 11px;
+    }
+    
+    .welcome-toast-quote {
+        font-size: 10px;
+    }
+    
+    .welcome-toast-link {
+        font-size: 11px;
+    }
+}
+
+/* 超小屏幕适配 */
+@media (max-width: 360px) {
+    .welcome-toast {
+        width: calc(100% - 16px);
+        bottom: 8px;
+    }
+    
+    .welcome-toast-inner {
+        padding: 12px;
+    }
+    
+    .welcome-toast-content {
+        gap: 10px;
+    }
+    
+    .welcome-toast-links {
+        gap: 4px;
+    }
+    
+    .welcome-toast-divider {
+        display: none;
+    }
+    
+    .welcome-toast-link {
+        padding: 2px 6px;
+        background: var(--color-neutral-subtle, rgba(175, 184, 193, 0.2));
+        border-radius: 4px;
+    }
+}
+</style><!-- 树枝背景 -->
+    <div id="branch-background">
+        <canvas id="branch-canvas"></canvas>
+    </div><!-- 加载动画 -->
+    <div id="preloader">
+        <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
+    </div><div id="header">
+<h1 class="postTitle">本博客的 ai 总结</h1>
+<div class="title-right">
+    <a href="https://moretti815.github.io/blog" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Moretti815/blog/issues/4" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="listLabels">
+    <span class="Label" style="max-width: 100px; height: 24px; border-radius: 4px; padding: 4px 8px; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; background-color:#6d99ec">
+            <object><a style="color:#fff; text-decoration: none; font-size: 14px;" href="https://moretti815.github.io/blog/tag.html#Gmeek">Gmeek</a></object>
+        </span><span class="Label" style="max-width: 100px; height: 24px; border-radius: 4px; padding: 4px 8px; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; background-color:#f9c69a">
+            <object><a style="color:#fff; text-decoration: none; font-size: 14px;" href="https://moretti815.github.io/blog/tag.html#ai总结">ai总结</a></object>
+        </span>
+</div>
+<br>
+
+<div id="vercount_container_page_pv" style="display:none;float:left;margin-top:0px;margin-right:5px;font-size:medium;">👁<span id="vercount_value_page_pv"></span></div>
+<span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
+
+<p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
+    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程。主要思路是利用 AI API，在文章发布或更新时生成摘要并显示在文章顶部。具体实现包括编写调用 AI API 的模块、在博客处理逻辑中集成摘要生成、修改前端模板以显示摘要，以及通过 GitHub Actions 配置环境变量传递 API 参数。在实现过程中，作者解决了环境变量未正确传递、API 调用超时和摘要过长等问题，同时提出了后续优化方向，如支持按需生成摘要、缓存摘要结果和允许手动编辑摘要。
+
+改进建议：
+1. 在生成摘要时，可以进一步优化 prompt，以提高摘要的准确性和简洁性。
+2. 添加日志记录功能，便于排查生成摘要失败的原因。
+3. 对摘要的长度进行动态控制，根据文章长度调整摘要的字数限制，使摘要更贴合实际需求。
+</div>
+
+<div class="markdown-body" id="postBody">
+<article class="markdown-body">
+<h1 id="gmeek-ai">给 Gmeek 博客添加 AI 文章总结</h1>
+<p>前段时间折腾博客的时候，发现有些文章比较长，想给每篇文章加个自动生成的摘要。研究了一下文章，最后给 Gmeek 博客加上了 AI 总结功能。记录一下实现过程，方便以后回顾。  </p>
+<h2 id="_1">整体思路</h2>
+<p>AI 总结功能的流程其实很简单：  </p>
+<ol>
+<li>文章发布/更新时，把文章内容发给 AI API  </li>
+<li>AI 返回一段摘要  </li>
+<li>把摘要显示在文章页面顶部  </li>
+</ol>
+<h2 id="_2">具体实现</h2>
+<h3 id="1-ai">1. 准备 AI 接口模块</h3>
+<p>先写了个 <code>Summary.py</code>，用来调用 AI API：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-python">import os  
+import requests  
+import json  
+import random  
+
+def generate_summary(text):  
+    api_url = os.environ.get("API_URL")  
+    api_key = os.environ.get("API_KEY")  
+    api_model = os.environ.get("API_MODEL")  
+
+    if not api_url or not api_model:  
+        return ""  
+
+    # 支持配置多个 key 和 model，随机选一个  
+    if api_key and ',' in api_key:  
+        api_key = random.choice(api_key.split(','))  
+    if api_model and ',' in api_model:  
+        api_model = random.choice(api_model.split(','))  
+
+    headers = {  
+        "Authorization": f"Bearer {api_key}",  
+        "Content-Type": "application/json"  
+    }  
+
+    prompt = "你是总结生成器。你的任务是以简洁、完整的语句总结用户提供的文本..."  
+
+    payload = {  
+        "model": api_model,  
+        "messages": [  
+            {"role": "system", "content": prompt},  
+            {"role": "user", "content": text}  
+        ],  
+        "temperature": 0.5,  
+        "max_tokens": 1500  
+    }  
+
+    try:  
+        response = requests.post(url=api_url, headers=headers,   
+                                data=json.dumps(payload), timeout=10)  
+        if response.status_code == 200:  
+            return response.json()['choices'][0]['message']['content']  
+    except Exception as e:  
+        print(f"生成摘要失败: {e}")  
+
+    return ""  </code></pre></div>
+<p>这个模块从环境变量读取配置，支持多个 API key 和 model（用逗号分隔），失败时返回空字符串。  </p>
+<h3 id="2-gmeekpy">2. 集成到 Gmeek.py</h3>
+<p>在 <code>Gmeek.py</code> 里导入这个模块：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-python">from Summary import generate_summary  </code></pre></div>
+<p>然后在处理每篇文章的地方，调用生成摘要：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-python"># 原来的代码是用文章第一句作为摘要  
+# self.blogBase[listJsonName][postNum]["description"] = issue.body.split(period)[0]  
+
+# 改成调用 AI 生成  
+ai_summary = generate_summary(issue.body)  
+if ai_summary:  
+    self.blogBase[listJsonName][postNum]["description"] = ai_summary  
+else:  
+    # AI 失败时回退到原来的方式  
+    self.blogBase[listJsonName][postNum]["description"] = issue.body.split(period)[0] + period  </code></pre></div>
+<h3 id="3">3. 前端显示</h3>
+<p>在 <code>post.html</code> 模板里，加上摘要的显示区域：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-html">{%- if blogBase['description'] and blogBase['description'] != '' -%}  
+&lt;div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;"&gt;  
+    &lt;strong&gt;AI总结:&lt;/strong&gt; {{ blogBase['description'] }}  
+&lt;/div&gt;  
+{%- endif %}  </code></pre></div>
+<p>放在文章标题下面、正文上面，读者一眼就能看到。  </p>
+<h3 id="4-github-actions">4. GitHub Actions 配置</h3>
+<p>因为博客是用 GitHub Actions 自动构建的，需要在 workflow 文件里把 API 配置传给环境变量：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-yaml">- name: Generate new html  
+  env:  
+    API_URL: ${{ secrets.API_URL }}  
+    API_KEY: ${{ secrets.API_KEY }}  
+    API_MODEL: ${{ secrets.API_MODEL }}  
+  run: |  
+    python Gmeek.py ...  </code></pre></div>
+<p>然后在仓库的 Settings &gt; Secrets 里添加这三个变量：<br />
+- <code>API_URL</code>: AI 接口地址，比如 <code>https://models.inference.ai.azure.com/chat/completions</code><br />
+- <code>API_KEY</code>: 你的 API 密钥<br />
+- <code>API_MODEL</code>: 模型名称，比如 <code>gpt-4o</code>  </p>
+<h2 id="_3">踩过的坑</h2>
+<p><strong>环境变量没传过去</strong>  </p>
+<p>最开始在 Secrets 里配置了变量，但构建日志显示 "未配置"。排查半天发现是 workflow 文件里没写 <code>env</code> 部分，Secrets 不会自动变成环境变量，必须显式传递。  </p>
+<p><strong>API 调用超时</strong>  </p>
+<p>有些文章很长，AI 处理比较慢。加了 10 秒超时，超时就回退到原来的摘要方式，避免构建卡住。  </p>
+<p><strong>摘要太长</strong>  </p>
+<p>一开始没限制 token 数，返回的摘要有时候比文章还长。加了 <code>max_tokens: 1500</code> 限制，同时 prompt 里要求简洁。  </p>
+<h2 id="_4">效果</h2>
+<p>现在每篇新文章发布时，会自动生成一段 AI 摘要，显示在文章顶部。如果 AI 服务不可用，会自动回退到原来的方式（取第一句），不影响正常发布。  </p>
+<p>摘要质量取决于用的 AI 模型，我试了几个免费的 API，效果都还可以。读者反馈说摘要帮他们快速判断这篇文章值不值得细读。  </p>
+<h2 id="_5">后续优化方向</h2>
+<ul>
+<li>支持自定义每篇文章是否生成 AI 摘要（通过 issue 标签控制）  </li>
+<li>缓存摘要结果，避免每次构建都重新生成  </li>
+<li>支持手动编辑 AI 生成的摘要  </li>
+</ul>
+<hr />
+<p>实现过程中参考了 <a href="https://github.com/anaer/blog">anaer/blog</a> 的做法，感谢前辈踩坑。  </p>
+</article>
+</div><!-- 文章版权信息 -->
+<div class="post-copyright">
+    <div class="post-copyright-header">
+        <div class="post-copyright-title">本博客的 ai 总结</div>
+        <div class="post-copyright-url">https://moretti815.github.io/blog/post/ben-bo-ke-de-%20ai%20-zong-jie.html</div>
+    </div>
+    <div class="post-copyright-info">
+        <div class="post-copyright-info-item">
+            <span class="label">Author</span>
+            <span class="value">Moretti</span>
+        </div>
+        
+        <div class="post-copyright-info-item">
+            <span class="label">Copyright</span>
+            <span class="value"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+        </div>
+    </div>
+    <div class="post-copyright-actions">
+        <button class="btn-icon" onclick="copyPostLink()" title="Copy link">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+        </button>
+        <button class="btn-icon" onclick="toggleQRCode()" title="Get QR code">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+        </button>
+        <a href="https://service.weibo.com/share/share.php?url=https%3A//moretti815.github.io/blog/post/ben-bo-ke-de-%2520ai%2520-zong-jie.html&title=%E6%9C%AC%E5%8D%9A%E5%AE%A2%E7%9A%84%20ai%20%E6%80%BB%E7%BB%93" target="_blank" class="btn-icon" title="Share to Weibo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20"><path fill="currentColor" d="M14.812 9.801c-.778-.141-.4-.534-.4-.534s.761-1.178-.15-2.034c-1.13-1.061-3.877.135-3.877.135c-1.05.306-.77-.14-.622-.897c0-.892-.326-2.402-3.12-1.51C3.853 5.858 1.455 9 1.455 9C-.212 11.087.01 12.7.01 12.7c.416 3.562 4.448 4.54 7.584 4.771c3.299.243 7.752-1.067 9.102-3.76c1.35-2.696-1.104-3.763-1.884-3.91m-1.044 2.549c0 2.051-2.653 3.977-5.93 4.117c-3.276.144-5.923-1.398-5.923-3.45c0-2.054 2.647-3.7 5.923-3.842s5.93 1.126 5.93 3.175m-6.584-1.823c-3.293.362-2.913 3.259-2.913 3.259s-.034.917.883 1.384c1.927.98 3.912.387 4.915-.829s.415-4.173-2.885-3.814m.281 3.075c0 .48-.498.925-1.112.99c-.614.068-1.11-.265-1.11-.747s.44-.985 1.055-1.045c.707-.064 1.167.318 1.167.802m1.003-1.15c.11.174.031.437-.173.588c-.208.146-.464.126-.574-.05c-.115-.17-.072-.445.139-.588c.244-.171.498-.122.608.05m4.86-9.806c.335-.06 1.532-.281 2.696-.025c2.083.456 4.941 2.346 3.655 6.368c-.094.575-.398.62-.76.62c-.432 0-.781-.255-.781-.662c0-.352.155-.71.155-.71c.046-.148.411-1.07-.241-2.448c-1.198-1.887-3.609-1.915-3.893-1.807a3.5 3.5 0 0 1-.591.141l-.106.016l-.014.002c-.437 0-.786-.333-.786-.737a.75.75 0 0 1 .573-.715s.007-.011.018-.014c.024-.004.049-.027.075-.029m.66 2.611s3.367-.584 2.964 2.811a.2.2 0 0 1-.007.054c-.037.241-.264.426-.529.426c-.3 0-.543-.225-.543-.507c0 0 .534-2.269-1.885-1.768c-.299 0-.538-.227-.538-.505c0-.283.24-.51.538-.51"/></svg>
+        </a>
+        <a href="https://x.com/intent/tweet?text=%E6%9C%AC%E5%8D%9A%E5%AE%A2%E7%9A%84%20ai%20%E6%80%BB%E7%BB%93&url=https%3A//moretti815.github.io/blog/post/ben-bo-ke-de-%2520ai%2520-zong-jie.html" target="_blank" class="btn-icon" title="Share to X">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+        </a>
+        <a href="https://bsky.app/intent/compose?text=%E6%9C%AC%E5%8D%9A%E5%AE%A2%E7%9A%84%20ai%20%E6%80%BB%E7%BB%93%0Ahttps%3A//moretti815.github.io/blog/post/ben-bo-ke-de-%2520ai%2520-zong-jie.html" target="_blank" class="btn-icon" title="Share to Bluesky">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="21.1875" viewBox="0 0 256 226"><path fill="#1185FE" d="M55.491 15.172c29.35 22.035 60.917 66.712 72.509 90.686c11.592-23.974 43.159-68.651 72.509-90.686C221.686-.727 256-13.028 256 26.116c0 7.818-4.482 65.674-7.111 75.068c-9.138 32.654-42.436 40.983-72.057 35.942c51.775 8.812 64.946 38 36.501 67.187c-54.021 55.433-77.644-13.908-83.696-31.676c-1.11-3.257-1.63-4.78-1.637-3.485c-.008-1.296-.527.228-1.637 3.485c-6.052 17.768-29.675 87.11-83.696 31.676c-28.445-29.187-15.274-58.375 36.5-67.187c-29.62 5.041-62.918-3.288-72.056-35.942C4.482 91.79 0 33.934 0 26.116C0-13.028 34.314-.727 55.491 15.172"/></svg>
+        </a>
+    </div>
+    <div id="qrcode-container" class="qrcode-container">
+        <div id="qrcode-content"></div>
+    </div>
+    <div class="post-copyright-reward">
+        <a href="https://moretti815.github.io/blog/reward.html">
+            <span class="reward-text">Buy me a cup of coffee ☕</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+        </a>
+    </div>
+</div>
+
+
+
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+<!-- 直达评论按钮 - 文章页专用 -->
+<div id="scroll-to-comments-wrapper" class="scroll-to-comments-wrapper">
+    <button id="scroll-to-comments-btn" class="scroll-to-comments-btn" aria-label="Scroll to Comments" onclick="scrollToComments()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M6 14h12v-2H6zm0-3h12V9H6zm0-3h12V6H6zM4 18q-.825 0-1.412-.587T2 16V4q0-.825.588-1.412T4 2h16q.825 0 1.413.588T22 4v18l-4-4z"/>
+        </svg>
+    </button>
+</div>
+
+<style>
+/* 直达评论按钮样式 */
+.scroll-to-comments-wrapper {
+    position: fixed;
+    right: 24px;
+    bottom: 136px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.scroll-to-comments-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border-default, #d0d7de);
+    background-color: var(--color-canvas-default, #ffffff);
+    color: var(--color-accent-fg, #0969da);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.9);
+    pointer-events: auto;
+}
+
+.scroll-to-comments-btn:hover {
+    background-color: var(--color-canvas-subtle, #f6f8fa);
+    border-color: var(--color-accent-emphasis, #0969da);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.scroll-to-comments-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.scroll-to-comments-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* 显示状态 */
+.scroll-to-comments-wrapper.visible .scroll-to-comments-btn {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* 暗色模式适配 */
+[data-color-mode="dark"] .scroll-to-comments-btn {
+    border-color: var(--color-border-default, #30363d);
+    background-color: var(--color-canvas-default, #0d1117);
+    color: var(--color-accent-fg, #58a6ff);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-color-mode="dark"] .scroll-to-comments-btn:hover {
+    background-color: var(--color-canvas-subtle, #161b22);
+    border-color: var(--color-accent-emphasis, #1f6feb);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .scroll-to-comments-wrapper {
+        right: 16px;
+        bottom: 124px;
+    }
+
+    .scroll-to-comments-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+    }
+
+    .scroll-to-comments-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* 小屏幕移动端 */
+@media (max-width: 480px) {
+    .scroll-to-comments-wrapper {
+        right: 12px;
+        bottom: 116px;
+    }
+
+    .scroll-to-comments-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+    }
+
+    .scroll-to-comments-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+</style>
+
+<script>
+(function() {
+    // 直达评论功能
+    function scrollToComments() {
+        const commentsSection = document.getElementById('comments');
+        const cmButton = document.getElementById('cmButton');
+        
+        // 优先滚动到评论按钮（如果存在且未展开）
+        if (cmButton && cmButton.offsetParent !== null) {
+            cmButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // 自动点击按钮展开评论
+            setTimeout(function() {
+                cmButton.click();
+            }, 500);
+        } else if (commentsSection) {
+            // 如果评论已展开，滚动到评论区
+            commentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // 滚动监听，控制按钮显示/隐藏
+    function handleScroll() {
+        const wrapper = document.getElementById('scroll-to-comments-wrapper');
+        if (!wrapper) return;
+
+        // 获取评论区位置
+        const commentsSection = document.getElementById('comments');
+        const cmButton = document.getElementById('cmButton');
+        
+        // 如果没有评论区或评论按钮，不显示按钮
+        if (!commentsSection && !cmButton) {
+            wrapper.classList.remove('visible');
+            return;
+        }
+
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        
+        // 获取评论区域的位置
+        let commentsTop = Infinity;
+        if (cmButton && cmButton.offsetParent !== null) {
+            commentsTop = cmButton.getBoundingClientRect().top + scrollTop;
+        } else if (commentsSection) {
+            commentsTop = commentsSection.getBoundingClientRect().top + scrollTop;
+        }
+
+        // 当滚动超过 300px 且还没有滚动到评论区时显示按钮
+        if (scrollTop > 300 && scrollTop + windowHeight < commentsTop + 100) {
+            wrapper.classList.add('visible');
+        } else {
+            wrapper.classList.remove('visible');
+        }
+    }
+
+    // 节流函数，优化性能
+    function throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(function() {
+                    inThrottle = false;
+                }, limit);
+            }
+        };
+    }
+
+    // 绑定滚动事件（节流处理，每 100ms 执行一次）
+    window.addEventListener('scroll', throttle(handleScroll, 100));
+
+    // 初始化一次
+    handleScroll();
+
+    // 暴露到全局
+    window.scrollToComments = scrollToComments;
+})();
+</script>
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://moretti815.github.io/blog">Moretti's Blog</a></div>
+<div id="footer2">
+    <span id="runday"></span><span id="site-stats">总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("11/01/2024"!=""){
+    var startSite=new Date("11/01/2024");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div></body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+
+// 当前主题模式：light / dark / auto
+let currentThemeMode = theme;
+
+// 系统主题监听器
+let systemThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+let systemThemeListener = null;
+
+function getSystemTheme() {
+    return systemThemeMediaQuery.matches ? 'dark' : 'light';
+}
+
+function startSystemThemeListener() {
+    // 移除旧的监听器
+    if (systemThemeListener) {
+        systemThemeMediaQuery.removeEventListener('change', systemThemeListener);
+    }
+    // 添加新的监听器
+    systemThemeListener = (e) => {
+        let newSystemTheme = e.matches ? 'dark' : 'light';
+        document.documentElement.setAttribute("data-color-mode", newSystemTheme);
+        // 更新图标
+        if (themeSettings[newSystemTheme]) {
+            let icon = themeSettings[newSystemTheme][1];
+            let color = themeSettings[newSystemTheme][2];
+            document.getElementById("themeSwitch").setAttribute("d", IconList[icon]);
+            document.getElementById("themeSwitch").parentNode.style.color = color;
+        }
+    };
+    systemThemeMediaQuery.addEventListener('change', systemThemeListener);
+}
+
+function stopSystemThemeListener() {
+    if (systemThemeListener) {
+        systemThemeMediaQuery.removeEventListener('change', systemThemeListener);
+        systemThemeListener = null;
+    }
+}
+
+function applyTheme(mode) {
+    // 应用主题设置，更新图标和颜色
+    if (themeSettings[mode]) {
+        let icon = themeSettings[mode][1];
+        let color = themeSettings[mode][2];
+        document.getElementById("themeSwitch").setAttribute("d", IconList[icon]);
+        document.getElementById("themeSwitch").parentNode.style.color = color;
+    }
+}
+
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode", mode);
+    document.getElementById("themeSwitch").setAttribute("d", value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color = color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+
+function modeSwitch(){
+    let newMode;
+    
+    // 循环：light -> dark -> auto -> light
+    if (currentThemeMode === "light") {
+        newMode = "dark";
+    } else if (currentThemeMode === "dark") {
+        newMode = "auto";
+    } else {
+        newMode = "light";
+    }
+    
+    // 更新当前模式
+    currentThemeMode = newMode;
+    localStorage.setItem("meek_theme", newMode);
+    
+    if (newMode === "auto") {
+        // 切换到 auto 模式，立即应用当前系统主题
+        stopSystemThemeListener();
+        let systemTheme = getSystemTheme();
+        document.documentElement.setAttribute("data-color-mode", systemTheme);
+        applyTheme("auto");
+        startSystemThemeListener();
+    } else if (themeSettings[newMode]) {
+        stopSystemThemeListener();
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+
+// 初始化主题
+if (theme === "auto") {
+    // 如果是 auto 模式，应用当前系统主题并启动监听
+    let systemTheme = getSystemTheme();
+    document.documentElement.setAttribute("data-color-mode", systemTheme);
+    applyTheme("auto");
+    startSystemThemeListener();
+} else if (themeSettings[theme]) {
+    changeTheme(...themeSettings[theme]);
+}// 加载动画控制
+(function() {
+    const preloader = document.getElementById('preloader');
+    if (!preloader) return;
+
+    // 最小显示时间（毫秒）- 确保动画至少显示一段时间，避免闪烁
+    const minDisplayTime = 500;
+    const startTime = Date.now();
+    let hidden = false;
+
+    function hidePreloader() {
+        if (hidden) return;
+        hidden = true;
+
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
+
+        setTimeout(function() {
+            preloader.classList.add('hidden');
+            preloader.style.display = 'none';
+            window.dispatchEvent(new CustomEvent('preloaderHidden'));
+
+            // 动画完全结束后移除元素
+            setTimeout(function() {
+                if (preloader.parentNode) {
+                    preloader.parentNode.removeChild(preloader);
+                }
+            }, 500); // 与 CSS transition 时间一致
+        }, remainingTime);
+    }
+
+    // 页面加载完成后隐藏动画
+    if (document.readyState === 'complete') {
+        hidePreloader();
+    } else {
+        window.addEventListener('load', hidePreloader);
+    }
+
+    // 备用方案：最多等待 3 秒，确保即使资源加载失败也不会一直显示
+    setTimeout(hidePreloader, 3000);
+})();console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+
+// 树枝背景动画 - 参考 BackgrounRandom.astro
+(function() {
+    const canvas = document.getElementById('branch-canvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    const r180 = Math.PI;
+    const r90 = Math.PI / 2;
+    const r15 = Math.PI / 12;
+    const MIN_BRANCH = 30;
+    const len = 6;
+    
+    let steps = [];
+    let prevSteps = [];
+    let size = { width: window.innerWidth, height: window.innerHeight };
+    
+    function randomMiddle() {
+        return Math.random() * 0.6 + 0.2;
+    }
+    
+    function initCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = size.width + 'px';
+        canvas.style.height = size.height + 'px';
+        canvas.width = dpr * size.width;
+        canvas.height = dpr * size.height;
+        ctx.scale(dpr, dpr);
+    }
+    
+    function polar2cart(x, y, r, theta) {
+        const dx = r * Math.cos(theta);
+        const dy = r * Math.sin(theta);
+        return [x + dx, y + dy];
+    }
+    
+    function step(x, y, rad, counter) {
+        counter = counter || { value: 0 };
+        const length = Math.random() * len;
+        counter.value += 1;
+        
+        const [nx, ny] = polar2cart(x, y, length, rad);
+        
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(nx, ny);
+        ctx.stroke();
+        
+        const rad1 = rad + Math.random() * r15;
+        const rad2 = rad - Math.random() * r15;
+        
+        if (nx < -100 || nx > size.width + 100 || ny < -100 || ny > size.height + 100) return;
+        
+        const rate = counter.value <= MIN_BRANCH ? 0.8 : 0.5;
+        
+        if (Math.random() < rate) steps.push(function() { step(nx, ny, rad1, counter); });
+        if (Math.random() < rate) steps.push(function() { step(nx, ny, rad2, counter); });
+    }
+    
+    function frame() {
+        prevSteps = steps;
+        steps = [];
+        
+        if (!prevSteps.length) return;
+        
+        prevSteps.forEach(function(i) {
+            if (Math.random() < 0.5) steps.push(i);
+            else i();
+        });
+        
+        requestAnimationFrame(frame);
+    }
+    
+    function getBranchColor() {
+        const isDark = document.documentElement.getAttribute('data-color-mode') === 'dark';
+        // 使用 CSS 变量获取主题色，适配明暗模式
+        const style = getComputedStyle(document.documentElement);
+        const accent = style.getPropertyValue('--color-accent-fg').trim() || (isDark ? '#58a6ff' : '#0969da');
+        // 解析 HSL 并降低透明度
+        if (accent.startsWith('#')) {
+            const r = parseInt(accent.slice(1, 3), 16);
+            const g = parseInt(accent.slice(3, 5), 16);
+            const b = parseInt(accent.slice(5, 7), 16);
+            return 'rgba(' + r + ', ' + g + ', ' + b + ', 0.12)';
+        }
+        return isDark ? 'rgba(88, 166, 255, 0.12)' : 'rgba(9, 105, 218, 0.12)';
+    }
+    
+    function start() {
+        const color = getBranchColor();
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = color;
+        prevSteps = [];
+        steps = [
+            function() { step(randomMiddle() * size.width, -5, r90); },
+            function() { step(randomMiddle() * size.width, size.height + 5, -r90); },
+            function() { step(-5, randomMiddle() * size.height, 0); },
+            function() { step(size.width + 5, randomMiddle() * size.height, r180); }
+        ];
+        if (size.width < 500) steps = steps.slice(0, 2);
+        requestAnimationFrame(frame);
+    }
+    
+    initCanvas();
+    start();
+    
+    // 窗口大小改变时重新绘制
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (window.innerWidth === size.width) return;
+            size.width = window.innerWidth;
+            size.height = window.innerHeight;
+            initCanvas();
+            start();
+        }, 200);
+    });
+    
+    // 主题切换时更新颜色
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'data-color-mode') {
+                start();
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+})();
+
+// SafeGo 外链中转处理
+
+(function() {
+    const SAFEGO_CONFIG = {
+        enableBase64: true,
+        goPagePath: 'https://moretti815.github.io/blog/go.html',
+        domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
+        ignoreAttrs: ["data-fancybox"],
+        enableTargetBlank: true
+    };
+    
+    function encodeSafeUrl(url) {
+        if (!SAFEGO_CONFIG.enableBase64) {
+            return encodeURIComponent(url);
+        }
+        
+        // Base64 encode with URL safe characters
+        const base64 = btoa(encodeURIComponent(url).replace(/%([0-9A-F]{2})/g,
+            function(_, p1) { return String.fromCharCode('0x' + p1); }
+        ));
+        
+        // Replace URL unsafe characters
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    
+    function isExternalLink(href) {
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+            return false;
+        }
+        
+        // Relative links
+        if (href.startsWith('/') && !href.startsWith('//')) {
+            return false;
+        }
+        
+        try {
+            const url = new URL(href, window.location.href);
+            const currentHost = window.location.hostname;
+            
+            // Same domain
+            if (url.hostname === currentHost) {
+                return false;
+            }
+            
+            // Check whitelist
+            for (let i = 0; i < SAFEGO_CONFIG.domainWhitelist.length; i++) {
+                if (url.hostname.includes(SAFEGO_CONFIG.domainWhitelist[i])) {
+                    return false;
+                }
+            }
+            
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    function hasIgnoreAttr(element) {
+        for (let i = 0; i < SAFEGO_CONFIG.ignoreAttrs.length; i++) {
+            if (element.hasAttribute(SAFEGO_CONFIG.ignoreAttrs[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    function processLinks() {
+        const links = document.querySelectorAll('a[href]');
+        
+        links.forEach(function(link) {
+            // Skip already processed
+            if (link.hasAttribute('data-safego-processed')) {
+                return;
+            }
+            
+            const href = link.getAttribute('href');
+            
+            // Skip if has ignore attribute
+            if (hasIgnoreAttr(link)) {
+                link.setAttribute('data-safego-processed', 'true');
+                return;
+            }
+            
+            // Check if external link
+            if (isExternalLink(href)) {
+                const encodedUrl = encodeSafeUrl(href);
+                // 将来源页 URL 附加到 go 链接中，解决 noopener 导致 referrer 为空的问题
+                const fromUrl = encodeURIComponent(window.location.href);
+                const goUrl = SAFEGO_CONFIG.goPagePath + '?u=' + encodedUrl + '&from=' + fromUrl;
+                
+                link.setAttribute('href', goUrl);
+                link.setAttribute('data-safego-processed', 'true');
+                link.setAttribute('rel', 'external nofollow noopener noreferrer');
+                
+                if (SAFEGO_CONFIG.enableTargetBlank) {
+                    link.setAttribute('target', '_blank');
+                }
+            }
+        });
+    }
+    
+    // Process on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', processLinks);
+    } else {
+        processLinks();
+    }
+    
+    // Process dynamically added links
+    const observer = new MutationObserver(function(mutations) {
+        let shouldProcess = false;
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        if (node.tagName === 'A' || node.querySelectorAll) {
+                            shouldProcess = true;
+                        }
+                    }
+                });
+            }
+        });
+        
+        if (shouldProcess) {
+            processLinks();
+        }
+    });
+    
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
+
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Moretti815/blog");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+// 复制文章链接
+function copyPostLink(){
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.querySelector('.post-copyright-actions .btn-icon');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-success-fg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+        }, 2000);
+    }).catch(err => {
+        console.error('复制失败:', err);
+        const textarea = document.createElement('textarea');
+        textarea.value = window.location.href;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    });
+}
+
+// 切换二维码显示
+function toggleQRCode(){
+    const container = document.getElementById('qrcode-container');
+    const qrcodeContent = document.getElementById('qrcode-content');
+
+    container.classList.toggle('expanded');
+
+    // 参考 QRCode.astro 的实现
+    if(container.classList.contains('expanded') && qrcodeContent.innerHTML === ''){
+        new QRCode(qrcodeContent, window.location.href);
+    }
+}
+
+
+
+
+// 代码块折叠复制功能
+document.addEventListener('DOMContentLoaded', () => {
+    // 复制功能
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const code = btn.parentElement.parentElement.querySelector('pre code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                // 复制成功，显示对勾图标
+                btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><path fill="var(--color-success-fg, #1f883d)" d="M7.629 15.314l-4.243-4.243 1.414-1.414 2.829 2.828 6.364-6.364 1.414 1.414z"/></svg>';
+                setTimeout(() => {
+                    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg>';
+                }, 1500);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                // 降级方案
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            });
+        });
+    });
+
+    // 折叠功能
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('fold-btn')) {
+            const code = e.target.parentElement.parentElement.querySelector('pre code');
+            const collapsed = code.style.display === 'none';
+            code.style.display = collapsed ? 'block' : 'none';
+            e.target.textContent = collapsed ? '▲' : '▼';
+            e.target.title = collapsed ? '折叠' : '展开';
+        }
+    });
+});
+
+</script>
+<script src='https://moretti815.github.io/blog/TOC/articletoc.js'></script><script src='https://moretti815.github.io/blog/Lightbox/lightbox.js'></script><script src='https://moretti815.github.io/blog/GmeekVercount.js'></script><script src='https://moretti815.github.io/blog/oneko.js/oneko.js'></script><script src='https://moretti815.github.io/blog/Mermaid/GmeekMermaid.js'></script>
+
+</html>
