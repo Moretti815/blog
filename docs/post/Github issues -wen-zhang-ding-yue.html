@@ -335,10 +335,174 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         border-radius: 0 0 9px 9px;
     }
     .post-meta-footer {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 4px 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+}
+
+/* 文章标签样式 */
+.post-labels {
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.post-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: opacity 0.2s ease;
+}
+
+.post-label:hover {
+    opacity: 0.85;
+}
+
+.post-label a {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* 文章元信息样式 */
+.post-meta {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--color-fg-muted, #656d76);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.post-meta time {
+    font-weight: 500;
+    color: var(--color-fg-default, #1f2328);
+}
+
+.post-view-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.post-publish::before {
+    content: '';
+}
+
+/* 暗色模式适配 */
+[data-color-mode="dark"] .post-meta {
+    color: var(--color-fg-muted, #8b949e);
+}
+
+[data-color-mode="dark"] .post-meta time {
+    color: var(--color-fg-default, #c9d1d9);
+}
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+    .post-labels {
+        margin-bottom: 10px;
+        gap: 6px;
     }
+
+    .post-label {
+        padding: 3px 8px;
+        font-size: 12px;
+        border-radius: 4px;
+    }
+
+    .post-meta {
+        font-size: 13px;
+        margin-bottom: 16px;
+        gap: 6px 10px;
+    }
+
+    .post-pagination .pagination {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .post-pagination .previous_page,
+    .post-pagination .next_page {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* 文章分页导航样式 */
+.post-pagination {
+    margin: 32px 0;
+    padding-top: 32px;
+    border-top: 1px solid var(--color-border-default, #d0d7de);
+}
+
+.post-pagination .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.post-pagination .previous_page,
+.post-pagination .next_page {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-accent-fg, #0969da);
+    text-decoration: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    max-width: 45%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.post-pagination .previous_page:hover,
+.post-pagination .next_page:hover {
+    background-color: var(--color-accent-subtle, #ddf4ff);
+    border-color: var(--color-accent-emphasis, #0969da);
+    text-decoration: none;
+}
+
+.post-pagination .previous_page svg,
+.post-pagination .next_page svg {
+    flex-shrink: 0;
+}
+
+.post-pagination .previous_page {
+    margin-right: auto;
+}
+
+.post-pagination .next_page {
+    margin-left: auto;
+}
+
+/* 暗色模式适配 */
+[data-color-mode="dark"] .post-pagination {
+    border-top-color: var(--color-border-default, #30363d);
+}
+
+[data-color-mode="dark"] .post-pagination .previous_page,
+[data-color-mode="dark"] .post-pagination .next_page {
+    color: var(--color-accent-fg, #58a6ff);
+}
+
+[data-color-mode="dark"] .post-pagination .previous_page:hover,
+[data-color-mode="dark"] .post-pagination .next_page:hover {
+    background-color: var(--color-accent-subtle, rgba(56, 139, 253, 0.15));
+    border-color: var(--color-accent-emphasis, #1f6feb);
 }
 .copy-feedback {
     display: none;
@@ -863,6 +1027,18 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
+<!-- 文章标签 -->
+
+
+<!-- 文章元信息：观看量、发布时间、更新时间 -->
+<div class="post-meta">
+    <span class="post-view-count" id="vercount_container_page_pv" style="display:none;">
+        👁 <span id="vercount_value_page_pv"></span>
+    </span>
+    <span class="post-publish">发布于 <time></time></span>
+    
+</div>
+
 <div class="markdown-body" id="postBody"><p>博客写久了，总会想：读者怎么知道我更新了？</p>
 <p>RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。自建邮件订阅又麻烦，还要处理 SMTP、退订逻辑，搞不好整域都被标记成垃圾邮件发送者。</p>
 <p>最近看到一个思路：用 GitHub Issues 做订阅。</p>
