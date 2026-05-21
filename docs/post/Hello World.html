@@ -410,170 +410,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     gap: 4px 12px;
 }
 
-/* 文章标签样式 */
-.post-labels {
-    margin-bottom: 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.post-label {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.4;
-    transition: opacity 0.2s ease;
-}
-
-.post-label:hover {
-    opacity: 0.85;
-}
-
-.post-label a {
-    color: #fff;
-    text-decoration: none;
-}
-
-/* 文章元信息样式 */
-.post-meta {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: var(--color-fg-muted, #656d76);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 12px;
-}
-
-.post-meta time {
-    font-weight: 500;
-    color: var(--color-fg-default, #1f2328);
-}
-
-.post-view-count {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.post-publish::before {
-    content: '';
-}
-
-/* 暗色模式适配 */
-[data-color-mode="dark"] .post-meta {
-    color: var(--color-fg-muted, #8b949e);
-}
-
-[data-color-mode="dark"] .post-meta time {
-    color: var(--color-fg-default, #c9d1d9);
-}
-
-/* 移动端适配 */
-@media (max-width: 600px) {
-    .post-labels {
-        margin-bottom: 10px;
-        gap: 6px;
-    }
-
-    .post-label {
-        padding: 3px 8px;
-        font-size: 12px;
-        border-radius: 4px;
-    }
-
-    .post-meta {
-        font-size: 13px;
-        margin-bottom: 16px;
-        gap: 6px 10px;
-    }
-
-    .post-pagination .pagination {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .post-pagination .previous_page,
-    .post-pagination .next_page {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-/* 文章分页导航样式 */
-.post-pagination {
-    margin: 32px 0;
-    padding-top: 32px;
-    border-top: 1px solid var(--color-border-default, #d0d7de);
-}
-
-.post-pagination .pagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-}
-
-.post-pagination .previous_page,
-.post-pagination .next_page {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-accent-fg, #0969da);
-    text-decoration: none;
-    background-color: transparent;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-    max-width: 45%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.post-pagination .previous_page:hover,
-.post-pagination .next_page:hover {
-    background-color: var(--color-accent-subtle, #ddf4ff);
-    border-color: var(--color-accent-emphasis, #0969da);
-    text-decoration: none;
-}
-
-.post-pagination .previous_page svg,
-.post-pagination .next_page svg {
-    flex-shrink: 0;
-}
-
-.post-pagination .previous_page {
-    margin-right: auto;
-}
-
-.post-pagination .next_page {
-    margin-left: auto;
-}
-
-/* 暗色模式适配 */
-[data-color-mode="dark"] .post-pagination {
-    border-top-color: var(--color-border-default, #30363d);
-}
-
-[data-color-mode="dark"] .post-pagination .previous_page,
-[data-color-mode="dark"] .post-pagination .next_page {
-    color: var(--color-accent-fg, #58a6ff);
-}
-
-[data-color-mode="dark"] .post-pagination .previous_page:hover,
-[data-color-mode="dark"] .post-pagination .next_page:hover {
-    background-color: var(--color-accent-subtle, rgba(56, 139, 253, 0.15));
-    border-color: var(--color-accent-emphasis, #1f6feb);
-}
+.previous_page {text-align: left;}
+.next_page {text-align: right;}
 .copy-feedback {
     display: none;
     position: absolute;
@@ -1097,25 +935,19 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<!-- 文章标签 -->
-
-<div class="post-labels">
-    <span class="post-label" style="background-color:#dab885">
-            <a href="https://moretti815.github.io/blog/tag.html#测试">测试</a>
+<div class="listLabels">
+    <span class="Label" style="max-width: 100px; height: 24px; border-radius: 4px; padding: 4px 8px; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; background-color:#dab885">
+            <object><a style="color:#fff; text-decoration: none; font-size: 14px;" href="https://moretti815.github.io/blog/tag.html#测试">测试</a></object>
         </span>
 </div>
+<br>
 
+<div id="vercount_container_page_pv" style="display:none;float:left;margin-top:0px;margin-right:5px;font-size:medium;">👁<span id="vercount_value_page_pv"></span></div>
+<span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-17 15:37:53</time></span>
 
-<!-- 文章元信息：观看量、发布时间、更新时间 -->
-<div class="post-meta">
-    <span class="post-view-count" id="vercount_container_page_pv" style="display:none;">
-        👁 <span id="vercount_value_page_pv"></span>
-    </span>
-    <span class="post-publish">发布于 <time>2026-05-17 15:37:53</time></span>
-    
-    <span class="post-update">更新于 <time>2026-05-20 11:05:10</time></span>
-    
-</div>
+<span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 11:05:10</time></span>
+
+<p>
 
 <div class="markdown-body" id="postBody"><p>欢迎来到我的博客！</p>
 <h1>一级标题</h1>
@@ -1160,9 +992,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>结束<span class="pl-pds"><span class="pl-sg">]</span></span></span>
     <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span></pre></div>
 <p>$$E = mc^2$$</p>
-<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p></div>
-
-<!-- 文章版权信息 -->
+<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p></div><nav class="paginate-container" aria-label="Pagination">
+    <div class="pagination"><!-- <span style="width:200px" aria-disabled="true"></span> --><a class="next_page" rel="next" href="https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html" aria-label="Next Page">Github issues 文章订阅</a></div>
+</nav><!-- 文章版权信息 -->
 <div class="post-copyright">
     <div class="post-copyright-header">
         <div class="post-copyright-title">Hello World</div>
@@ -1227,14 +1059,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         <span class="page-view-unit">次</span>
     </div>
     <div class="bottom-text">转载请注明出处</div>
-</div><nav class="post-pagination" aria-label="Pagination">
-    <div class="pagination"><a class="next_page" rel="next" href="https://moretti815.github.io/blog/post/Github%20issues%20-wen-zhang-ding-yue.html" aria-label="Next Page">
-            Github issues 文章订阅
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-        </a></div>
-</nav>
+</div>
 
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
