@@ -288,22 +288,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     gap: 6px;
 }
 
-/* 文章底部元信息区域 */
-.post-meta-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-    font-size: small;
-}
 
-.page-view-count {
-    color: var(--color-fg-muted);
-}
-
-.bottom-text {
-    color: var(--color-fg-muted);
-}
 
 /* 移动端适配 */
 @media (max-width: 600px) {
@@ -334,14 +319,30 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         padding: 8px 14px;
         border-radius: 0 0 9px 9px;
     }
-    .post-meta-footer {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 4px 12px;
 }
 
-.previous_page {text-align: left;}
-.next_page {text-align: right;}
+.previous_page {
+    text-align: left;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.next_page {
+    text-align: right;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.previous_page::before {
+    content: "‹";
+    font-size: 1.2em;
+    line-height: 1;
+}
+.next_page::after {
+    content: "›";
+    font-size: 1.2em;
+    line-height: 1;
+}
 .copy-feedback {
     display: none;
     position: absolute;
@@ -879,7 +880,11 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
-<p>
+<p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
+    <strong>AI总结:</strong> 博客写久了，总会想：读者怎么知道我更新了？
+
+RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。
+</div>
 
 <div class="markdown-body" id="postBody"><p>博客写久了，总会想：读者怎么知道我更新了？</p>
 <p>RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。自建邮件订阅又麻烦，还要处理 SMTP、退订逻辑，搞不好整域都被标记成垃圾邮件发送者。</p>
@@ -1058,14 +1063,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     </div>
 </div>
 
-<div class="post-meta-footer">
-    <div id="busuanzi_container_page_pv" class="page-view-count" style="display:none;">
-        <span class="page-view-label">本文浏览量</span>
-        <span id="busuanzi_value_page_pv"></span>
-        <span class="page-view-unit">次</span>
-    </div>
-    <div class="bottom-text">转载请注明出处</div>
-</div>
+
 
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
