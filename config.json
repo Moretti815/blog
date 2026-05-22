@@ -4,7 +4,7 @@
     "author":"Moretti",
     "subTitle":"这是最好的时代，也是最坏的时代。",
     "avatarUrl":"https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif",
-    "homeUrl":"https://mblog.2005815.xyz",
+    "homeUrl":"https://blog.2005815.xyz",
     "faviconUrl":"https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif",
     "email":"mcy@kemiaosw.top",
     "startSite":"11/01/2024",
@@ -159,7 +159,7 @@
         "title": "Moretti's Blog",
         "subtitle": "安全跳转中心",
         "avatar": "https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif",
-        "domainWhitelist": ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
+        "domainWhitelist": ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top", "blog.2005815.xyz"],
         "ignoreAttrs": ["data-fancybox"]
     },
     "subscribeIssue": 2,
