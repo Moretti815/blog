@@ -24,13 +24,13 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程，包括整体思路、代码实现、前端显示、GitHub Actions 配置及遇到的问题和优化方向。具体方法是通过调用 AI API，在文章发布或更新时生成摘要，并将其显示在文章页面顶部。代码模块支持多个 API key 和模型的随机选择，并在调用失败时回退到原始摘要方式。为确保构建流程顺畅，作者解决了环境变量传递、API 调用超时及摘要过长的问题，并在 GitHub Actions 中配置了相关环境变量。后续优化计划包括支持自定义摘要生成、缓存摘要结果和手动编辑功能。
+<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示以及相关配置。作者通过编写 `Summary.py` 模块调用 AI API，集成到博客生成脚本中，在文章发布或更新时生成简洁的摘要并显示在文章顶部。为此，作者设置了环境变量、处理了超时问题，并限制了摘要长度。此外，作者还在 GitHub Actions 中配置了 API 参数，确保自动构建时能够正常调用服务。文中也记录了实现过程中遇到的主要问题及解决方法，如环境变量未正确传递、API 超时及摘要过长等。最后，作者提出了未来优化方向，包括支持自定义生成摘要、缓存摘要结果以及手动编辑功能。
 
-改进建议：可以进一步详细说明如何选择和评估不同的 AI 模型，或提供摘要质量的具体对比示例，帮助读者更好地理解效果差异。">
+改进建议：可以补充更多关于如何选择合适的 AI 模型及其效果对比的内容，以便读者更好地理解模型选择对摘要质量的影响。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程，包括整体思路、代码实现、前端显示、GitHub Actions 配置及遇到的问题和优化方向。具体方法是通过调用 AI API，在文章发布或更新时生成摘要，并将其显示在文章页面顶部。代码模块支持多个 API key 和模型的随机选择，并在调用失败时回退到原始摘要方式。为确保构建流程顺畅，作者解决了环境变量传递、API 调用超时及摘要过长的问题，并在 GitHub Actions 中配置了相关环境变量。后续优化计划包括支持自定义摘要生成、缓存摘要结果和手动编辑功能。
+<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示以及相关配置。作者通过编写 `Summary.py` 模块调用 AI API，集成到博客生成脚本中，在文章发布或更新时生成简洁的摘要并显示在文章顶部。为此，作者设置了环境变量、处理了超时问题，并限制了摘要长度。此外，作者还在 GitHub Actions 中配置了 API 参数，确保自动构建时能够正常调用服务。文中也记录了实现过程中遇到的主要问题及解决方法，如环境变量未正确传递、API 超时及摘要过长等。最后，作者提出了未来优化方向，包括支持自定义生成摘要、缓存摘要结果以及手动编辑功能。
 
-改进建议：可以进一步详细说明如何选择和评估不同的 AI 模型，或提供摘要质量的具体对比示例，帮助读者更好地理解效果差异。">
+改进建议：可以补充更多关于如何选择合适的 AI 模型及其效果对比的内容，以便读者更好地理解模型选择对摘要质量的影响。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -906,9 +906,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动文章摘要功能的实现过程，包括整体思路、代码实现、前端显示、GitHub Actions 配置及遇到的问题和优化方向。具体方法是通过调用 AI API，在文章发布或更新时生成摘要，并将其显示在文章页面顶部。代码模块支持多个 API key 和模型的随机选择，并在调用失败时回退到原始摘要方式。为确保构建流程顺畅，作者解决了环境变量传递、API 调用超时及摘要过长的问题，并在 GitHub Actions 中配置了相关环境变量。后续优化计划包括支持自定义摘要生成、缓存摘要结果和手动编辑功能。
+    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示以及相关配置。作者通过编写 `Summary.py` 模块调用 AI API，集成到博客生成脚本中，在文章发布或更新时生成简洁的摘要并显示在文章顶部。为此，作者设置了环境变量、处理了超时问题，并限制了摘要长度。此外，作者还在 GitHub Actions 中配置了 API 参数，确保自动构建时能够正常调用服务。文中也记录了实现过程中遇到的主要问题及解决方法，如环境变量未正确传递、API 超时及摘要过长等。最后，作者提出了未来优化方向，包括支持自定义生成摘要、缓存摘要结果以及手动编辑功能。
 
-改进建议：可以进一步详细说明如何选择和评估不同的 AI 模型，或提供摘要质量的具体对比示例，帮助读者更好地理解效果差异。
+改进建议：可以补充更多关于如何选择合适的 AI 模型及其效果对比的内容，以便读者更好地理解模型选择对摘要质量的影响。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1297,7 +1297,7 @@ else:
 </div>
     <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://blog.2005815.xyz">Moretti's Blog</a></div>
 <div id="footer2">
-    <span id="runday"></span><span id="site-stats">总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
+    <span id="runday"></span> • 访客量<span id="busuanzi_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
 </div>
 
 <script>
