@@ -10,6 +10,14 @@ function createVercount() {
     siteStats.innerHTML =
       '总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • ';
   }
+  // 在 runday 后添加总访客数容器（类似 busuanzi_container_site_pv）
+  var runday = document.getElementById("runday");
+  if (runday) {
+    runday.insertAdjacentHTML(
+      "afterend",
+      '<span id="busuanzi_container_site_uv" style="display:none">总访客数<span id="busuanzi_value_site_uv"></span>人 • </span>',
+    );
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
