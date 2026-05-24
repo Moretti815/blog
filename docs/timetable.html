@@ -28,7 +28,7 @@
 <meta property="og:title" content="课程表">
 <meta property="og:description" content="课程安排">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://mblog.2005815.xyz/timetable.html">
+<meta property="og:url" content="https://blog.2005815.xyz/timetable.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
 <title>课程表 - Moretti</title>
 
@@ -905,7 +905,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     </div><div id="header">
 <h1 class="postTitle">课程表</h1>
 <div class="title-right">
-    <a href="https://mblog.2005815.xyz" id="buttonHome" class="btn btn-invisible circle" title="首页">
+    <a href="https://blog.2005815.xyz" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
             <path id="pathHome" fill-rule="evenodd"></path>
         </svg>
@@ -971,7 +971,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     </div>
 </div>
 </div>
-    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://mblog.2005815.xyz">Moretti's Blog</a></div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://blog.2005815.xyz">Moretti's Blog</a></div>
 <div id="footer2">
     <span id="runday"></span><span id="site-stats">总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
 </div>
@@ -986,7 +986,10 @@ if("11/01/2024"!=""){
     var diffDay=Math.floor(diff/(1000*60*60*24));
     document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
 }
-</script></div><!-- 回到顶部按钮 - 参考 BackToTop.astro -->
+</script>
+
+<!-- Vercount 统计脚本 -->
+<script src="https://blog.2005815.xyz/GmeekVercount.js"></script></div><!-- 回到顶部按钮 - 参考 BackToTop.astro -->
 <div id="back-to-top-wrapper" class="back-to-top-wrapper">
     <button id="back-to-top-btn" class="back-to-top-btn" aria-label="Back to Top" onclick="backToTop()">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
@@ -1438,8 +1441,8 @@ if (theme === "auto") {
 (function() {
     const SAFEGO_CONFIG = {
         enableBase64: true,
-        goPagePath: 'https://mblog.2005815.xyz/go.html',
-        domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top"],
+        goPagePath: 'https://blog.2005815.xyz/go.html',
+        domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top", "blog.2005815.xyz"],
         ignoreAttrs: ["data-fancybox"],
         enableTargetBlank: true
     };
@@ -1568,7 +1571,7 @@ if (theme === "auto") {
 
 <script>
 // Timetable Data URL
-const TIMETABLE_DATA_URL = 'https://mblog.2005815.xyz/%E5%A4%A7%E4%B8%89%E4%B8%8B.json';
+const TIMETABLE_DATA_URL = 'https://blog.2005815.xyz/%E5%A4%A7%E4%B8%89%E4%B8%8B.json';
 
 // State
 let timetableData = null;
@@ -1771,14 +1774,26 @@ function renderDesktopTable(dayColumns, nodeRows, coursesByDay) {
         
         // Day cells
         dayColumns.forEach(day => {
-            const courses = coursesByDay[day.day].filter(c => c.startNode === row.node);
+            // 修改过滤逻辑：显示在当前行范围内的课程
+            const courses = coursesByDay[day.day].filter(c => {
+                const courseStart = c.startNode;
+                const courseEnd = c.endNode || courseStart;
+                const rowStart = row.node;
+                const rowEnd = row.node + 1;
+                // 课程与当前行有重叠
+                return courseStart <= rowEnd && courseEnd >= rowStart;
+            });
             let cellHtml = '';
             
             if (courses.length > 0) {
                 courses.forEach(course => {
+                    // 计算课程跨越的节数
+                    const step = course.step || 1;
+                    const isStartRow = course.startNode === row.node || (course.startNode % 2 === 0 && course.startNode === row.node - 1);
+                    
                     cellHtml += `
-                        <div class="course-card" style="border-color: ${course.color}; background: color-mix(in srgb, ${course.color} 10%, var(--color-canvas-subtle))">
-                            <div class="course-name">${escapeHtml(course.courseName)}</div>
+                        <div class="course-card" style="border-color: ${course.color}; background: color-mix(in srgb, ${course.color} 10%, var(--color-canvas-subtle)); ${step > 2 ? 'min-height: 80px;' : ''}">
+                            <div class="course-name">${escapeHtml(course.courseName)} ${step > 2 ? '<span style="font-size: 11px; opacity: 0.8;">(' + course.startNode + '-' + course.endNode + '节)</span>' : ''}</div>
                             <div class="course-details">
                                 <div>${course.startWeek}-${course.endWeek} 周</div>
                                 <div>教室: ${escapeHtml(course.room || '未填写')}</div>
@@ -1817,12 +1832,18 @@ function renderMobileCards(dayColumns, coursesByDay, nodeRows) {
         
         if (courses.length > 0) {
             courses.forEach(course => {
-                const nodeInfo = nodeRows.find(n => n.node === course.startNode);
-                const timeText = nodeInfo ? `${nodeInfo.startTime} - ${nodeInfo.endTime}` : '';
+                // 计算课程的实际结束时间
+                const step = course.step || 1;
+                const endNode = course.endNode || course.startNode;
+                const startNodeInfo = nodeRows.find(n => n.node === course.startNode);
+                const endNodeInfo = nodeRows.find(n => n.node === endNode) || startNodeInfo;
+                const timeText = startNodeInfo && endNodeInfo 
+                    ? `${startNodeInfo.startTime} - ${endNodeInfo.endTime}` 
+                    : '';
                 
                 contentHtml += `
                     <div class="mobile-course-card" style="border-color: ${course.color}; background: color-mix(in srgb, ${course.color} 10%, var(--color-canvas-subtle))">
-                        <div class="mobile-course-name">${escapeHtml(course.courseName)}</div>
+                        <div class="mobile-course-name">${escapeHtml(course.courseName)} ${step > 2 ? '<span style="font-size: 12px; opacity: 0.8;">(' + course.startNode + '-' + endNode + '节)</span>' : ''}</div>
                         <div class="mobile-course-details">
                             <div>时间: ${timeText}</div>
                             <div>周: ${course.startWeek}-${course.endWeek}</div>
