@@ -4,13 +4,11 @@ function createVercount() {
   if (pageViewContainer) {
     pageViewContainer.style.display = "block";
   }
-  // 网站总浏览量 - 插入到页脚
-  var runday = document.getElementById("runday");
-  if (runday) {
-    runday.insertAdjacentHTML(
-      "afterend",
-      '<span id="busuanzi_container_site_pv" style="display:none">总浏览量<span id="busuanzi_value_site_pv"></span>次 • </span>',
-    );
+  // 网站统计信息 - 插入到 site-stats 中
+  var siteStats = document.getElementById("site-stats");
+  if (siteStats) {
+    siteStats.innerHTML =
+      '总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • ';
   }
 }
 
