@@ -24,31 +24,19 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，旨在解决传统邮件订阅的复杂性和垃圾邮件拦截问题。通过创建一个专门的订阅 Issue，读者可以自行订阅并在博客更新时收到 GitHub 的邮件通知。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发布更新通知，以及在博客中添加订阅入口链接。
-
-主要优点：
-- 零成本，利用 GitHub 自带功能。
-- 高邮件可信度，避免被拦截。
-- 简单易用，无需手动管理邮件列表或处理退订逻辑。
-- 更新历史清晰可查。
+<meta name="description" content="本文介绍了利用 GitHub Issues 实现博客更新订阅的方案，旨在解决传统 RSS 和邮件通知方式的局限性。通过创建一个专门的订阅 Issue，用户可以订阅更新并通过 GitHub 的邮件功能接收通知，避免邮件被误判为垃圾邮件。具体实现包括创建订阅 Issue、配置 GitHub Actions 工作流自动发布更新通知，以及在博客中添加订阅入口链接。此方案具有零成本、高邮件可信度、易用性强等优点，且无需维护邮件列表或处理退订逻辑，适合个人博客使用。
 
 改进建议：
-1. 进一步优化邮件内容的格式和预览信息，提升用户体验。
-2. 提供更详细的过滤规则示例，适配不同博客平台的需求。
-3. 考虑扩展功能，如支持多种语言的通知模板或集成其他通知渠道（如 Telegram）。">
+1. 提供更详细的错误处理和调试方法，以便用户解决潜在问题。
+2. 增加对其他博客平台的兼容性说明，扩展适用范围。
+3. 考虑补充如何应对订阅人数增长可能导致的 GitHub API 限制问题。">
 <meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，旨在解决传统邮件订阅的复杂性和垃圾邮件拦截问题。通过创建一个专门的订阅 Issue，读者可以自行订阅并在博客更新时收到 GitHub 的邮件通知。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发布更新通知，以及在博客中添加订阅入口链接。
-
-主要优点：
-- 零成本，利用 GitHub 自带功能。
-- 高邮件可信度，避免被拦截。
-- 简单易用，无需手动管理邮件列表或处理退订逻辑。
-- 更新历史清晰可查。
+<meta property="og:description" content="本文介绍了利用 GitHub Issues 实现博客更新订阅的方案，旨在解决传统 RSS 和邮件通知方式的局限性。通过创建一个专门的订阅 Issue，用户可以订阅更新并通过 GitHub 的邮件功能接收通知，避免邮件被误判为垃圾邮件。具体实现包括创建订阅 Issue、配置 GitHub Actions 工作流自动发布更新通知，以及在博客中添加订阅入口链接。此方案具有零成本、高邮件可信度、易用性强等优点，且无需维护邮件列表或处理退订逻辑，适合个人博客使用。
 
 改进建议：
-1. 进一步优化邮件内容的格式和预览信息，提升用户体验。
-2. 提供更详细的过滤规则示例，适配不同博客平台的需求。
-3. 考虑扩展功能，如支持多种语言的通知模板或集成其他通知渠道（如 Telegram）。">
+1. 提供更详细的错误处理和调试方法，以便用户解决潜在问题。
+2. 增加对其他博客平台的兼容性说明，扩展适用范围。
+3. 考虑补充如何应对订阅人数增长可能导致的 GitHub API 限制问题。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -926,18 +914,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，旨在解决传统邮件订阅的复杂性和垃圾邮件拦截问题。通过创建一个专门的订阅 Issue，读者可以自行订阅并在博客更新时收到 GitHub 的邮件通知。具体实现包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发布更新通知，以及在博客中添加订阅入口链接。
-
-主要优点：
-- 零成本，利用 GitHub 自带功能。
-- 高邮件可信度，避免被拦截。
-- 简单易用，无需手动管理邮件列表或处理退订逻辑。
-- 更新历史清晰可查。
+    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 实现博客更新订阅的方案，旨在解决传统 RSS 和邮件通知方式的局限性。通过创建一个专门的订阅 Issue，用户可以订阅更新并通过 GitHub 的邮件功能接收通知，避免邮件被误判为垃圾邮件。具体实现包括创建订阅 Issue、配置 GitHub Actions 工作流自动发布更新通知，以及在博客中添加订阅入口链接。此方案具有零成本、高邮件可信度、易用性强等优点，且无需维护邮件列表或处理退订逻辑，适合个人博客使用。
 
 改进建议：
-1. 进一步优化邮件内容的格式和预览信息，提升用户体验。
-2. 提供更详细的过滤规则示例，适配不同博客平台的需求。
-3. 考虑扩展功能，如支持多种语言的通知模板或集成其他通知渠道（如 Telegram）。
+1. 提供更详细的错误处理和调试方法，以便用户解决潜在问题。
+2. 增加对其他博客平台的兼容性说明，扩展适用范围。
+3. 考虑补充如何应对订阅人数增长可能导致的 GitHub API 限制问题。
 </div>
 
 <div class="markdown-body" id="postBody">
