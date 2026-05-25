@@ -22,9 +22,9 @@
     "nightTheme":"dark_colorblind",
     "urlMode":"pinyin",
     "style":"",
-    "script":"<script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/GmeekVercount.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>",
-    "head":"<link href='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />",
-    "allHead":"<link href='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />",
+    "script":"<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js?v=2'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>",
+    "head":"<link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />",
+    "allHead":"<link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />",
     "indexStyle":"",
     "indexScript":"",
     "showPostSource":1,
@@ -76,27 +76,27 @@
                 {
                     "platform":"GitHub",
                     "url":"https://github.com/moretti815",
-                    "icon":"https://cdn.jsdmirror.com/gh/yxksw/icons@main/socials/github.svg"
+                    "icon":"https://jsd.liiiu.cn/gh/yxksw/icons@main/socials/github.svg"
                 },
                 {
                     "platform":"QQ",
                     "url":"https://qm.qq.com/q/FLRZlmsESI",
-                    "icon":"https://cdn.jsdmirror.com/gh/yxksw/icons@main/socials/qq.svg"
+                    "icon":"https://jsd.liiiu.cn/gh/yxksw/icons@main/socials/qq.svg"
                 },
                 {
                     "platform":"Telegram",
                     "url":"https://t.me/Kemeow0815",
-                    "icon":"https://cdn.jsdmirror.com/gh/yxksw/icons@main/socials/telegram.svg"
+                    "icon":"https://jsd.liiiu.cn/gh/yxksw/icons@main/socials/telegram.svg"
                 },
                 {
                     "platform":"BiliBili",
                     "url":"https://space.bilibili.com/3546643173477234",
-                    "icon":"https://cdn.jsdmirror.com/gh/yxksw/icons@main/socials/bilibili.svg"
+                    "icon":"https://jsd.liiiu.cn/gh/yxksw/icons@main/socials/bilibili.svg"
                 },
                 {
                     "platform":"Mail",
                     "url":"mailto:mcy@kemiaosw.top",
-                    "icon":"https://cdn.jsdmirror.com/gh/yxksw/icons@main/socials/mail.svg"
+                    "icon":"https://jsd.liiiu.cn/gh/yxksw/icons@main/socials/mail.svg"
                 }
             ]
         },
@@ -147,10 +147,10 @@
     "rewardTitle": "赞助支持",
     "rewardDesc": "如果您觉得我的内容对您有帮助...",
     "rewardSubDesc": "所有赞助将用于网站维护...",
-    "rewardAlipayQrcode": "https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/reward/alipay.avif",
-    "rewardWechatQrcode": "https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/reward/weixin.avif",
+    "rewardAlipayQrcode": "https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/reward/alipay.avif",
+    "rewardWechatQrcode": "https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/reward/weixin.avif",
     "rewardSponsorSubmitUrl": "https://github.com/kemeow0815/sponsors",
-    "rewardSponsorsDataUrl": "https://cdn.jsdmirror.com/gh/Kemeow0815/sponsors@main/data/sponsors/sponsors.json",
+    "rewardSponsorsDataUrl": "https://jsd.liiiu.cn/gh/Kemeow0815/sponsors@main/data/sponsors/sponsors.json",
     "safego": {
         "enable": true,
         "enableBase64Encode": true,
@@ -159,7 +159,7 @@
         "title": "Moretti's Blog",
         "subtitle": "安全跳转中心",
         "avatar": "https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif",
-        "domainWhitelist": ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top", "blog.2005815.xyz"],
+        "domainWhitelist": ["moretti815.github.io", "github.com", "jsd.268682.xyz", "jsd.liiiu.cn", "www.kemiaosw.top", "blog.2005815.xyz"],
         "ignoreAttrs": ["data-fancybox"]
     },
     "subscribeIssue": 2,
@@ -172,7 +172,7 @@
             "title": "画廊",
             "description": "基于github的图库自用魔改",
             "url": "https://moretti815.github.io/gallery",
-            "icon": "https://cdn.jsdmirror.com/gh/Moretti815/icons@main/icons/gallery.svg",
+            "icon": "https://jsd.liiiu.cn/gh/Moretti815/icons@main/icons/gallery.svg",
             "external": true,
             "customIcon": true
         },
@@ -180,7 +180,7 @@
             "title": "友链检测",
             "description": "检测友链的进程",
             "url": "https://kemeow0815.github.io/link-data/",
-            "icon": "https://cdn.jsdmirror.com/gh/Moretti815/icons@main/icons/MynauiMonitor.svg",
+            "icon": "https://jsd.liiiu.cn/gh/Moretti815/icons@main/icons/MynauiMonitor.svg",
             "external": true,
             "customIcon": true
         },
@@ -188,7 +188,7 @@
             "title": "友链屋",
             "description": "查看我的朋友们",
             "url": "https://www.268682.xyz",
-            "icon": "https://cdn.jsdmirror.com/gh/Moretti815/icons@main/icons/TablerFriends.svg",
+            "icon": "https://jsd.liiiu.cn/gh/Moretti815/icons@main/icons/TablerFriends.svg",
             "external": true,
             "customIcon": true
         }
