@@ -24,19 +24,13 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了如何为 Gmeek 博客添加基于 AI 的文章摘要功能，记录了实现的整体思路、具体步骤、遇到的难点以及后续优化方向。主要步骤包括开发一个调用 AI API 的模块 `Summary.py`，在博客主程序中集成该模块以生成摘要，并在前端模板中显示摘要内容。此外，通过 GitHub Actions 自动化构建流程，并配置环境变量以支持 API 调用。作者还提到了解决环境变量传递失败、API 超时和摘要过长等问题，并提出了优化方向，如支持自定义是否生成摘要、缓存结果和手动编辑摘要。
+<meta name="description" content="本文介绍了作者为 Gmeek 博客添加AI自动生成文章摘要功能的实现过程。整体思路是通过调用AI API生成摘要，并在文章页面顶部显示。具体实现包括编写调用AI API的模块`Summary.py`，在博客处理逻辑中集成摘要生成代码，更新前端模板以显示摘要，并通过GitHub Actions配置环境变量以支持自动构建。实现过程中解决了环境变量未传递、API调用超时和摘要过长等问题。最终效果是每篇文章发布时自动生成简洁摘要，提升读者阅读效率。作者还提出了后续优化方向，如支持摘要生成的自定义、缓存摘要结果和手动编辑功能。
 
-改进建议：
-1. 在生成摘要时，可考虑根据文章长度动态调整 `max_tokens`，以提高摘要的适配性。
-2. 对于超时问题，可以增加异步处理或分段请求的机制，以减少失败率。
-3. 在前端显示摘要时，可提供“展开/收起”功能，提升用户体验。">
+改进建议：可以进一步探讨如何选择和优化AI模型以提升摘要的质量，并分享一些具体的模型对比结果或性能测试数据。此外，建议详细说明如何处理超长文章的摘要生成问题，以及如何有效管理和更新缓存的摘要数据。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了如何为 Gmeek 博客添加基于 AI 的文章摘要功能，记录了实现的整体思路、具体步骤、遇到的难点以及后续优化方向。主要步骤包括开发一个调用 AI API 的模块 `Summary.py`，在博客主程序中集成该模块以生成摘要，并在前端模板中显示摘要内容。此外，通过 GitHub Actions 自动化构建流程，并配置环境变量以支持 API 调用。作者还提到了解决环境变量传递失败、API 超时和摘要过长等问题，并提出了优化方向，如支持自定义是否生成摘要、缓存结果和手动编辑摘要。
+<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加AI自动生成文章摘要功能的实现过程。整体思路是通过调用AI API生成摘要，并在文章页面顶部显示。具体实现包括编写调用AI API的模块`Summary.py`，在博客处理逻辑中集成摘要生成代码，更新前端模板以显示摘要，并通过GitHub Actions配置环境变量以支持自动构建。实现过程中解决了环境变量未传递、API调用超时和摘要过长等问题。最终效果是每篇文章发布时自动生成简洁摘要，提升读者阅读效率。作者还提出了后续优化方向，如支持摘要生成的自定义、缓存摘要结果和手动编辑功能。
 
-改进建议：
-1. 在生成摘要时，可考虑根据文章长度动态调整 `max_tokens`，以提高摘要的适配性。
-2. 对于超时问题，可以增加异步处理或分段请求的机制，以减少失败率。
-3. 在前端显示摘要时，可提供“展开/收起”功能，提升用户体验。">
+改进建议：可以进一步探讨如何选择和优化AI模型以提升摘要的质量，并分享一些具体的模型对比结果或性能测试数据。此外，建议详细说明如何处理超长文章的摘要生成问题，以及如何有效管理和更新缓存的摘要数据。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -912,12 +906,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了如何为 Gmeek 博客添加基于 AI 的文章摘要功能，记录了实现的整体思路、具体步骤、遇到的难点以及后续优化方向。主要步骤包括开发一个调用 AI API 的模块 `Summary.py`，在博客主程序中集成该模块以生成摘要，并在前端模板中显示摘要内容。此外，通过 GitHub Actions 自动化构建流程，并配置环境变量以支持 API 调用。作者还提到了解决环境变量传递失败、API 超时和摘要过长等问题，并提出了优化方向，如支持自定义是否生成摘要、缓存结果和手动编辑摘要。
+    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加AI自动生成文章摘要功能的实现过程。整体思路是通过调用AI API生成摘要，并在文章页面顶部显示。具体实现包括编写调用AI API的模块`Summary.py`，在博客处理逻辑中集成摘要生成代码，更新前端模板以显示摘要，并通过GitHub Actions配置环境变量以支持自动构建。实现过程中解决了环境变量未传递、API调用超时和摘要过长等问题。最终效果是每篇文章发布时自动生成简洁摘要，提升读者阅读效率。作者还提出了后续优化方向，如支持摘要生成的自定义、缓存摘要结果和手动编辑功能。
 
-改进建议：
-1. 在生成摘要时，可考虑根据文章长度动态调整 `max_tokens`，以提高摘要的适配性。
-2. 对于超时问题，可以增加异步处理或分段请求的机制，以减少失败率。
-3. 在前端显示摘要时，可提供“展开/收起”功能，提升用户体验。
+改进建议：可以进一步探讨如何选择和优化AI模型以提升摘要的质量，并分享一些具体的模型对比结果或性能测试数据。此外，建议详细说明如何处理超长文章的摘要生成问题，以及如何有效管理和更新缓存的摘要数据。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1858,6 +1849,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js?v=2'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
+<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
 
 </html>

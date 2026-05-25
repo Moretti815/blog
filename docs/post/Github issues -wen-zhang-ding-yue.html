@@ -24,13 +24,9 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了如何利用 GitHub Issues 实现博客订阅通知，避免传统邮件订阅的复杂性和垃圾邮件问题。方案通过创建一个专门的订阅 Issue，使用 GitHub Actions 自动在博客更新时向该 Issue 添加评论，从而触发 GitHub 的邮件通知。主要优点包括零成本、高邮件可信度、订阅简单以及清晰的更新历史。具体实现分为创建订阅 Issue、编写 GitHub Actions 工作流以及在博客中添加订阅入口三步，且提供了详细的代码和配置示例。文中还讨论了触发时机优化、通知过滤条件和邮件内容设计等细节。
-
-改进建议：可以补充关于潜在的订阅人数限制（如 GitHub 的 API 限制）以及如何解决可能的性能瓶颈。此外，可探讨如何结合其他平台（如 Twitter 或 Telegram）进一步扩展通知渠道。">
+<meta name="description" content="本文介绍了通过 GitHub Issues 实现博客更新订阅的方案，利用 GitHub 自带的订阅功能，避免传统邮件通知的复杂性和垃圾邮件问题。具体方法包括创建一个专门的订阅 Issue，配置 GitHub Actions 自动在博客更新时发布通知评论，并在博客中添加订阅入口链接。该方案的优点是零成本、邮件可信度高、操作简单，且无需维护邮件列表或处理退订逻辑。改进建议：可以进一步优化邮件内容的格式和信息量，增强用户体验；同时，针对不同博客框架（如静态博客）的适配方案可更详细说明。">
 <meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="本文介绍了如何利用 GitHub Issues 实现博客订阅通知，避免传统邮件订阅的复杂性和垃圾邮件问题。方案通过创建一个专门的订阅 Issue，使用 GitHub Actions 自动在博客更新时向该 Issue 添加评论，从而触发 GitHub 的邮件通知。主要优点包括零成本、高邮件可信度、订阅简单以及清晰的更新历史。具体实现分为创建订阅 Issue、编写 GitHub Actions 工作流以及在博客中添加订阅入口三步，且提供了详细的代码和配置示例。文中还讨论了触发时机优化、通知过滤条件和邮件内容设计等细节。
-
-改进建议：可以补充关于潜在的订阅人数限制（如 GitHub 的 API 限制）以及如何解决可能的性能瓶颈。此外，可探讨如何结合其他平台（如 Twitter 或 Telegram）进一步扩展通知渠道。">
+<meta property="og:description" content="本文介绍了通过 GitHub Issues 实现博客更新订阅的方案，利用 GitHub 自带的订阅功能，避免传统邮件通知的复杂性和垃圾邮件问题。具体方法包括创建一个专门的订阅 Issue，配置 GitHub Actions 自动在博客更新时发布通知评论，并在博客中添加订阅入口链接。该方案的优点是零成本、邮件可信度高、操作简单，且无需维护邮件列表或处理退订逻辑。改进建议：可以进一步优化邮件内容的格式和信息量，增强用户体验；同时，针对不同博客框架（如静态博客）的适配方案可更详细说明。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -908,9 +904,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了如何利用 GitHub Issues 实现博客订阅通知，避免传统邮件订阅的复杂性和垃圾邮件问题。方案通过创建一个专门的订阅 Issue，使用 GitHub Actions 自动在博客更新时向该 Issue 添加评论，从而触发 GitHub 的邮件通知。主要优点包括零成本、高邮件可信度、订阅简单以及清晰的更新历史。具体实现分为创建订阅 Issue、编写 GitHub Actions 工作流以及在博客中添加订阅入口三步，且提供了详细的代码和配置示例。文中还讨论了触发时机优化、通知过滤条件和邮件内容设计等细节。
-
-改进建议：可以补充关于潜在的订阅人数限制（如 GitHub 的 API 限制）以及如何解决可能的性能瓶颈。此外，可探讨如何结合其他平台（如 Twitter 或 Telegram）进一步扩展通知渠道。
+    <strong>AI总结:</strong> 本文介绍了通过 GitHub Issues 实现博客更新订阅的方案，利用 GitHub 自带的订阅功能，避免传统邮件通知的复杂性和垃圾邮件问题。具体方法包括创建一个专门的订阅 Issue，配置 GitHub Actions 自动在博客更新时发布通知评论，并在博客中添加订阅入口链接。该方案的优点是零成本、邮件可信度高、操作简单，且无需维护邮件列表或处理退订逻辑。改进建议：可以进一步优化邮件内容的格式和信息量，增强用户体验；同时，针对不同博客框架（如静态博客）的适配方案可更详细说明。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1853,6 +1847,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js?v=2'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
+<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
 
 </html>
