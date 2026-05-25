@@ -337,7 +337,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         const maxAttempts = 30; // 最多等待3秒
         
         while (attempts < maxAttempts) {
-            const sitePvEl = document.getElementById('vercount_value_site_pv');
+            const sitePvEl = document.getElementById('busuanzi_value_site_pv');
             if (sitePvEl && sitePvEl.textContent) {
                 const pageviews = sitePvEl.textContent.trim();
                 const statsText = `欢迎 我是 Moretti 你是本站迎来的第${pageviews}次访问`;
@@ -753,7 +753,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
     <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://blog.2005815.xyz">Moretti's Blog</a></div>
 <div id="footer2">
-    <span id="runday"></span><span id="site-stats"><span id="vercount_container_site_pv" style="display:none">总浏览量<span id="vercount_value_site_pv"></span>次 • </span><span id="vercount_container_site_uv" style="display:none">访客量<span id="vercount_value_site_uv"></span>人 • </span></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
+    <span id="runday"></span><span id="site-stats">总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
 </div>
 
 <script>

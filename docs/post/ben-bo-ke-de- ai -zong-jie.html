@@ -24,13 +24,13 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 文章总结功能的实现过程。具体步骤包括：开发调用 AI API 的模块（`Summary.py`），在博客生成脚本中集成摘要生成逻辑，修改前端模板以展示摘要，并在 GitHub Actions 中配置环境变量以支持自动构建。为应对可能的问题，作者设置了超时回退机制和摘要长度限制，同时记录了踩坑经验，如环境变量未传递、API 超时及摘要过长等问题。最终实现了每篇文章自动生成和展示 AI 摘要的功能，提升了读者的阅读体验。后续优化方向包括支持自定义摘要生成、缓存摘要结果及手动编辑摘要。
+<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、遇到的问题及解决办法，以及后续优化方向。主要过程包括：编写调用 AI API 的 `Summary.py` 模块，支持从环境变量读取配置和处理多种 API key 与模型；在博客主程序 `Gmeek.py` 中集成摘要生成逻辑，优先使用 AI 摘要，失败时回退到原有的手动摘要方式；在前端模板中新增摘要展示区域；通过 GitHub Actions 配置环境变量以支持自动构建。作者还记录了几个关键问题及其解决方法，如环境变量未正确传递、API 调用超时及生成摘要过长的问题。最终实现的功能能够在文章发布时自动生成简洁摘要，并在服务不可用时安全回退。
 
-改进建议：可以进一步详细说明如何选择和测试 AI 模型，以帮助读者更好地理解模型对摘要质量的影响。此外，增加对摘要缓存机制的技术细节描述会更具指导性。">
+改进建议：可以进一步优化摘要生成功能，例如通过文章标签控制是否生成摘要、缓存生成的摘要以减少重复调用、以及支持手动编辑摘要内容。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 文章总结功能的实现过程。具体步骤包括：开发调用 AI API 的模块（`Summary.py`），在博客生成脚本中集成摘要生成逻辑，修改前端模板以展示摘要，并在 GitHub Actions 中配置环境变量以支持自动构建。为应对可能的问题，作者设置了超时回退机制和摘要长度限制，同时记录了踩坑经验，如环境变量未传递、API 超时及摘要过长等问题。最终实现了每篇文章自动生成和展示 AI 摘要的功能，提升了读者的阅读体验。后续优化方向包括支持自定义摘要生成、缓存摘要结果及手动编辑摘要。
+<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、遇到的问题及解决办法，以及后续优化方向。主要过程包括：编写调用 AI API 的 `Summary.py` 模块，支持从环境变量读取配置和处理多种 API key 与模型；在博客主程序 `Gmeek.py` 中集成摘要生成逻辑，优先使用 AI 摘要，失败时回退到原有的手动摘要方式；在前端模板中新增摘要展示区域；通过 GitHub Actions 配置环境变量以支持自动构建。作者还记录了几个关键问题及其解决方法，如环境变量未正确传递、API 调用超时及生成摘要过长的问题。最终实现的功能能够在文章发布时自动生成简洁摘要，并在服务不可用时安全回退。
 
-改进建议：可以进一步详细说明如何选择和测试 AI 模型，以帮助读者更好地理解模型对摘要质量的影响。此外，增加对摘要缓存机制的技术细节描述会更具指导性。">
+改进建议：可以进一步优化摘要生成功能，例如通过文章标签控制是否生成摘要、缓存生成的摘要以减少重复调用、以及支持手动编辑摘要内容。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -492,7 +492,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         const maxAttempts = 30; // 最多等待3秒
         
         while (attempts < maxAttempts) {
-            const sitePvEl = document.getElementById('vercount_value_site_pv');
+            const sitePvEl = document.getElementById('busuanzi_value_site_pv');
             if (sitePvEl && sitePvEl.textContent) {
                 const pageviews = sitePvEl.textContent.trim();
                 const statsText = `欢迎 我是 Moretti 你是本站迎来的第${pageviews}次访问`;
@@ -906,9 +906,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 文章总结功能的实现过程。具体步骤包括：开发调用 AI API 的模块（`Summary.py`），在博客生成脚本中集成摘要生成逻辑，修改前端模板以展示摘要，并在 GitHub Actions 中配置环境变量以支持自动构建。为应对可能的问题，作者设置了超时回退机制和摘要长度限制，同时记录了踩坑经验，如环境变量未传递、API 超时及摘要过长等问题。最终实现了每篇文章自动生成和展示 AI 摘要的功能，提升了读者的阅读体验。后续优化方向包括支持自定义摘要生成、缓存摘要结果及手动编辑摘要。
+    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、遇到的问题及解决办法，以及后续优化方向。主要过程包括：编写调用 AI API 的 `Summary.py` 模块，支持从环境变量读取配置和处理多种 API key 与模型；在博客主程序 `Gmeek.py` 中集成摘要生成逻辑，优先使用 AI 摘要，失败时回退到原有的手动摘要方式；在前端模板中新增摘要展示区域；通过 GitHub Actions 配置环境变量以支持自动构建。作者还记录了几个关键问题及其解决方法，如环境变量未正确传递、API 调用超时及生成摘要过长的问题。最终实现的功能能够在文章发布时自动生成简洁摘要，并在服务不可用时安全回退。
 
-改进建议：可以进一步详细说明如何选择和测试 AI 模型，以帮助读者更好地理解模型对摘要质量的影响。此外，增加对摘要缓存机制的技术细节描述会更具指导性。
+改进建议：可以进一步优化摘要生成功能，例如通过文章标签控制是否生成摘要、缓存生成的摘要以减少重复调用、以及支持手动编辑摘要内容。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1297,7 +1297,7 @@ else:
 </div>
     <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://blog.2005815.xyz">Moretti's Blog</a></div>
 <div id="footer2">
-    <span id="runday"></span><span id="site-stats"><span id="vercount_container_site_pv" style="display:none">总浏览量<span id="vercount_value_site_pv"></span>次 • </span><span id="vercount_container_site_uv" style="display:none">访客量<span id="vercount_value_site_uv"></span>人 • </span></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
+    <span id="runday"></span><span id="site-stats">总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
 </div>
 
 <script>
