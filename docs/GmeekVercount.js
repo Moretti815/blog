@@ -1,6 +1,6 @@
 function createVercount() {
-  // 文章页面浏览量 - 显示 vercount_container_page_pv
-  var pageViewContainer = document.getElementById("vercount_container_page_pv");
+  // 文章页面浏览量 - 插入到 post-meta-footer 中
+  var pageViewContainer = document.getElementById("busuanzi_container_page_pv");
   if (pageViewContainer) {
     pageViewContainer.style.display = "block";
   }
@@ -8,10 +8,8 @@ function createVercount() {
 
 document.addEventListener("DOMContentLoaded", function () {
   createVercount();
-  // 使用 Vercount 官方推荐的脚本地址
   var element = document.createElement("script");
-  element.src = "https://events.vercount.one/js";
-  element.defer = true;
+  element.src = "https://vercount.one/js";
   document.head.appendChild(element);
   console.log(
     "\n %c GmeekVercount Plugins https://github.com/Meekdai/Gmeek \n",
