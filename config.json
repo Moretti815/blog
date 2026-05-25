@@ -22,7 +22,7 @@
     "nightTheme":"dark_colorblind",
     "urlMode":"pinyin",
     "style":"",
-    "script":"<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js?v=2'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>",
+    "script":"<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>",
     "head":"<link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />",
     "allHead":"<link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />",
     "indexStyle":"",
