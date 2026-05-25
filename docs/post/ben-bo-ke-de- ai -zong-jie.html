@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
-    <link href='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />
+    <link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />
     <link rel="icon" href="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif"><script>
         // 获取系统主题偏好
         function getSystemTheme() {
@@ -24,20 +24,26 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤以及遇到的问题和解决方法。通过调用 AI API，在文章发布或更新时生成简洁的摘要，并显示在文章页面顶部。实现过程包括编写调用 AI 接口的模块、集成到博客代码、修改前端模板显示摘要，以及在 GitHub Actions 中配置环境变量以支持自动构建。此外，作者记录了常见问题及解决方案，如环境变量未正确传递、API 调用超时和摘要过长等问题，并提出了后续优化方向，如支持自定义是否生成摘要、缓存摘要结果以及手动编辑摘要。
+<meta name="description" content="本文介绍了如何为 Gmeek 博客添加基于 AI 的文章摘要功能，记录了实现的整体思路、具体步骤、遇到的难点以及后续优化方向。主要步骤包括开发一个调用 AI API 的模块 `Summary.py`，在博客主程序中集成该模块以生成摘要，并在前端模板中显示摘要内容。此外，通过 GitHub Actions 自动化构建流程，并配置环境变量以支持 API 调用。作者还提到了解决环境变量传递失败、API 超时和摘要过长等问题，并提出了优化方向，如支持自定义是否生成摘要、缓存结果和手动编辑摘要。
 
-改进建议：可以进一步详细说明如何选择和评估不同的免费 AI API，以帮助读者选择适合的模型，同时补充关于性能优化和错误处理的更多细节。">
+改进建议：
+1. 在生成摘要时，可考虑根据文章长度动态调整 `max_tokens`，以提高摘要的适配性。
+2. 对于超时问题，可以增加异步处理或分段请求的机制，以减少失败率。
+3. 在前端显示摘要时，可提供“展开/收起”功能，提升用户体验。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤以及遇到的问题和解决方法。通过调用 AI API，在文章发布或更新时生成简洁的摘要，并显示在文章页面顶部。实现过程包括编写调用 AI 接口的模块、集成到博客代码、修改前端模板显示摘要，以及在 GitHub Actions 中配置环境变量以支持自动构建。此外，作者记录了常见问题及解决方案，如环境变量未正确传递、API 调用超时和摘要过长等问题，并提出了后续优化方向，如支持自定义是否生成摘要、缓存摘要结果以及手动编辑摘要。
+<meta property="og:description" content="本文介绍了如何为 Gmeek 博客添加基于 AI 的文章摘要功能，记录了实现的整体思路、具体步骤、遇到的难点以及后续优化方向。主要步骤包括开发一个调用 AI API 的模块 `Summary.py`，在博客主程序中集成该模块以生成摘要，并在前端模板中显示摘要内容。此外，通过 GitHub Actions 自动化构建流程，并配置环境变量以支持 API 调用。作者还提到了解决环境变量传递失败、API 超时和摘要过长等问题，并提出了优化方向，如支持自定义是否生成摘要、缓存结果和手动编辑摘要。
 
-改进建议：可以进一步详细说明如何选择和评估不同的免费 AI API，以帮助读者选择适合的模型，同时补充关于性能优化和错误处理的更多细节。">
+改进建议：
+1. 在生成摘要时，可考虑根据文章长度动态调整 `max_tokens`，以提高摘要的适配性。
+2. 对于超时问题，可以增加异步处理或分段请求的机制，以减少失败率。
+3. 在前端显示摘要时，可提供“展开/收起”功能，提升用户体验。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
 <title>本博客的 ai 总结</title>
 
 <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
-<link href='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />
+<link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />
 
 </head>
 <style>
@@ -492,7 +498,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         const maxAttempts = 30; // 最多等待3秒
         
         while (attempts < maxAttempts) {
-            const sitePvEl = document.getElementById('busuanzi_value_site_pv');
+            const sitePvEl = document.getElementById('vercount_value_site_pv');
             if (sitePvEl && sitePvEl.textContent) {
                 const pageviews = sitePvEl.textContent.trim();
                 const statsText = `欢迎 我是 Moretti 你是本站迎来的第${pageviews}次访问`;
@@ -906,9 +912,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤以及遇到的问题和解决方法。通过调用 AI API，在文章发布或更新时生成简洁的摘要，并显示在文章页面顶部。实现过程包括编写调用 AI 接口的模块、集成到博客代码、修改前端模板显示摘要，以及在 GitHub Actions 中配置环境变量以支持自动构建。此外，作者记录了常见问题及解决方案，如环境变量未正确传递、API 调用超时和摘要过长等问题，并提出了后续优化方向，如支持自定义是否生成摘要、缓存摘要结果以及手动编辑摘要。
+    <strong>AI总结:</strong> 本文介绍了如何为 Gmeek 博客添加基于 AI 的文章摘要功能，记录了实现的整体思路、具体步骤、遇到的难点以及后续优化方向。主要步骤包括开发一个调用 AI API 的模块 `Summary.py`，在博客主程序中集成该模块以生成摘要，并在前端模板中显示摘要内容。此外，通过 GitHub Actions 自动化构建流程，并配置环境变量以支持 API 调用。作者还提到了解决环境变量传递失败、API 超时和摘要过长等问题，并提出了优化方向，如支持自定义是否生成摘要、缓存结果和手动编辑摘要。
 
-改进建议：可以进一步详细说明如何选择和评估不同的免费 AI API，以帮助读者选择适合的模型，同时补充关于性能优化和错误处理的更多细节。
+改进建议：
+1. 在生成摘要时，可考虑根据文章长度动态调整 `max_tokens`，以提高摘要的适配性。
+2. 对于超时问题，可以增加异步处理或分段请求的机制，以减少失败率。
+3. 在前端显示摘要时，可提供“展开/收起”功能，提升用户体验。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1297,7 +1306,7 @@ else:
 </div>
     <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://blog.2005815.xyz">Moretti's Blog</a></div>
 <div id="footer2">
-    <span id="runday"></span><span id="site-stats">总浏览量<span id="busuanzi_value_site_pv">0</span>次 • 访客量<span id="busuanzi_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
+    <span id="runday"></span><span id="site-stats">总浏览量<span id="vercount_value_site_pv">0</span>次 • 访客量<span id="vercount_value_site_uv">0</span>人 • </span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span><span> • <a href="https://github.com/moretti815/blog/issues/2" target="_blank" title="订阅博客更新">🔔 订阅更新</a></span>
 </div>
 
 <script>
@@ -1601,7 +1610,7 @@ if (theme === "auto") {
     const SAFEGO_CONFIG = {
         enableBase64: true,
         goPagePath: 'https://blog.2005815.xyz/go.html',
-        domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "cdn.jsdmirror.com", "www.kemiaosw.top", "blog.2005815.xyz"],
+        domainWhitelist: ["moretti815.github.io", "github.com", "jsd.268682.xyz", "jsd.liiiu.cn", "www.kemiaosw.top", "blog.2005815.xyz"],
         ignoreAttrs: ["data-fancybox"],
         enableTargetBlank: true
     };
@@ -1849,6 +1858,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-<script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/GmeekVercount.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://cdn.jsdmirror.com/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
+<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js?v=2'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
 
 </html>
