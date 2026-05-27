@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
-    <link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />
+    <link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' /><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js?v=2'></script>
     <link rel="icon" href="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif"><script>
         // 获取系统主题偏好
         function getSystemTheme() {
@@ -24,13 +24,21 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，解决了传统邮件通知易被拦截、自建邮件订阅复杂等问题。其核心思路是创建一个专门的订阅 Issue，通过 GitHub Actions 在博客更新时自动向该 Issue 添加评论，订阅者即可收到 GitHub 的邮件通知。此方法的优点包括零成本、高邮件可信度、简单易用和更新历史透明化。具体实现分为以下步骤：创建订阅 Issue、编写 GitHub Actions 工作流、配置博客显示订阅入口。此外，文章还提供了触发时机优化、通知过滤和邮件内容设计等细节建议。
+<meta name="description" content="本文介绍了通过 GitHub Issues 实现博客更新通知的方案。利用 GitHub Issues 的订阅功能，博主可以在博客更新时自动向指定的通知 Issue 添加评论，订阅该 Issue 的用户会收到 GitHub 的邮件通知。此方法的优势包括零成本、邮件可信度高、操作简单以及更新历史透明。具体实现步骤包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发布通知，以及在博客中添加订阅入口链接。
 
-改进建议：可以进一步说明如何处理可能的订阅者隐私问题，以及如何应对 GitHub 政策变更可能带来的影响。同时，可补充更多适用场景和潜在限制，以便读者更全面地评估此方案的适用性。">
+改进建议：
+1. 考虑为订阅 Issue 添加更明确的说明，吸引读者订阅。
+2. 增强工作流的灵活性，例如支持多种触发条件以适应不同的博客框架。
+3. 提供更详细的邮件内容模板，提升邮件通知的吸引力。
+4. 针对不同读者群体，探索更便捷的订阅方式（如非 GitHub 用户的替代方案）。">
 <meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，解决了传统邮件通知易被拦截、自建邮件订阅复杂等问题。其核心思路是创建一个专门的订阅 Issue，通过 GitHub Actions 在博客更新时自动向该 Issue 添加评论，订阅者即可收到 GitHub 的邮件通知。此方法的优点包括零成本、高邮件可信度、简单易用和更新历史透明化。具体实现分为以下步骤：创建订阅 Issue、编写 GitHub Actions 工作流、配置博客显示订阅入口。此外，文章还提供了触发时机优化、通知过滤和邮件内容设计等细节建议。
+<meta property="og:description" content="本文介绍了通过 GitHub Issues 实现博客更新通知的方案。利用 GitHub Issues 的订阅功能，博主可以在博客更新时自动向指定的通知 Issue 添加评论，订阅该 Issue 的用户会收到 GitHub 的邮件通知。此方法的优势包括零成本、邮件可信度高、操作简单以及更新历史透明。具体实现步骤包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发布通知，以及在博客中添加订阅入口链接。
 
-改进建议：可以进一步说明如何处理可能的订阅者隐私问题，以及如何应对 GitHub 政策变更可能带来的影响。同时，可补充更多适用场景和潜在限制，以便读者更全面地评估此方案的适用性。">
+改进建议：
+1. 考虑为订阅 Issue 添加更明确的说明，吸引读者订阅。
+2. 增强工作流的灵活性，例如支持多种触发条件以适应不同的博客框架。
+3. 提供更详细的邮件内容模板，提升邮件通知的吸引力。
+4. 针对不同读者群体，探索更便捷的订阅方式（如非 GitHub 用户的替代方案）。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -908,9 +916,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 实现博客订阅通知的方案，解决了传统邮件通知易被拦截、自建邮件订阅复杂等问题。其核心思路是创建一个专门的订阅 Issue，通过 GitHub Actions 在博客更新时自动向该 Issue 添加评论，订阅者即可收到 GitHub 的邮件通知。此方法的优点包括零成本、高邮件可信度、简单易用和更新历史透明化。具体实现分为以下步骤：创建订阅 Issue、编写 GitHub Actions 工作流、配置博客显示订阅入口。此外，文章还提供了触发时机优化、通知过滤和邮件内容设计等细节建议。
+    <strong>AI总结:</strong> 本文介绍了通过 GitHub Issues 实现博客更新通知的方案。利用 GitHub Issues 的订阅功能，博主可以在博客更新时自动向指定的通知 Issue 添加评论，订阅该 Issue 的用户会收到 GitHub 的邮件通知。此方法的优势包括零成本、邮件可信度高、操作简单以及更新历史透明。具体实现步骤包括创建订阅 Issue、编写 GitHub Actions 工作流以自动发布通知，以及在博客中添加订阅入口链接。
 
-改进建议：可以进一步说明如何处理可能的订阅者隐私问题，以及如何应对 GitHub 政策变更可能带来的影响。同时，可补充更多适用场景和潜在限制，以便读者更全面地评估此方案的适用性。
+改进建议：
+1. 考虑为订阅 Issue 添加更明确的说明，吸引读者订阅。
+2. 增强工作流的灵活性，例如支持多种触发条件以适应不同的博客框架。
+3. 提供更详细的邮件内容模板，提升邮件通知的吸引力。
+4. 针对不同读者群体，探索更便捷的订阅方式（如非 GitHub 用户的替代方案）。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1853,6 +1865,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/GmeekVercount.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
+<script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/TOC/articletoc.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Lightbox/lightbox.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/oneko.js/oneko.js'></script><script src='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/Mermaid/GmeekMermaid.js'></script>
 
 </html>
