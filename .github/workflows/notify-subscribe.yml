@@ -5,6 +5,10 @@ on:
   issues:
     types: [labeled]
 
+concurrency:
+  group: notify-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 jobs:
   notify:
     runs-on: ubuntu-latest
@@ -21,6 +25,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const fs = require('fs');
             const issue = context.payload.issue;
             
             // 检查是否是博客文章（有特定标签或排除某些标签）
@@ -30,6 +35,34 @@ jobs:
             // 如果 issue 被关闭或者是 talk 标签，不发送通知
             if (issue.state === 'closed' || labels.includes('talk')) {
               console.log('Issue is closed or is a talk post, skipping notification.');
+              return;
+            }
+            
+            // 从 config.json 读取订阅 Issue 编号
+            let subscribeIssueNumber = 1; // 默认值
+            try {
+              const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
+              subscribeIssueNumber = config.subscribeIssue || subscribeIssueNumber;
+            } catch (e) {
+              console.log('Could not read subscribeIssue from config.json, using default value');
+            }
+            
+            // 检查最近 5 分钟内是否已发送过相同文章的通知（防止多标签触发重复通知）
+            const { data: recentComments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: subscribeIssueNumber,
+              per_page: 10
+            });
+            
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+            const recentNotification = recentComments.find(comment => {
+              const commentTime = new Date(comment.created_at);
+              return commentTime > fiveMinutesAgo && comment.body.includes(title);
+            });
+            
+            if (recentNotification) {
+              console.log(`Notification for "${title}" was already sent within the last 5 minutes, skipping.`);
               return;
             }
             
@@ -53,7 +86,6 @@ jobs:
             // 构建文章 URL
             // Gmeek 的文章 URL 格式通常是: homeUrl/post/文章标题.html
             // 需要从 config.json 获取 homeUrl
-            const fs = require('fs');
             let homeUrl = 'https://moretti815.github.io/blog';
             try {
               const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
@@ -98,15 +130,6 @@ jobs:
             body += `📅 发布时间：${timeStr} (UTC+8)\n\n`;
             body += '---\n';
             body += '*此通知由 GitHub Actions 自动发布*\n';
-            
-            // 从 config.json 读取订阅 Issue 编号
-            let subscribeIssueNumber = 1; // 默认值
-            try {
-              const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
-              subscribeIssueNumber = config.subscribeIssue || subscribeIssueNumber;
-            } catch (e) {
-              console.log('Could not read subscribeIssue from config.json, using default value');
-            }
             
             // 发布评论到订阅 Issue
             await github.rest.issues.createComment({
