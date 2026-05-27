@@ -24,13 +24,9 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示方式、GitHub Actions 配置以及开发中遇到的主要问题和改进措施。具体来说，作者通过调用 AI API 自动生成文章摘要并显示在文章顶部，同时设置了回退机制以保证功能的稳定性。文章还分享了开发中遇到的环境变量配置、API超时和摘要长度控制等问题，并提出了后续优化方向，如支持自定义摘要生成、缓存摘要结果及手动编辑摘要。
-
-改进建议：可以进一步详细说明不同 AI 模型的表现差异及其对摘要质量的影响，同时提供一些示例对比以便更直观地展示功能效果。">
+<meta name="description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示和相关优化。其主要步骤为：编写调用 AI API 的模块 `Summary.py`，通过环境变量配置接口地址、密钥和模型；在博客主程序中调用该模块生成摘要，并在前端页面显示；通过 GitHub Actions 配置环境变量实现自动化构建。作者还记录了在环境变量传递、API 调用超时及摘要长度控制等方面遇到的问题及解决方案。最终实现了文章发布时自动生成简洁摘要的功能，并提供了失败时的回退方案，同时提出了支持自定义摘要生成、结果缓存和手动编辑的优化方向。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示方式、GitHub Actions 配置以及开发中遇到的主要问题和改进措施。具体来说，作者通过调用 AI API 自动生成文章摘要并显示在文章顶部，同时设置了回退机制以保证功能的稳定性。文章还分享了开发中遇到的环境变量配置、API超时和摘要长度控制等问题，并提出了后续优化方向，如支持自定义摘要生成、缓存摘要结果及手动编辑摘要。
-
-改进建议：可以进一步详细说明不同 AI 模型的表现差异及其对摘要质量的影响，同时提供一些示例对比以便更直观地展示功能效果。">
+<meta property="og:description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示和相关优化。其主要步骤为：编写调用 AI API 的模块 `Summary.py`，通过环境变量配置接口地址、密钥和模型；在博客主程序中调用该模块生成摘要，并在前端页面显示；通过 GitHub Actions 配置环境变量实现自动化构建。作者还记录了在环境变量传递、API 调用超时及摘要长度控制等方面遇到的问题及解决方案。最终实现了文章发布时自动生成简洁摘要的功能，并提供了失败时的回退方案，同时提出了支持自定义摘要生成、结果缓存和手动编辑的优化方向。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -906,9 +902,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示方式、GitHub Actions 配置以及开发中遇到的主要问题和改进措施。具体来说，作者通过调用 AI API 自动生成文章摘要并显示在文章顶部，同时设置了回退机制以保证功能的稳定性。文章还分享了开发中遇到的环境变量配置、API超时和摘要长度控制等问题，并提出了后续优化方向，如支持自定义摘要生成、缓存摘要结果及手动编辑摘要。
-
-改进建议：可以进一步详细说明不同 AI 模型的表现差异及其对摘要质量的影响，同时提供一些示例对比以便更直观地展示功能效果。
+    <strong>AI总结:</strong> 本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端展示和相关优化。其主要步骤为：编写调用 AI API 的模块 `Summary.py`，通过环境变量配置接口地址、密钥和模型；在博客主程序中调用该模块生成摘要，并在前端页面显示；通过 GitHub Actions 配置环境变量实现自动化构建。作者还记录了在环境变量传递、API 调用超时及摘要长度控制等方面遇到的问题及解决方案。最终实现了文章发布时自动生成简洁摘要的功能，并提供了失败时的回退方案，同时提出了支持自定义摘要生成、结果缓存和手动编辑的优化方向。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1036,7 +1030,7 @@ else:
 <div style="text-align: center; margin: 24px 0; padding: 12px; color: var(--color-fg-muted); font-size: 14px;">
     ❤️ 转载文章请注明出处，谢谢！❤️
 </div><nav class="paginate-container" aria-label="Pagination">
-    <div class="pagination"><a class="previous_page" rel="previous" href="https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html" aria-label="Previous Page">Github issues 文章订阅</a><!-- <span style="width:200px" aria-disabled="true"></span> --></div>
+    <div class="pagination"><a class="previous_page" rel="previous" href="https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html" aria-label="Previous Page">Github issues 文章订阅</a><!-- <span style="width:200px" aria-disabled="true"></span> --><a class="next_page" rel="next" href="https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html" aria-label="Next Page">Petal Note：写给喜欢碎碎念的你</a></div>
 </nav><!-- 文章版权信息 -->
 <div class="post-copyright">
     <div class="post-copyright-header">
