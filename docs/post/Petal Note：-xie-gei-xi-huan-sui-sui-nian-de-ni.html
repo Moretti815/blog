@@ -24,13 +24,13 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了一个名为 Petal Note 的极简日记框架，适合记录日常零碎想法。Petal Note 的特点是无需数据库和后端，所有数据以明文存储，用户可以通过简单的配置和部署，在 Vercel、Cloudflare Pages 或 GitHub Pages 上免费搭建自己的日记站。文章详细说明了从初始化项目、配置文件、书写日记到部署的具体步骤，同时提供了密码保护私密内容、网页编辑器、字体更换、自定义语法等功能的实现方法。此外，还介绍了通过 GitHub API 实现无服务器更新的高级用法。作者认为 Petal Note 的设计轻量化且非常实用，特别适合随性记录和保护隐私。
+<meta name="description" content="本文介绍了一个名为 Petal Note 的极简日记框架，其特点是无需复杂的博客系统，仅需一个 TXT 文件即可记录日常想法，数据以明文存储且易于编辑。用户可通过简单步骤在 Vercel、Cloudflare Pages 或 GitHub Pages 免费部署。功能包括标签导航、私密日记加密、网页编辑器及图片上传支持等，同时支持个性化定制，如字体更换、自定义语法和提示框样式等。进阶用户还可通过无服务器方式实现即时更新。文章还分享了作者使用 Petal Note 的感受，强调其轻量、自由和加密功能的实用性。
 
-改进建议：可以增加更多实际应用场景的展示，例如如何利用 Petal Note 记录特定主题的内容（如旅行日志、学习笔记等），以吸引更广泛的用户群体。同时，可补充更多关于安全性的细节，增强用户对隐私保护的信任感。">
+建议改进：可以补充实际用户案例或截图以更直观地展示使用效果，并进一步详细说明加密功能的技术细节和安全性。">
 <meta property="og:title" content="Petal Note：写给喜欢碎碎念的你">
-<meta property="og:description" content="本文介绍了一个名为 Petal Note 的极简日记框架，适合记录日常零碎想法。Petal Note 的特点是无需数据库和后端，所有数据以明文存储，用户可以通过简单的配置和部署，在 Vercel、Cloudflare Pages 或 GitHub Pages 上免费搭建自己的日记站。文章详细说明了从初始化项目、配置文件、书写日记到部署的具体步骤，同时提供了密码保护私密内容、网页编辑器、字体更换、自定义语法等功能的实现方法。此外，还介绍了通过 GitHub API 实现无服务器更新的高级用法。作者认为 Petal Note 的设计轻量化且非常实用，特别适合随性记录和保护隐私。
+<meta property="og:description" content="本文介绍了一个名为 Petal Note 的极简日记框架，其特点是无需复杂的博客系统，仅需一个 TXT 文件即可记录日常想法，数据以明文存储且易于编辑。用户可通过简单步骤在 Vercel、Cloudflare Pages 或 GitHub Pages 免费部署。功能包括标签导航、私密日记加密、网页编辑器及图片上传支持等，同时支持个性化定制，如字体更换、自定义语法和提示框样式等。进阶用户还可通过无服务器方式实现即时更新。文章还分享了作者使用 Petal Note 的感受，强调其轻量、自由和加密功能的实用性。
 
-改进建议：可以增加更多实际应用场景的展示，例如如何利用 Petal Note 记录特定主题的内容（如旅行日志、学习笔记等），以吸引更广泛的用户群体。同时，可补充更多关于安全性的细节，增强用户对隐私保护的信任感。">
+建议改进：可以补充实际用户案例或截图以更直观地展示使用效果，并进一步详细说明加密功能的技术细节和安全性。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -906,9 +906,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-27 19:56:09</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了一个名为 Petal Note 的极简日记框架，适合记录日常零碎想法。Petal Note 的特点是无需数据库和后端，所有数据以明文存储，用户可以通过简单的配置和部署，在 Vercel、Cloudflare Pages 或 GitHub Pages 上免费搭建自己的日记站。文章详细说明了从初始化项目、配置文件、书写日记到部署的具体步骤，同时提供了密码保护私密内容、网页编辑器、字体更换、自定义语法等功能的实现方法。此外，还介绍了通过 GitHub API 实现无服务器更新的高级用法。作者认为 Petal Note 的设计轻量化且非常实用，特别适合随性记录和保护隐私。
+    <strong>AI总结:</strong> 本文介绍了一个名为 Petal Note 的极简日记框架，其特点是无需复杂的博客系统，仅需一个 TXT 文件即可记录日常想法，数据以明文存储且易于编辑。用户可通过简单步骤在 Vercel、Cloudflare Pages 或 GitHub Pages 免费部署。功能包括标签导航、私密日记加密、网页编辑器及图片上传支持等，同时支持个性化定制，如字体更换、自定义语法和提示框样式等。进阶用户还可通过无服务器方式实现即时更新。文章还分享了作者使用 Petal Note 的感受，强调其轻量、自由和加密功能的实用性。
 
-改进建议：可以增加更多实际应用场景的展示，例如如何利用 Petal Note 记录特定主题的内容（如旅行日志、学习笔记等），以吸引更广泛的用户群体。同时，可补充更多关于安全性的细节，增强用户对隐私保护的信任感。
+建议改进：可以补充实际用户案例或截图以更直观地展示使用效果，并进一步详细说明加密功能的技术细节和安全性。
 </div>
 
 <div class="markdown-body" id="postBody">
