@@ -24,19 +24,19 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端集成以及潜在问题的解决方案。作者通过调用 AI 接口生成文章摘要，并在文章页面顶部展示，优化了用户的阅读体验。实现细节包括创建调用 AI 接口的模块、在博客生成脚本中集成摘要功能、前端显示摘要内容，以及在 GitHub Actions 中配置环境变量以支持自动构建。作者还分享了解决环境变量未传递、API 调用超时和摘要过长等问题的经验。最终效果是每篇新文章均能自动生成简洁的 AI 摘要，提升了博客的可读性和用户体验。
+<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体技术实现和遇到的问题解决方案。功能通过调用 AI API，在文章发布或更新时生成简洁的摘要并显示在文章顶部，若调用失败则回退到使用文章首句作为摘要。实现步骤包括编写调用 AI 接口的模块、集成到博客生成逻辑、在前端模板中显示摘要，以及配置 GitHub Actions 传递 API 所需的环境变量。作者还分享了开发中遇到的环境变量配置、API 调用超时和摘要长度控制等问题，并提出了后续优化方向，如支持自定义生成摘要、缓存摘要和手动编辑功能。
 
 改进建议：
-1. 增加对摘要生成的手动编辑功能，提升摘要的准确性和个性化。
-2. 实现摘要结果的缓存机制，减少重复生成的资源消耗。
-3. 增加通过标签控制是否生成摘要的功能，灵活适配不同文章需求。">
+1. 在文章中详细说明如何选择和测试不同的 AI 模型，以帮助用户优化摘要质量。
+2. 对安全性问题进行补充说明，例如如何保护 API 密钥。
+3. 提供更多关于性能优化的建议，特别是在处理长文章时的解决方案。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端集成以及潜在问题的解决方案。作者通过调用 AI 接口生成文章摘要，并在文章页面顶部展示，优化了用户的阅读体验。实现细节包括创建调用 AI 接口的模块、在博客生成脚本中集成摘要功能、前端显示摘要内容，以及在 GitHub Actions 中配置环境变量以支持自动构建。作者还分享了解决环境变量未传递、API 调用超时和摘要过长等问题的经验。最终效果是每篇新文章均能自动生成简洁的 AI 摘要，提升了博客的可读性和用户体验。
+<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体技术实现和遇到的问题解决方案。功能通过调用 AI API，在文章发布或更新时生成简洁的摘要并显示在文章顶部，若调用失败则回退到使用文章首句作为摘要。实现步骤包括编写调用 AI 接口的模块、集成到博客生成逻辑、在前端模板中显示摘要，以及配置 GitHub Actions 传递 API 所需的环境变量。作者还分享了开发中遇到的环境变量配置、API 调用超时和摘要长度控制等问题，并提出了后续优化方向，如支持自定义生成摘要、缓存摘要和手动编辑功能。
 
 改进建议：
-1. 增加对摘要生成的手动编辑功能，提升摘要的准确性和个性化。
-2. 实现摘要结果的缓存机制，减少重复生成的资源消耗。
-3. 增加通过标签控制是否生成摘要的功能，灵活适配不同文章需求。">
+1. 在文章中详细说明如何选择和测试不同的 AI 模型，以帮助用户优化摘要质量。
+2. 对安全性问题进行补充说明，例如如何保护 API 密钥。
+3. 提供更多关于性能优化的建议，特别是在处理长文章时的解决方案。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -912,12 +912,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端集成以及潜在问题的解决方案。作者通过调用 AI 接口生成文章摘要，并在文章页面顶部展示，优化了用户的阅读体验。实现细节包括创建调用 AI 接口的模块、在博客生成脚本中集成摘要功能、前端显示摘要内容，以及在 GitHub Actions 中配置环境变量以支持自动构建。作者还分享了解决环境变量未传递、API 调用超时和摘要过长等问题的经验。最终效果是每篇新文章均能自动生成简洁的 AI 摘要，提升了博客的可读性和用户体验。
+    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体技术实现和遇到的问题解决方案。功能通过调用 AI API，在文章发布或更新时生成简洁的摘要并显示在文章顶部，若调用失败则回退到使用文章首句作为摘要。实现步骤包括编写调用 AI 接口的模块、集成到博客生成逻辑、在前端模板中显示摘要，以及配置 GitHub Actions 传递 API 所需的环境变量。作者还分享了开发中遇到的环境变量配置、API 调用超时和摘要长度控制等问题，并提出了后续优化方向，如支持自定义生成摘要、缓存摘要和手动编辑功能。
 
 改进建议：
-1. 增加对摘要生成的手动编辑功能，提升摘要的准确性和个性化。
-2. 实现摘要结果的缓存机制，减少重复生成的资源消耗。
-3. 增加通过标签控制是否生成摘要的功能，灵活适配不同文章需求。
+1. 在文章中详细说明如何选择和测试不同的 AI 模型，以帮助用户优化摘要质量。
+2. 对安全性问题进行补充说明，例如如何保护 API 密钥。
+3. 提供更多关于性能优化的建议，特别是在处理长文章时的解决方案。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1612,21 +1612,41 @@ window.addEventListener('pjax:complete', function(event) {
         pathHome.setAttribute('d', IconList['home']);
     }
     
-    // Re-initialize memos timeline if on home page
-    if (typeof loadMemosTimeline === 'function') {
-        const timeline = document.getElementById('memos-timeline');
-        if (timeline) {
-            // Clear existing interval
-            if (window.memosCarouselInterval) {
-                clearInterval(window.memosCarouselInterval);
-                window.memosCarouselInterval = null;
-            }
-            // Reset state
-            window.currentMemoIndex = 0;
-            window.publicMemos = [];
-            // Reload timeline
-            loadMemosTimeline();
+    // Re-initialize header icons (search, RSS, etc.)
+    if (typeof IconList !== 'undefined') {
+        // Search icon
+        const pathSearch = document.getElementById('pathSearch');
+        if (pathSearch) pathSearch.setAttribute('d', IconList['search']);
+        
+        // RSS icon
+        const pathRSS = document.getElementById('pathRSS');
+        if (pathRSS) pathRSS.setAttribute('d', IconList['rss']);
+        
+        // Top/Post icons in article list
+        const iconTOP = document.getElementsByClassName('svgTop1');
+        const iconPost = document.getElementsByClassName('svgTop0');
+        for (let i = 0; i < iconTOP.length; i++) {
+            iconTOP[i].setAttribute('d', IconList['upload']);
+            iconTOP[i].parentNode.style.color = 'red';
         }
+        for (let i = 0; i < iconPost.length; i++) {
+            iconPost[i].setAttribute('d', IconList['post']);
+        }
+    }
+    
+    // Re-initialize memos timeline if on home page
+    const timeline = document.getElementById('memos-timeline');
+    if (timeline && typeof window.loadMemosTimeline === 'function') {
+        // Clear existing interval
+        if (window.memosCarouselInterval) {
+            clearInterval(window.memosCarouselInterval);
+            window.memosCarouselInterval = null;
+        }
+        // Reset state
+        window.currentMemoIndex = 0;
+        window.publicMemos = [];
+        // Reload timeline
+        window.loadMemosTimeline();
     }
     
     // Re-initialize Vercount stats
@@ -1648,9 +1668,6 @@ window.addEventListener('pjax:complete', function(event) {
         // Reset scroll state
         window.handleScroll();
     }
-    
-    // Re-run all DOMContentLoaded handlers
-    document.dispatchEvent(new Event('DOMContentLoaded'));
     
     console.log('PJAX: Page initialized for', url);
 });
