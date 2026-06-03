@@ -193,6 +193,7 @@
             "customIcon": true
         }
     ],
+    "memosDefaultSource": "jike",
     "memosSources": {
         "memos": {
             "url": "https://m.314926.xyz/api/v1/memos",
