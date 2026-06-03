@@ -24,13 +24,17 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了通过 GitHub Issues 实现博客订阅通知的方案，避免传统 RSS 或邮件订阅带来的复杂性和垃圾邮件问题。具体实现包括创建专门的订阅 Issue，设置 GitHub Actions 自动发送评论通知，以及在博客中添加订阅入口链接。此方案利用 GitHub 的自带功能，具有零成本、高邮件送达率、便捷订阅和更新记录透明的优势。改进建议包括优化触发时机以避免重复通知、过滤不必要的推送内容，以及根据需求调整邮件内容格式。该方法简单高效，适合个人博客使用。">
-<meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="本文介绍了通过 GitHub Issues 实现博客订阅通知的方案，避免传统 RSS 或邮件订阅带来的复杂性和垃圾邮件问题。具体实现包括创建专门的订阅 Issue，设置 GitHub Actions 自动发送评论通知，以及在博客中添加订阅入口链接。此方案利用 GitHub 的自带功能，具有零成本、高邮件送达率、便捷订阅和更新记录透明的优势。改进建议包括优化触发时机以避免重复通知、过滤不必要的推送内容，以及根据需求调整邮件内容格式。该方法简单高效，适合个人博客使用。">
+<meta name="description" content="本文介绍了一个名为 Petal Note 的极简日记框架，其特点是无需复杂的博客系统，仅需一个 TXT 文件即可记录日常想法，数据以明文存储且易于编辑。用户可通过简单步骤在 Vercel、Cloudflare Pages 或 GitHub Pages 免费部署。功能包括标签导航、私密日记加密、网页编辑器及图片上传支持等，同时支持个性化定制，如字体更换、自定义语法和提示框样式等。进阶用户还可通过无服务器方式实现即时更新。文章还分享了作者使用 Petal Note 的感受，强调其轻量、自由和加密功能的实用性。
+
+建议改进：可以补充实际用户案例或截图以更直观地展示使用效果，并进一步详细说明加密功能的技术细节和安全性。">
+<meta property="og:title" content="Petal Note：写给喜欢碎碎念的你">
+<meta property="og:description" content="本文介绍了一个名为 Petal Note 的极简日记框架，其特点是无需复杂的博客系统，仅需一个 TXT 文件即可记录日常想法，数据以明文存储且易于编辑。用户可通过简单步骤在 Vercel、Cloudflare Pages 或 GitHub Pages 免费部署。功能包括标签导航、私密日记加密、网页编辑器及图片上传支持等，同时支持个性化定制，如字体更换、自定义语法和提示框样式等。进阶用户还可通过无服务器方式实现即时更新。文章还分享了作者使用 Petal Note 的感受，强调其轻量、自由和加密功能的实用性。
+
+建议改进：可以补充实际用户案例或截图以更直观地展示使用效果，并进一步详细说明加密功能的技术细节和安全性。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html">
+<meta property="og:url" content="https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
-<title>Github issues 文章订阅</title>
+<title>Petal Note：写给喜欢碎碎念的你</title>
 
 <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 <link href='https://jsd.liiiu.cn/gh/Moretti815/blog@main/static/fonts/chill-font.css' rel='stylesheet' />
@@ -865,7 +869,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <div id="preloader">
         <img src="https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/preloader.gif" alt="Loading...">
     </div><div id="header">
-<h1 class="postTitle">Github issues 文章订阅</h1>
+<h1 class="postTitle">Petal Note：写给喜欢碎碎念的你</h1>
 <div class="title-right">
     <a href="https://blog.2005815.xyz" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
@@ -873,7 +877,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         </svg>
     </a>
     
-    <a href="https://github.com/Moretti815/blog/issues/3" target="_blank" class="btn btn-invisible circle" title="Issue">
+    <a href="https://github.com/Moretti815/blog/issues/5" target="_blank" class="btn btn-invisible circle" title="Issue">
         <svg class="octicon" width="16" height="16">
             <path id="pathIssue" fill-rule="evenodd"></path>
         </svg>
@@ -890,143 +894,137 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
     <div id="content">
 <div class="listLabels">
-    <span class="Label" style="max-width: 100px; height: 24px; border-radius: 4px; padding: 4px 8px; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; background-color:#6d99ec">
-            <object><a style="color:#fff; text-decoration: none; font-size: 14px;" href="https://blog.2005815.xyz/tag.html#Gmeek">Gmeek</a></object>
-        </span><span class="Label" style="max-width: 100px; height: 24px; border-radius: 4px; padding: 4px 8px; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; background-color:#5d624b">
-            <object><a style="color:#fff; text-decoration: none; font-size: 14px;" href="https://blog.2005815.xyz/tag.html#订阅">订阅</a></object>
+    <span class="Label" style="max-width: 100px; height: 24px; border-radius: 4px; padding: 4px 8px; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; background-color:#3102c7">
+            <object><a style="color:#fff; text-decoration: none; font-size: 14px;" href="https://blog.2005815.xyz/tag.html#Github项目">Github项目</a></object>
+        </span><span class="Label" style="max-width: 100px; height: 24px; border-radius: 4px; padding: 4px 8px; margin-right: 8px; display: inline-flex; align-items: center; justify-content: center; background-color:#dc3d17">
+            <object><a style="color:#fff; text-decoration: none; font-size: 14px;" href="https://blog.2005815.xyz/tag.html#微博客">微博客</a></object>
         </span>
 </div>
 <br>
 
 <div id="vercount_container_page_pv" style="display:none;float:left;margin-top:0px;margin-right:5px;font-size:medium;">👁<span id="vercount_value_page_pv"></span></div>
-<span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-20 12:01:45</time></span>
-
-<span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
+<span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-27 19:56:09</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了通过 GitHub Issues 实现博客订阅通知的方案，避免传统 RSS 或邮件订阅带来的复杂性和垃圾邮件问题。具体实现包括创建专门的订阅 Issue，设置 GitHub Actions 自动发送评论通知，以及在博客中添加订阅入口链接。此方案利用 GitHub 的自带功能，具有零成本、高邮件送达率、便捷订阅和更新记录透明的优势。改进建议包括优化触发时机以避免重复通知、过滤不必要的推送内容，以及根据需求调整邮件内容格式。该方法简单高效，适合个人博客使用。
+    <strong>AI总结:</strong> 本文介绍了一个名为 Petal Note 的极简日记框架，其特点是无需复杂的博客系统，仅需一个 TXT 文件即可记录日常想法，数据以明文存储且易于编辑。用户可通过简单步骤在 Vercel、Cloudflare Pages 或 GitHub Pages 免费部署。功能包括标签导航、私密日记加密、网页编辑器及图片上传支持等，同时支持个性化定制，如字体更换、自定义语法和提示框样式等。进阶用户还可通过无服务器方式实现即时更新。文章还分享了作者使用 Petal Note 的感受，强调其轻量、自由和加密功能的实用性。
+
+建议改进：可以补充实际用户案例或截图以更直观地展示使用效果，并进一步详细说明加密功能的技术细节和安全性。
 </div>
 
 <div class="markdown-body" id="postBody">
 <article class="markdown-body">
-<p>博客写久了，总会想：读者怎么知道我更新了？  </p>
-<p>RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。自建邮件订阅又麻烦，还要处理 SMTP、退订逻辑，搞不好整域都被标记成垃圾邮件发送者。  </p>
-<p>最近看到一个思路：用 GitHub Issues 做订阅。  </p>
-<h2 id="_1">原理很简单</h2>
-<p>GitHub Issues 自带订阅功能。你创建一个专门的通知 Issue，每次博客更新时自动往下面发一条评论，订阅了这个 Issue 的人就会收到 GitHub 的邮件通知。  </p>
-<p>好处很明显：  </p>
-<ul>
-<li>零成本，用 GitHub 自带功能  </li>
-<li>GitHub 的邮件可信度远高于第三方服务，基本不会被拦截  </li>
-<li>读者只需要点一下 Subscribe，有 GitHub 账号就行  </li>
-<li>所有更新历史都在 Issue 评论里，一目了然  </li>
-</ul>
-<h2 id="_2">具体怎么搞</h2>
-<h3 id="issue">第一步：创建订阅 Issue</h3>
-<p>在你的博客仓库里新建一个 Issue，标题随便写，比如「博客更新订阅」。内容可以写清楚这是干嘛用的：  </p>
+<h1 id="petal-note">Petal Note：写给喜欢碎碎念的你</h1>
+<p><em>风吹落的花瓣，和那些无处安放的碎碎念。</em>  </p>
+<hr />
+<p>如果你也在找一个地方记录日常的零碎想法，不想被复杂的博客系统束缚，那 Petal Note 可能正合你意。  </p>
+<h2 id="_1">它是什么</h2>
+<p>Petal Note 是一个极简的日记框架，简单到只需要一个 TXT 文件就能开始写。所有数据都是明文存储，人可以直接阅读和编辑，不需要数据库，不需要后端。  </p>
+<p>你可以把它部署在 Vercel、Cloudflare Pages 或者 GitHub Pages 上，完全免费。  </p>
+<p>官方演示站：<a href="https://petal-note.vercel.app/">petal-note.vercel.app</a>  </p>
+<hr />
+<h2 id="30">小白玩法：30 分钟搭好你的日记站</h2>
+<h3 id="_2">第一步：初始化项目</h3>
+<p>在一个空文件夹里运行这个命令，它会引导你创建基本结构：  </p>
 <div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
-<pre class="highlight"><code>订阅本 Issue，每当博客有新文章发布时，你将收到 GitHub 邮件通知。  
-
-点击右侧 Subscribe 按钮即可订阅。  </code></pre></div>
-<p>创建后记住 Issue 编号，比如 <code>#2</code>。  </p>
-<h3 id="github-actions">第二步：写 GitHub Actions 工作流</h3>
-<p>在 <code>.github/workflows/</code> 下创建一个 <code>notify-subscribe.yml</code>：  </p>
+<pre class="highlight"><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/main/scripts/create-petal-app.sh | bash -e  </code></pre></div>
+<h3 id="_3">第二步：改配置文件</h3>
+<p>打开 <code>public/config.toml</code>，只需要改几个关键项：  </p>
 <div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
-<pre class="highlight"><code class="language-yaml">name: Notify Blog Update  
+<pre class="highlight"><code class="language-toml">title = "你的日记"  
+header_title = "我的碎碎念"  
+header_subtitle = """  
+记录生活的小片段  
+"""  
 
-on:  
-  workflow_dispatch:  
-  issues:  
-    types: [labeled]  
-
-jobs:  
-  notify:  
-    runs-on: ubuntu-latest  
-    if: ${{ github.event.repository.owner.id == github.event.sender.id || github.event_name == 'workflow_dispatch' }}  
-    permissions:  
-      issues: write  
-      contents: read  
-    steps:  
-      - name: Checkout  
-        uses: actions/checkout@v4  
-
-      - name: Get Issue Info and Post Notification  
-        uses: actions/github-script@v7  
-        with:  
-          github-token: ${{ secrets.GITHUB_TOKEN }}  
-          script: |  
-            const issue = context.payload.issue;  
-            const labels = issue.labels.map(l =&gt; l.name);  
-
-            // 跳过已关闭的 issue 和 talk 标签  
-            if (issue.state === 'closed' || labels.includes('talk')) {  
-              console.log('Skipping notification.');  
-              return;  
-            }  
-
-            // 生成文章预览  
-            let preview = '';  
-            if (issue.body) {  
-              preview = issue.body  
-                .replace(/^#+\s+/gm, '')  
-                .replace(/!\[.*?\]\(.*?\)/g, '[图片]')  
-                .replace(/\[.*?\]\(.*?\)/g, '$1')  
-                .replace(/[*_~`#]/g, '')  
-                .replace(/\n+/g, ' ')  
-                .trim()  
-                .substring(0, 150);  
-              if (issue.body.length &gt; 150) preview += '...';  
-            }  
-
-            // 构建通知内容  
-            const title = issue.title;  
-            const issueUrl = issue.html_url;  
-            const timeStr = new Date().toISOString().replace('T', ' ').substring(0, 19);  
-
-            let body = '## 🎉 博客更新啦！\n\n';  
-            body += `**${title}**\n\n`;  
-            if (preview) body += `&gt; ${preview}\n\n`;  
-            body += `💬 [查看原文](${issueUrl})\n\n`;  
-            if (labels.length &gt; 0) body += `🏷️ ${labels.join(', ')}\n\n`;  
-            body += `📅 ${timeStr}\n\n`;  
-            body += '---\n*自动发布*';  
-
-            // 这里填你的订阅 Issue 编号  
-            await github.rest.issues.createComment({  
-              owner: context.repo.owner,  
-              repo: context.repo.repo,  
-              issue_number: 2,  
-              body: body  
-            });  </code></pre></div>
-<h3 id="_3">第三步：配置博客显示订阅入口</h3>
-<p>在博客页脚或者其他显眼位置加个订阅链接，指向你创建的订阅 Issue。  </p>
-<p>比如在我的 Gmeek 博客里，修改 <code>config.json</code>：  </p>
+# 这个改成粉色、蓝色或者你喜欢的颜色  
+theme_color = "#FFB6C1"  </code></pre></div>
+<h3 id="_4">第三步：开始写日记</h3>
+<p>打开 <code>public/data.txt</code>，按这个格式写：  </p>
 <div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
-<pre class="highlight"><code class="language-json">{  
-  "subscribeIssue": 2,  
-  "subscribeUrl": "https://github.com/moretti815/blog/issues/2"  
-}  </code></pre></div>
-<p>然后在模板里读取这个配置生成链接。  </p>
-<h2 id="_4">一些细节</h2>
-<p><strong>关于触发时机</strong>  </p>
-<p>Gmeek 这类基于 GitHub Issues 的博客，文章就是 Issue。但这里有个坑：Issue 的创建、编辑、添加标签都会触发事件，如果监听 <code>[opened, edited, labeled]</code>，会导致一篇文章发布时触发多次通知。  </p>
-<p>解决方法是只监听 <code>labeled</code>。Gmeek 的工作流程是：<br />
-1. 用户创建 Issue<br />
-2. 用户编辑完善内容<br />
-3. Gmeek Actions 生成文章并给 Issue 添加标签  </p>
-<p>所以只在 <code>labeled</code> 时触发，就能确保文章完全生成后再发送通知，而且只发送一次。  </p>
-<p>如果你用的是 Hexo、VitePress 这类静态博客，文章是 Markdown 文件，那就改成监听 <code>push</code> 事件，检测 <code>src/content/posts/</code> 目录的变更。  </p>
-<p><strong>关于过滤</strong>  </p>
-<ul>
-<li><code>talk</code> 标签的 Issue 通常是短内容/说说，不需要发通知  </li>
-<li>已关闭的 Issue 不发通知  </li>
-<li>可以根据自己的需求加其他过滤条件  </li>
-</ul>
-<p><strong>关于邮件内容</strong>  </p>
-<p>GitHub 的邮件通知会包含评论的完整内容，所以读者在邮件里就能看到文章标题和预览，决定要不要点进去看全文。  </p>
-<h2 id="_5">总结</h2>
-<p>这个方案最大的优点就是简单。不需要第三方服务，不需要维护邮件列表，不需要处理退订逻辑。GitHub 帮你做了所有脏活累活，你只需要写几行工作流配置。  </p>
-<p>对于个人博客来说，完全够用了。  </p>
+<pre class="highlight"><code class="language-text">2025-05-27 下午  
+#日常 今天试着用 Petal Note 搭了个日记站，比想象中简单。  
+感觉不错，明天继续。  
+
+---  
+2025-05-27 晚上  
+#感想 写日记这件事，还是随心所欲比较好。  
+不用在意格式，不用在意字数。  </code></pre></div>
+<p>格式说明：<br />
+- 每篇日记用 <code>---</code> 分隔<br />
+- 第一行是时间戳，随意写<br />
+- 正文里用 <code>#标签</code> 可以自动生成标签导航  </p>
+<h3 id="_5">第四步：部署</h3>
+<p><strong>方式一：传统静态托管</strong>  </p>
+<p>把整个文件夹拖到 Vercel 或 Cloudflare Pages，完事。  </p>
+<p><strong>方式二：框架和内容分离（推荐）</strong>  </p>
+<p>这种方式下，你的仓库只存日记内容，框架会自动从官方拉取最新版本。  </p>
+<ol>
+<li>在 Vercel 新建项目，连接你的 GitHub 仓库  </li>
+<li>设置 Build Command：<br />
+   <div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/miniyu157/petal-note/e310ca1/scripts/build.sh | bash -e -s -- index.html syntax.toml petal-parser.js  </code></pre></div></li>
+<li>设置 Output Directory 为 <code>public</code>  </li>
+</ol>
+<p>以后每次 push 代码，网站自动更新。  </p>
+<h3 id="_6">第五步：写密码保护的内容</h3>
+<p>想写一些不想让别人看的东西？创建一个 <code>private.txt</code> 文件，然后在 <code>config.toml</code> 里加上：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-toml">private_source = "./private.txt"  </code></pre></div>
+<p>再创建一个 <code>.env</code> 文件：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-sh">KEY_private_source="你的密码"  </code></pre></div>
+<p>这样私密日记会用密码保护，只有输入正确密码才能看到。  </p>
+<h3 id="_7">用网页编辑器写日记</h3>
+<p>配置好之后，左下角会出现一个小羽毛笔图标，点进去可以网页直接编辑。它会自动帮你推送到 GitHub。  </p>
+<p>如果想要上传图片功能，需要额外配置一个图床 API。  </p>
+<hr />
+<h2 id="_8">进阶玩法：打造专属体验</h2>
+<h3 id="_9">换个字体</h3>
+<p>把喜欢的字体文件放进 <code>public/assets/</code>，然后在 <code>config.toml</code> 里指定：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-toml">font = "./assets/你的字体.woff2"  </code></pre></div>
+<h3 id="_10">自定义语法</h3>
+<p>Petal Note 支持自定义写作语法。比如想写高亮文字：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-toml">[[rules]]  
+prefix = "=="  
+suffix = "=="  
+replacement = "&lt;mark&gt;$1&lt;/mark&gt;"  
+css = "mark { background: #fffacd; padding: 0 4px; border-radius: 3px; }"  </code></pre></div>
+<p>这样输入 <code>==这段文字高亮==</code> 就会显示高亮效果。  </p>
+<p>编辑器工具栏会自动出现对应的按钮，点击就能插入格式。  </p>
+<h3 id="github">做个 GitHub 风格的提示框</h3>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-toml">[[rules]]  
+prefix = ":::note\n"  
+suffix = "\n:::"  
+replacement = """&lt;div class="gh-alert gh-alert-note"&gt;&lt;div class="gh-alert-title"&gt;📝 Note&lt;/div&gt;&lt;div class="gh-alert-body"&gt;$1&lt;/div&gt;&lt;/div&gt;"""  
+css = """  
+.gh-alert { border-left: 4px solid; padding: 0.6rem 1rem; margin: 0.8rem 0; border-radius: 0 6px 6px 0; }  
+.gh-alert-note { border-left-color: #0969da; background: rgb(9 105 218 / 4%); }  
+"""  </code></pre></div>
+<p>写日记时这样用：  </p>
+<div class="code-block-wrapper"><div class="code-block-controls"><button class="fold-btn" title="折叠/展开">▲</button><button class="copy-btn" title="复制代码"><svg width="18" height="18" viewBox="0 0 20 20" style="vertical-align:middle"><rect x="6" y="2" width="9" height="13" rx="2" fill="currentColor"/><rect x="3" y="5" width="9" height="13" rx="2" fill="currentColor" opacity="0.6"/></svg></button></div>
+<pre class="highlight"><code class="language-text">:::note  
+这是一个提示框，可以用来记录重要的事情。  
+:::  </code></pre></div>
+<h3 id="_11">完全无服务器的写法</h3>
+<p>如果想每次保存后立即更新，不需要等部署，可以这样玩：  </p>
+<ol>
+<li>建两个仓库：一个是内容仓库存日记，一个是托管仓库只放 <code>config.toml</code>  </li>
+<li>用 Cloudflare Workers 代理 GitHub API  </li>
+<li>在 <code>config.toml</code> 里直接写 API 地址  </li>
+</ol>
+<p>这样写完保存，网页立刻刷新，不用等 CI 构建。  </p>
+<hr />
+<h2 id="_12">一些碎碎念</h2>
+<p>用 Petal Note 写日记这几个月，感觉最舒服的是它的「轻」。不用想排版，不用想分类，想到什么就写什么。回头翻的时候，那些零碎的想法串起来，反而挺有意思的。  </p>
+<p>它的加密功能也很实用。有些日记确实不想被搜索引擎收录，用 AES-GCM 加密之后，至少多了一层保护。  </p>
+<p>如果你也想找个地方安放日常的碎碎念，不妨试试看。  </p>
+<hr />
+<blockquote>
+<p>Stay gentle, stay pure.  </p>
+</blockquote>
 </article>
 </div>
 
@@ -1034,12 +1032,12 @@ jobs:
 <div style="text-align: center; margin: 24px 0; padding: 12px; color: var(--color-fg-muted); font-size: 14px;">
     ❤️ 转载文章请注明出处，谢谢！❤️
 </div><nav class="paginate-container" aria-label="Pagination">
-    <div class="pagination"><a class="previous_page" rel="previous" href="https://blog.2005815.xyz/post/Hello%20World.html" aria-label="Previous Page">Hello World</a><!-- <span style="width:200px" aria-disabled="true"></span> --><a class="next_page" rel="next" href="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html" aria-label="Next Page">本博客的 ai 总结</a></div>
+    <div class="pagination"><a class="previous_page" rel="previous" href="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html" aria-label="Previous Page">本博客的 ai 总结</a><!-- <span style="width:200px" aria-disabled="true"></span> --></div>
 </nav><!-- 文章版权信息 -->
 <div class="post-copyright">
     <div class="post-copyright-header">
-        <div class="post-copyright-title">Github issues 文章订阅</div>
-        <div class="post-copyright-url">https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html</div>
+        <div class="post-copyright-title">Petal Note：写给喜欢碎碎念的你</div>
+        <div class="post-copyright-url">https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html</div>
     </div>
     <div class="post-copyright-info">
         <div class="post-copyright-info-item">
@@ -1067,15 +1065,15 @@ jobs:
                 <rect x="3" y="14" width="7" height="7"/>
             </svg>
         </button>
-        <a href="https://service.weibo.com/share/share.php?url=https%3A//blog.2005815.xyz/post/Github%2520issues%2520-wen-zhang-ding-yue.html&title=Github%20issues%20%E6%96%87%E7%AB%A0%E8%AE%A2%E9%98%85" target="_blank" class="btn-icon" title="Share to Weibo">
+        <a href="https://service.weibo.com/share/share.php?url=https%3A//blog.2005815.xyz/post/Petal%2520Note%25EF%25BC%259A-xie-gei-xi-huan-sui-sui-nian-de-ni.html&title=Petal%20Note%EF%BC%9A%E5%86%99%E7%BB%99%E5%96%9C%E6%AC%A2%E7%A2%8E%E7%A2%8E%E5%BF%B5%E7%9A%84%E4%BD%A0" target="_blank" class="btn-icon" title="Share to Weibo">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20"><path fill="currentColor" d="M14.812 9.801c-.778-.141-.4-.534-.4-.534s.761-1.178-.15-2.034c-1.13-1.061-3.877.135-3.877.135c-1.05.306-.77-.14-.622-.897c0-.892-.326-2.402-3.12-1.51C3.853 5.858 1.455 9 1.455 9C-.212 11.087.01 12.7.01 12.7c.416 3.562 4.448 4.54 7.584 4.771c3.299.243 7.752-1.067 9.102-3.76c1.35-2.696-1.104-3.763-1.884-3.91m-1.044 2.549c0 2.051-2.653 3.977-5.93 4.117c-3.276.144-5.923-1.398-5.923-3.45c0-2.054 2.647-3.7 5.923-3.842s5.93 1.126 5.93 3.175m-6.584-1.823c-3.293.362-2.913 3.259-2.913 3.259s-.034.917.883 1.384c1.927.98 3.912.387 4.915-.829s.415-4.173-2.885-3.814m.281 3.075c0 .48-.498.925-1.112.99c-.614.068-1.11-.265-1.11-.747s.44-.985 1.055-1.045c.707-.064 1.167.318 1.167.802m1.003-1.15c.11.174.031.437-.173.588c-.208.146-.464.126-.574-.05c-.115-.17-.072-.445.139-.588c.244-.171.498-.122.608.05m4.86-9.806c.335-.06 1.532-.281 2.696-.025c2.083.456 4.941 2.346 3.655 6.368c-.094.575-.398.62-.76.62c-.432 0-.781-.255-.781-.662c0-.352.155-.71.155-.71c.046-.148.411-1.07-.241-2.448c-1.198-1.887-3.609-1.915-3.893-1.807a3.5 3.5 0 0 1-.591.141l-.106.016l-.014.002c-.437 0-.786-.333-.786-.737a.75.75 0 0 1 .573-.715s.007-.011.018-.014c.024-.004.049-.027.075-.029m.66 2.611s3.367-.584 2.964 2.811a.2.2 0 0 1-.007.054c-.037.241-.264.426-.529.426c-.3 0-.543-.225-.543-.507c0 0 .534-2.269-1.885-1.768c-.299 0-.538-.227-.538-.505c0-.283.24-.51.538-.51"/></svg>
         </a>
-        <a href="https://x.com/intent/tweet?text=Github%20issues%20%E6%96%87%E7%AB%A0%E8%AE%A2%E9%98%85&url=https%3A//blog.2005815.xyz/post/Github%2520issues%2520-wen-zhang-ding-yue.html" target="_blank" class="btn-icon" title="Share to X">
+        <a href="https://x.com/intent/tweet?text=Petal%20Note%EF%BC%9A%E5%86%99%E7%BB%99%E5%96%9C%E6%AC%A2%E7%A2%8E%E7%A2%8E%E5%BF%B5%E7%9A%84%E4%BD%A0&url=https%3A//blog.2005815.xyz/post/Petal%2520Note%25EF%25BC%259A-xie-gei-xi-huan-sui-sui-nian-de-ni.html" target="_blank" class="btn-icon" title="Share to X">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
         </a>
-        <a href="https://bsky.app/intent/compose?text=Github%20issues%20%E6%96%87%E7%AB%A0%E8%AE%A2%E9%98%85%0Ahttps%3A//blog.2005815.xyz/post/Github%2520issues%2520-wen-zhang-ding-yue.html" target="_blank" class="btn-icon" title="Share to Bluesky">
+        <a href="https://bsky.app/intent/compose?text=Petal%20Note%EF%BC%9A%E5%86%99%E7%BB%99%E5%96%9C%E6%AC%A2%E7%A2%8E%E7%A2%8E%E5%BF%B5%E7%9A%84%E4%BD%A0%0Ahttps%3A//blog.2005815.xyz/post/Petal%2520Note%25EF%25BC%259A-xie-gei-xi-huan-sui-sui-nian-de-ni.html" target="_blank" class="btn-icon" title="Share to Bluesky">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="21.1875" viewBox="0 0 256 226"><path fill="#1185FE" d="M55.491 15.172c29.35 22.035 60.917 66.712 72.509 90.686c11.592-23.974 43.159-68.651 72.509-90.686C221.686-.727 256-13.028 256 26.116c0 7.818-4.482 65.674-7.111 75.068c-9.138 32.654-42.436 40.983-72.057 35.942c51.775 8.812 64.946 38 36.501 67.187c-54.021 55.433-77.644-13.908-83.696-31.676c-1.11-3.257-1.63-4.78-1.637-3.485c-.008-1.296-.527.228-1.637 3.485c-6.052 17.768-29.675 87.11-83.696 31.676c-28.445-29.187-15.274-58.375 36.5-67.187c-29.62 5.041-62.918-3.288-72.056-35.942C4.482 91.79 0 33.934 0 26.116C0-13.028 34.314-.727 55.491 15.172"/></svg>
         </a>
     </div>
