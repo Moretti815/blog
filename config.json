@@ -210,7 +210,7 @@
             "enabled": true
         },
         "jike": {
-            "url": "https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
+            "url": "https://rsshub-api.2005815.xyz/?url=https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
             "type": "rss",
             "label": "即刻",
             "icon": "material-symbols:explore",
@@ -218,7 +218,7 @@
         }
     },
     "timelineSource": {
-    "url": "https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
+    "url": "https://rsshub-api.2005815.xyz/?url=https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
     "type": "rss",
     "limit": 5,
     "enabled": true
