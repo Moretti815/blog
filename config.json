@@ -218,9 +218,10 @@
         }
     },
     "timelineSource": {
-    "url": "https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
-    "type": "rss",
-    "limit": 5,
-    "enabled": true
- }
+        "url": "https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
+        "type": "rss",
+        "limit": 5,
+        "enabled": true
+    },
+    "enablePJAX": true
 }
