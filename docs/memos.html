@@ -1793,7 +1793,9 @@ const API_CONFIG = {memos: {
         url: 'https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5',
         type: 'rss'}};
 
-// State - get first enabled source from configlet currentSource = 'memos';
+// State - get first enabled source from config
+// Get first enabled source from API_CONFIG keys
+let currentSource = Object.keys(API_CONFIG)[0] || 'memos';
 let memosData = [];
 let nextPageToken = '';
 let currentFilter = 'all';
