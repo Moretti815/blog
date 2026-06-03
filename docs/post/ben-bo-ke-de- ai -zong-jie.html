@@ -24,13 +24,19 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程。具体步骤包括：编写调用 AI 接口的模块 `Summary.py`，在文章发布或更新时生成摘要；将该功能集成到博客的主程序中，并设置当 AI 失败时回退到原始摘要方式；修改前端模板，在文章顶部显示摘要；最后，通过 GitHub Actions 配置环境变量并实现自动化构建。文章还提到了解决环境变量未正确传递、API 调用超时及摘要过长等问题，并展示了功能的初步效果。后续优化方向包括支持自定义摘要生成、缓存摘要结果以及手动编辑摘要。
+<meta name="description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端集成以及潜在问题的解决方案。作者通过调用 AI 接口生成文章摘要，并在文章页面顶部展示，优化了用户的阅读体验。实现细节包括创建调用 AI 接口的模块、在博客生成脚本中集成摘要功能、前端显示摘要内容，以及在 GitHub Actions 中配置环境变量以支持自动构建。作者还分享了解决环境变量未传递、API 调用超时和摘要过长等问题的经验。最终效果是每篇新文章均能自动生成简洁的 AI 摘要，提升了博客的可读性和用户体验。
 
-改进建议：可以进一步详细说明 AI 模型选择的依据，以及如何衡量摘要质量的标准。同时，增加对安全性（如 API 密钥保护）和性能优化的详细描述会更全面。">
+改进建议：
+1. 增加对摘要生成的手动编辑功能，提升摘要的准确性和个性化。
+2. 实现摘要结果的缓存机制，减少重复生成的资源消耗。
+3. 增加通过标签控制是否生成摘要的功能，灵活适配不同文章需求。">
 <meta property="og:title" content="本博客的 ai 总结">
-<meta property="og:description" content="本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程。具体步骤包括：编写调用 AI 接口的模块 `Summary.py`，在文章发布或更新时生成摘要；将该功能集成到博客的主程序中，并设置当 AI 失败时回退到原始摘要方式；修改前端模板，在文章顶部显示摘要；最后，通过 GitHub Actions 配置环境变量并实现自动化构建。文章还提到了解决环境变量未正确传递、API 调用超时及摘要过长等问题，并展示了功能的初步效果。后续优化方向包括支持自定义摘要生成、缓存摘要结果以及手动编辑摘要。
+<meta property="og:description" content="本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端集成以及潜在问题的解决方案。作者通过调用 AI 接口生成文章摘要，并在文章页面顶部展示，优化了用户的阅读体验。实现细节包括创建调用 AI 接口的模块、在博客生成脚本中集成摘要功能、前端显示摘要内容，以及在 GitHub Actions 中配置环境变量以支持自动构建。作者还分享了解决环境变量未传递、API 调用超时和摘要过长等问题的经验。最终效果是每篇新文章均能自动生成简洁的 AI 摘要，提升了博客的可读性和用户体验。
 
-改进建议：可以进一步详细说明 AI 模型选择的依据，以及如何衡量摘要质量的标准。同时，增加对安全性（如 API 密钥保护）和性能优化的详细描述会更全面。">
+改进建议：
+1. 增加对摘要生成的手动编辑功能，提升摘要的准确性和个性化。
+2. 实现摘要结果的缓存机制，减少重复生成的资源消耗。
+3. 增加通过标签控制是否生成摘要的功能，灵活适配不同文章需求。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -906,9 +912,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-publish" id="postPublish" style="font-size: 14px; color: #666;">发布于 <time style="font-weight: bold; color: #333;">2026-05-21 19:56:03</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程。具体步骤包括：编写调用 AI 接口的模块 `Summary.py`，在文章发布或更新时生成摘要；将该功能集成到博客的主程序中，并设置当 AI 失败时回退到原始摘要方式；修改前端模板，在文章顶部显示摘要；最后，通过 GitHub Actions 配置环境变量并实现自动化构建。文章还提到了解决环境变量未正确传递、API 调用超时及摘要过长等问题，并展示了功能的初步效果。后续优化方向包括支持自定义摘要生成、缓存摘要结果以及手动编辑摘要。
+    <strong>AI总结:</strong> 本文介绍了为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现步骤、前端集成以及潜在问题的解决方案。作者通过调用 AI 接口生成文章摘要，并在文章页面顶部展示，优化了用户的阅读体验。实现细节包括创建调用 AI 接口的模块、在博客生成脚本中集成摘要功能、前端显示摘要内容，以及在 GitHub Actions 中配置环境变量以支持自动构建。作者还分享了解决环境变量未传递、API 调用超时和摘要过长等问题的经验。最终效果是每篇新文章均能自动生成简洁的 AI 摘要，提升了博客的可读性和用户体验。
 
-改进建议：可以进一步详细说明 AI 模型选择的依据，以及如何衡量摘要质量的标准。同时，增加对安全性（如 API 密钥保护）和性能优化的详细描述会更全面。
+改进建议：
+1. 增加对摘要生成的手动编辑功能，提升摘要的准确性和个性化。
+2. 实现摘要结果的缓存机制，减少重复生成的资源消耗。
+3. 增加通过标签控制是否生成摘要的功能，灵活适配不同文章需求。
 </div>
 
 <div class="markdown-body" id="postBody">
@@ -1310,7 +1319,383 @@ if("11/01/2024"!=""){
     var diffDay=Math.floor(diff/(1000*60*60*24));
     document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
 }
-</script></div></body>
+</script></div><!-- PJAX - Partial Page Load System -->
+<script>
+(function() {
+    'use strict';
+    
+    // PJAX Configuration
+    const PJAX_CONFIG = {
+        selector: 'a[href^="https://blog.2005815.xyz"]:not([data-pjax-disable]):not([href*=".pdf"]):not([href*=".zip"]):not([href*=".rar"]):not([target="_blank"])',
+        container: '#content',
+        timeout: 10000,
+        cache: true,
+        cacheLimit: 10
+    };
+    
+    // Cache storage
+    const pageCache = new Map();
+    
+    // Current state
+    let isLoading = false;
+    let currentUrl = location.href;
+    
+    // Utility: Parse HTML string
+    function parseHTML(html) {
+        const parser = new DOMParser();
+        return parser.parseFromString(html, 'text/html');
+    }
+    
+    // Utility: Execute scripts in container
+    function executeScripts(container) {
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            // Copy attributes
+            Array.from(oldScript.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value);
+            });
+            // Copy content
+            newScript.textContent = oldScript.textContent;
+            // Replace
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    }
+    
+    // Utility: Update elements that need refresh
+    function updatePage(doc, url) {
+        const newContent = doc.querySelector(PJAX_CONFIG.container);
+        const currentContent = document.querySelector(PJAX_CONFIG.container);
+        
+        if (!newContent || !currentContent) {
+            console.warn('PJAX: Content container not found');
+            return false;
+        }
+        
+        // Update content
+        currentContent.innerHTML = newContent.innerHTML;
+        
+        // Execute scripts in new content
+        executeScripts(currentContent);
+        
+        // Update title
+        const newTitle = doc.querySelector('title');
+        if (newTitle) {
+            document.title = newTitle.textContent;
+        }
+        
+        // Update meta tags (description, og:*, etc.)
+        const metaSelectors = ['meta[name="description"]', 'meta[property^="og:"]', 'meta[name="twitter:"]'];
+        metaSelectors.forEach(selector => {
+            const newMeta = doc.querySelector(selector);
+            const currentMeta = document.querySelector(selector);
+            if (newMeta && currentMeta) {
+                currentMeta.content = newMeta.content;
+            }
+        });
+        
+        // Update header if it exists in both pages
+        const newHeader = doc.querySelector('#header');
+        const currentHeader = document.querySelector('#header');
+        if (newHeader && currentHeader) {
+            currentHeader.innerHTML = newHeader.innerHTML;
+            executeScripts(currentHeader);
+        }
+        
+        // Update footer if it exists in both pages
+        const newFooter = doc.querySelector('#footer');
+        const currentFooter = document.querySelector('#footer');
+        if (newFooter && currentFooter) {
+            currentFooter.innerHTML = newFooter.innerHTML;
+            executeScripts(currentFooter);
+        }
+        
+        // Update body classes and attributes
+        const newBody = doc.body;
+        const currentBody = document.body;
+        
+        // Copy data attributes from new body
+        Array.from(newBody.attributes).forEach(attr => {
+            if (attr.name.startsWith('data-')) {
+                currentBody.setAttribute(attr.name, attr.value);
+            }
+        });
+        
+        // Trigger custom event for page-specific initialization
+        window.dispatchEvent(new CustomEvent('pjax:complete', { detail: { url: url } }));
+        
+        return true;
+    }
+    
+    // Load page via AJAX
+    async function loadPage(url, pushState = true) {
+        if (isLoading || url === currentUrl) return;
+        
+        isLoading = true;
+        
+        // Show loading indicator
+        showLoading();
+        
+        // Check cache
+        if (PJAX_CONFIG.cache && pageCache.has(url)) {
+            const cached = pageCache.get(url);
+            if (Date.now() - cached.time < 5 * 60 * 1000) { // 5 minutes cache
+                updatePage(cached.doc, url);
+                if (pushState) {
+                    history.pushState({ url: url }, '', url);
+                }
+                currentUrl = url;
+                isLoading = false;
+                hideLoading();
+                return;
+            }
+            pageCache.delete(url);
+        }
+        
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-PJAX': 'true'
+                },
+                credentials: 'same-origin'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const html = await response.text();
+            const doc = parseHTML(html);
+            
+            // Cache the page
+            if (PJAX_CONFIG.cache) {
+                if (pageCache.size >= PJAX_CONFIG.cacheLimit) {
+                    const firstKey = pageCache.keys().next().value;
+                    pageCache.delete(firstKey);
+                }
+                pageCache.set(url, { doc: doc, time: Date.now() });
+            }
+            
+            // Update page
+            if (updatePage(doc, url)) {
+                if (pushState) {
+                    history.pushState({ url: url }, '', url);
+                }
+                currentUrl = url;
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            } else {
+                // Fallback to normal navigation
+                location.href = url;
+            }
+            
+        } catch (error) {
+            console.error('PJAX load error:', error);
+            // Fallback to normal navigation
+            location.href = url;
+        } finally {
+            isLoading = false;
+            hideLoading();
+        }
+    }
+    
+    // Show loading indicator
+    function showLoading() {
+        // Use existing preloader if available
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.style.display = 'flex';
+            preloader.classList.remove('hidden');
+        }
+    }
+    
+    // Hide loading indicator
+    function hideLoading() {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.classList.add('hidden');
+            setTimeout(() => {
+                if (!isLoading) {
+                    preloader.style.display = 'none';
+                }
+            }, 500);
+        }
+    }
+    
+    // Handle link clicks
+    function handleClick(event) {
+        const link = event.target.closest('a');
+        if (!link) return;
+        
+        // Check if link matches PJAX selector
+        if (!link.matches(PJAX_CONFIG.selector)) return;
+        
+        // Skip if modifier keys are pressed
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        
+        // Skip if it's the same page
+        if (link.href === currentUrl) {
+            event.preventDefault();
+            return;
+        }
+        
+        event.preventDefault();
+        loadPage(link.href);
+    }
+    
+    // Handle popstate (back/forward buttons)
+    function handlePopState(event) {
+        if (event.state && event.state.url) {
+            loadPage(event.state.url, false);
+        }
+    }
+    
+    // Initialize PJAX
+    function init() {
+        // Don't initialize if browser doesn't support required features
+        if (!window.history || !window.history.pushState) return;
+        
+        // Add click listener to document
+        document.addEventListener('click', handleClick);
+        
+        // Handle back/forward buttons
+        window.addEventListener('popstate', handlePopState);
+        
+        // Save initial state
+        history.replaceState({ url: location.href }, '', location.href);
+        
+        console.log('%c PJAX initialized ', 'padding:2px 5px;background:#0969da;color:#fff;border-radius:3px');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Expose PJAX API
+    window.PJAX = {
+        load: loadPage,
+        reload: function() { loadPage(currentUrl, false); },
+        clearCache: function() { pageCache.clear(); },
+        config: PJAX_CONFIG
+    };
+})();
+</script>
+
+<!-- PJAX Page Initialization Handler -->
+<script>
+// Handle page-specific initialization after PJAX load
+window.addEventListener('pjax:complete', function(event) {
+    const url = event.detail.url;
+    
+    // Re-initialize theme switcher icon
+    const themeSwitch = document.getElementById('themeSwitch');
+    if (themeSwitch && typeof IconList !== 'undefined') {
+        const currentMode = document.documentElement.getAttribute('data-color-mode');
+        if (currentMode === 'dark') {
+            themeSwitch.setAttribute('d', IconList['moon']);
+            themeSwitch.parentNode.style.color = '#00f0ff';
+        } else {
+            themeSwitch.setAttribute('d', IconList['sun']);
+            themeSwitch.parentNode.style.color = '#ff5000';
+        }
+    }
+    
+    // Re-initialize home icon
+    const pathHome = document.getElementById('pathHome');
+    if (pathHome && typeof IconList !== 'undefined') {
+        pathHome.setAttribute('d', IconList['home']);
+    }
+    
+    // Re-initialize memos timeline if on home page
+    if (typeof loadMemosTimeline === 'function') {
+        const timeline = document.getElementById('memos-timeline');
+        if (timeline) {
+            // Clear existing interval
+            if (window.memosCarouselInterval) {
+                clearInterval(window.memosCarouselInterval);
+                window.memosCarouselInterval = null;
+            }
+            // Reset state
+            window.currentMemoIndex = 0;
+            window.publicMemos = [];
+            // Reload timeline
+            loadMemosTimeline();
+        }
+    }
+    
+    // Re-initialize Vercount stats
+    if (typeof createVercount === 'function') {
+        createVercount();
+    }
+    
+    // Re-initialize back to top button
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
+        backToTopBtn.style.display = 'none';
+        backToTopBtn.classList.remove('show');
+    }
+    
+    // Re-initialize scroll event listeners
+    if (typeof window.throttledHandleScroll === 'function') {
+        window.removeEventListener('scroll', window.throttledHandleScroll);
+        window.addEventListener('scroll', window.throttledHandleScroll);
+        // Reset scroll state
+        window.handleScroll();
+    }
+    
+    // Re-run all DOMContentLoaded handlers
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    
+    console.log('PJAX: Page initialized for', url);
+});
+</script>
+
+<style>
+/* PJAX Loading Indicator */
+.pjax-loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-emphasis, #0969da), var(--color-accent-muted, #54aeff));
+    z-index: 10001;
+    transition: width 0.3s ease, opacity 0.3s ease;
+    width: 0;
+    opacity: 0;
+}
+
+.pjax-loading-bar.active {
+    width: 70%;
+    opacity: 1;
+    animation: pjax-loading-pulse 1s ease-in-out infinite;
+}
+
+.pjax-loading-bar.complete {
+    width: 100%;
+    opacity: 0;
+    transition: width 0.2s ease, opacity 0.2s ease 0.2s;
+}
+
+@keyframes pjax-loading-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* PJAX Fade Animation */
+#content {
+    transition: opacity 0.15s ease;
+}
+
+#content.pjax-loading {
+    opacity: 0.7;
+}
+</style></body>
 <script>
 var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
 var utterancesLoad=0;

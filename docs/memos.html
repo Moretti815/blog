@@ -135,6 +135,43 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     margin: 0;
 }
 
+/* Source Tabs */
+.source-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--color-border-default);
+    padding-bottom: 12px;
+}
+
+.source-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-default);
+    background-color: var(--color-canvas-default);
+    color: var(--color-fg-default);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.source-tab:hover {
+    background-color: var(--color-canvas-subtle);
+}
+
+.source-tab.active {
+    background-color: var(--color-accent-emphasis, #0969da);
+    color: white;
+    border-color: var(--color-accent-emphasis, #0969da);
+}
+
+.source-tab iconify-icon {
+    font-size: 16px;
+}
+
 /* Filter Tabs */
 .memos-filter {
     display: flex;
@@ -322,6 +359,22 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     font-weight: 600;
 }
 
+/* TGTalk specific styles */
+.memo-content .emoji {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: middle;
+    margin: 0 2px;
+}
+
+.memo-content .emoji b {
+    display: none;
+}
+
 /* Memo Images (from attachments) */
 .memo-images {
     display: grid;
@@ -423,6 +476,16 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     font-size: 13px;
 }
 
+.memo-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background-color: var(--color-canvas-subtle);
+    border-radius: 4px;
+    font-size: 11px;
+}
+
 /* Loading State */
 .memos-loading {
     display: flex;
@@ -511,6 +574,15 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
     .memos-banner h1 {
         font-size: 22px;
+    }
+
+    .source-tabs {
+        gap: 6px;
+    }
+
+    .source-tab {
+        padding: 6px 12px;
+        font-size: 13px;
     }
 
     .memos-filter {
@@ -1074,6 +1146,18 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
         <p>记录生活的每一个瞬间</p>
     </div>
 
+    <!-- Source Tabs -->
+    <div class="source-tabs" id="source-tabs"><button class="source-tab active" data-source="memos" onclick="switchSource('memos')">
+            <iconify-icon icon="material-symbols:chat"></iconify-icon>
+            <span>Memos</span>
+        </button><button class="source-tab active" data-source="tgtalk" onclick="switchSource('tgtalk')">
+            <iconify-icon icon="material-symbols:send"></iconify-icon>
+            <span>TGTalk</span>
+        </button><button class="source-tab active" data-source="jike" onclick="switchSource('jike')">
+            <iconify-icon icon="material-symbols:explore"></iconify-icon>
+            <span>即刻</span>
+        </button></div>
+
     <!-- Filter Tabs -->
     <div class="memos-filter" id="memos-filter">
         <button class="filter-btn active" data-filter="all">
@@ -1272,16 +1356,397 @@ if("11/01/2024"!=""){
         };
     }
 
+    // 创建节流的滚动处理函数
+    const throttledHandleScroll = throttle(handleScroll, 100);
+
     // 绑定滚动事件（节流处理，每 100ms 执行一次）
-    window.addEventListener('scroll', throttle(handleScroll, 100));
+    window.addEventListener('scroll', throttledHandleScroll);
 
     // 初始化一次
     handleScroll();
 
-    // 暴露到全局
+    // 暴露到全局，供 PJAX 使用
     window.backToTop = backToTop;
+    window.handleScroll = handleScroll;
+    window.throttledHandleScroll = throttledHandleScroll;
 })();
-</script></body>
+</script><!-- PJAX - Partial Page Load System -->
+<script>
+(function() {
+    'use strict';
+    
+    // PJAX Configuration
+    const PJAX_CONFIG = {
+        selector: 'a[href^="https://blog.2005815.xyz"]:not([data-pjax-disable]):not([href*=".pdf"]):not([href*=".zip"]):not([href*=".rar"]):not([target="_blank"])',
+        container: '#content',
+        timeout: 10000,
+        cache: true,
+        cacheLimit: 10
+    };
+    
+    // Cache storage
+    const pageCache = new Map();
+    
+    // Current state
+    let isLoading = false;
+    let currentUrl = location.href;
+    
+    // Utility: Parse HTML string
+    function parseHTML(html) {
+        const parser = new DOMParser();
+        return parser.parseFromString(html, 'text/html');
+    }
+    
+    // Utility: Execute scripts in container
+    function executeScripts(container) {
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            // Copy attributes
+            Array.from(oldScript.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value);
+            });
+            // Copy content
+            newScript.textContent = oldScript.textContent;
+            // Replace
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    }
+    
+    // Utility: Update elements that need refresh
+    function updatePage(doc, url) {
+        const newContent = doc.querySelector(PJAX_CONFIG.container);
+        const currentContent = document.querySelector(PJAX_CONFIG.container);
+        
+        if (!newContent || !currentContent) {
+            console.warn('PJAX: Content container not found');
+            return false;
+        }
+        
+        // Update content
+        currentContent.innerHTML = newContent.innerHTML;
+        
+        // Execute scripts in new content
+        executeScripts(currentContent);
+        
+        // Update title
+        const newTitle = doc.querySelector('title');
+        if (newTitle) {
+            document.title = newTitle.textContent;
+        }
+        
+        // Update meta tags (description, og:*, etc.)
+        const metaSelectors = ['meta[name="description"]', 'meta[property^="og:"]', 'meta[name="twitter:"]'];
+        metaSelectors.forEach(selector => {
+            const newMeta = doc.querySelector(selector);
+            const currentMeta = document.querySelector(selector);
+            if (newMeta && currentMeta) {
+                currentMeta.content = newMeta.content;
+            }
+        });
+        
+        // Update header if it exists in both pages
+        const newHeader = doc.querySelector('#header');
+        const currentHeader = document.querySelector('#header');
+        if (newHeader && currentHeader) {
+            currentHeader.innerHTML = newHeader.innerHTML;
+            executeScripts(currentHeader);
+        }
+        
+        // Update footer if it exists in both pages
+        const newFooter = doc.querySelector('#footer');
+        const currentFooter = document.querySelector('#footer');
+        if (newFooter && currentFooter) {
+            currentFooter.innerHTML = newFooter.innerHTML;
+            executeScripts(currentFooter);
+        }
+        
+        // Update body classes and attributes
+        const newBody = doc.body;
+        const currentBody = document.body;
+        
+        // Copy data attributes from new body
+        Array.from(newBody.attributes).forEach(attr => {
+            if (attr.name.startsWith('data-')) {
+                currentBody.setAttribute(attr.name, attr.value);
+            }
+        });
+        
+        // Trigger custom event for page-specific initialization
+        window.dispatchEvent(new CustomEvent('pjax:complete', { detail: { url: url } }));
+        
+        return true;
+    }
+    
+    // Load page via AJAX
+    async function loadPage(url, pushState = true) {
+        if (isLoading || url === currentUrl) return;
+        
+        isLoading = true;
+        
+        // Show loading indicator
+        showLoading();
+        
+        // Check cache
+        if (PJAX_CONFIG.cache && pageCache.has(url)) {
+            const cached = pageCache.get(url);
+            if (Date.now() - cached.time < 5 * 60 * 1000) { // 5 minutes cache
+                updatePage(cached.doc, url);
+                if (pushState) {
+                    history.pushState({ url: url }, '', url);
+                }
+                currentUrl = url;
+                isLoading = false;
+                hideLoading();
+                return;
+            }
+            pageCache.delete(url);
+        }
+        
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-PJAX': 'true'
+                },
+                credentials: 'same-origin'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const html = await response.text();
+            const doc = parseHTML(html);
+            
+            // Cache the page
+            if (PJAX_CONFIG.cache) {
+                if (pageCache.size >= PJAX_CONFIG.cacheLimit) {
+                    const firstKey = pageCache.keys().next().value;
+                    pageCache.delete(firstKey);
+                }
+                pageCache.set(url, { doc: doc, time: Date.now() });
+            }
+            
+            // Update page
+            if (updatePage(doc, url)) {
+                if (pushState) {
+                    history.pushState({ url: url }, '', url);
+                }
+                currentUrl = url;
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            } else {
+                // Fallback to normal navigation
+                location.href = url;
+            }
+            
+        } catch (error) {
+            console.error('PJAX load error:', error);
+            // Fallback to normal navigation
+            location.href = url;
+        } finally {
+            isLoading = false;
+            hideLoading();
+        }
+    }
+    
+    // Show loading indicator
+    function showLoading() {
+        // Use existing preloader if available
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.style.display = 'flex';
+            preloader.classList.remove('hidden');
+        }
+    }
+    
+    // Hide loading indicator
+    function hideLoading() {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.classList.add('hidden');
+            setTimeout(() => {
+                if (!isLoading) {
+                    preloader.style.display = 'none';
+                }
+            }, 500);
+        }
+    }
+    
+    // Handle link clicks
+    function handleClick(event) {
+        const link = event.target.closest('a');
+        if (!link) return;
+        
+        // Check if link matches PJAX selector
+        if (!link.matches(PJAX_CONFIG.selector)) return;
+        
+        // Skip if modifier keys are pressed
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        
+        // Skip if it's the same page
+        if (link.href === currentUrl) {
+            event.preventDefault();
+            return;
+        }
+        
+        event.preventDefault();
+        loadPage(link.href);
+    }
+    
+    // Handle popstate (back/forward buttons)
+    function handlePopState(event) {
+        if (event.state && event.state.url) {
+            loadPage(event.state.url, false);
+        }
+    }
+    
+    // Initialize PJAX
+    function init() {
+        // Don't initialize if browser doesn't support required features
+        if (!window.history || !window.history.pushState) return;
+        
+        // Add click listener to document
+        document.addEventListener('click', handleClick);
+        
+        // Handle back/forward buttons
+        window.addEventListener('popstate', handlePopState);
+        
+        // Save initial state
+        history.replaceState({ url: location.href }, '', location.href);
+        
+        console.log('%c PJAX initialized ', 'padding:2px 5px;background:#0969da;color:#fff;border-radius:3px');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Expose PJAX API
+    window.PJAX = {
+        load: loadPage,
+        reload: function() { loadPage(currentUrl, false); },
+        clearCache: function() { pageCache.clear(); },
+        config: PJAX_CONFIG
+    };
+})();
+</script>
+
+<!-- PJAX Page Initialization Handler -->
+<script>
+// Handle page-specific initialization after PJAX load
+window.addEventListener('pjax:complete', function(event) {
+    const url = event.detail.url;
+    
+    // Re-initialize theme switcher icon
+    const themeSwitch = document.getElementById('themeSwitch');
+    if (themeSwitch && typeof IconList !== 'undefined') {
+        const currentMode = document.documentElement.getAttribute('data-color-mode');
+        if (currentMode === 'dark') {
+            themeSwitch.setAttribute('d', IconList['moon']);
+            themeSwitch.parentNode.style.color = '#00f0ff';
+        } else {
+            themeSwitch.setAttribute('d', IconList['sun']);
+            themeSwitch.parentNode.style.color = '#ff5000';
+        }
+    }
+    
+    // Re-initialize home icon
+    const pathHome = document.getElementById('pathHome');
+    if (pathHome && typeof IconList !== 'undefined') {
+        pathHome.setAttribute('d', IconList['home']);
+    }
+    
+    // Re-initialize memos timeline if on home page
+    if (typeof loadMemosTimeline === 'function') {
+        const timeline = document.getElementById('memos-timeline');
+        if (timeline) {
+            // Clear existing interval
+            if (window.memosCarouselInterval) {
+                clearInterval(window.memosCarouselInterval);
+                window.memosCarouselInterval = null;
+            }
+            // Reset state
+            window.currentMemoIndex = 0;
+            window.publicMemos = [];
+            // Reload timeline
+            loadMemosTimeline();
+        }
+    }
+    
+    // Re-initialize Vercount stats
+    if (typeof createVercount === 'function') {
+        createVercount();
+    }
+    
+    // Re-initialize back to top button
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
+        backToTopBtn.style.display = 'none';
+        backToTopBtn.classList.remove('show');
+    }
+    
+    // Re-initialize scroll event listeners
+    if (typeof window.throttledHandleScroll === 'function') {
+        window.removeEventListener('scroll', window.throttledHandleScroll);
+        window.addEventListener('scroll', window.throttledHandleScroll);
+        // Reset scroll state
+        window.handleScroll();
+    }
+    
+    // Re-run all DOMContentLoaded handlers
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    
+    console.log('PJAX: Page initialized for', url);
+});
+</script>
+
+<style>
+/* PJAX Loading Indicator */
+.pjax-loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-emphasis, #0969da), var(--color-accent-muted, #54aeff));
+    z-index: 10001;
+    transition: width 0.3s ease, opacity 0.3s ease;
+    width: 0;
+    opacity: 0;
+}
+
+.pjax-loading-bar.active {
+    width: 70%;
+    opacity: 1;
+    animation: pjax-loading-pulse 1s ease-in-out infinite;
+}
+
+.pjax-loading-bar.complete {
+    width: 100%;
+    opacity: 0;
+    transition: width 0.2s ease, opacity 0.2s ease 0.2s;
+}
+
+@keyframes pjax-loading-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* PJAX Fade Animation */
+#content {
+    transition: opacity 0.15s ease;
+}
+
+#content.pjax-loading {
+    opacity: 0.7;
+}
+</style></body>
 <script>
 var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z'};
 var utterancesLoad=0;
@@ -1700,17 +2165,22 @@ if (theme === "auto") {
 </script>
 
 <script>
-// Memos API Configuration
-const MEMOS_API_URL = 'https://m.314926.xyz/api/v1/memos';
-const MEMOS_PAGE_SIZE = 20;
+// API Configuration from config.json
+const API_CONFIG = {memos: {
+        url: 'https://m.314926.xyz/api/v1/memos',
+        type: 'memos', pageSize: 20},tgtalk: {
+        url: 'https://tgtalk.kemiaosw.top/',
+        type: 'json'},jike: {
+        url: 'https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5',
+        type: 'rss'}};
 
-// State - 每次页面加载都重新初始化
+// State - get first enabled source from configlet currentSource = 'memos';
 let memosData = [];
 let nextPageToken = '';
 let currentFilter = 'all';
 let allTags = new Set();
 
-// Configure marked.js for safe rendering
+// Configure marked.js
 marked.setOptions({
     breaks: true,
     gfm: true,
@@ -1722,15 +2192,22 @@ marked.setOptions({
     xhtml: false
 });
 
-// Initialize - 每次页面加载都会执行
-async function initMemos() {
-    // 重置状态
+// Switch Source
+async function switchSource(source) {
+    if (currentSource === source) return;
+    
+    currentSource = source;
     memosData = [];
     nextPageToken = '';
     currentFilter = 'all';
     allTags = new Set();
     
-    // 显示加载状态
+    // Update tab UI
+    document.querySelectorAll('.source-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.source === source);
+    });
+    
+    // Show loading
     document.getElementById('memos-list').innerHTML = `
         <div class="memos-loading">
             <iconify-icon icon="material-symbols:sync"></iconify-icon>
@@ -1738,34 +2215,90 @@ async function initMemos() {
         </div>
     `;
     
-    await loadMemos();
+    // Load data based on source type
+    const config = API_CONFIG[source];
+    if (!config) {
+        console.error(`Unknown source: ${source}`);
+        return;
+    }
+    
+    if (config.type === 'memos') {
+        await loadMemosData();
+    } else if (config.type === 'json') {
+        await loadTGTalkData();
+    } else if (config.type === 'rss') {
+        await loadJikeData();
+    } else {
+        // Try generic loader
+        await loadGenericData(source, config);
+    }
 }
 
-// Load Memos from API
-async function loadMemos() {
+// Generic data loader for custom sources
+async function loadGenericData(source, config) {
     const listContainer = document.getElementById('memos-list');
-
+    
     try {
-        // 添加时间戳防止缓存
-        let url = `${MEMOS_API_URL}?pageSize=${MEMOS_PAGE_SIZE}&_t=${Date.now()}`;
+        const response = await fetch(`${config.url}?_t=${Date.now()}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        let data;
+        if (config.type === 'json') {
+            data = await response.json();
+        } else {
+            data = await response.text();
+        }
+        
+        // Try to transform using source-specific function or generic
+        const transformer = window[`transform${source.charAt(0).toUpperCase() + source.slice(1)}`];
+        if (transformer) {
+            memosData = transformer(data);
+        } else {
+            // Generic fallback
+            memosData = [{
+                id: Date.now(),
+                content: '无法解析此数据源格式',
+                date: new Date().toISOString(),
+                tags: [],
+                images: [],
+                source: source
+            }];
+        }
+        
+        memosData.forEach(memo => {
+            if (memo.tags) memo.tags.forEach(tag => allTags.add(tag));
+        });
+        
+        renderMemos();
+        updateFilterTabs();
+        document.getElementById('load-more').style.display = 'none';
+        
+    } catch (error) {
+        console.error(`Failed to load ${source}:`, error);
+        listContainer.innerHTML = `
+            <div class="memos-error">
+                <iconify-icon icon="material-symbols:error-outline"></iconify-icon>
+                <p>加载 ${source} 数据失败</p>
+            </div>
+        `;
+    }
+}
+
+// Load Memos Data
+async function loadMemosData() {
+    const listContainer = document.getElementById('memos-list');
+    
+    try {
+        let url = `${API_CONFIG.memos.url}?pageSize=${API_CONFIG.memos.pageSize}&_t=${Date.now()}`;
         if (nextPageToken) {
             url += `&pageToken=${encodeURIComponent(nextPageToken)}`;
         }
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Cache-Control': 'no-cache'
-            }
-        });
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const data = await response.json();
-
+        
         if (!data.memos || data.memos.length === 0) {
             if (memosData.length === 0) {
                 listContainer.innerHTML = `
@@ -1778,45 +2311,112 @@ async function loadMemos() {
             document.getElementById('load-more').style.display = 'none';
             return;
         }
-
-        // Transform and store memos
+        
         const newMemos = transformMemos(data.memos);
         memosData = [...memosData, ...newMemos];
-
-        // Collect tags
+        
         newMemos.forEach(memo => {
-            if (memo.tags) {
-                memo.tags.forEach(tag => allTags.add(tag));
-            }
+            if (memo.tags) memo.tags.forEach(tag => allTags.add(tag));
         });
-
-        // Update next page token
+        
         nextPageToken = data.nextPageToken || '';
-
-        // Render memos
         renderMemos();
-
-        // Update filter tabs
         updateFilterTabs();
-
-        // Show/hide load more button
         document.getElementById('load-more').style.display = nextPageToken ? 'flex' : 'none';
-
+        
     } catch (error) {
         console.error('Failed to load memos:', error);
         listContainer.innerHTML = `
             <div class="memos-error">
                 <iconify-icon icon="material-symbols:error-outline"></iconify-icon>
                 <p>加载友链失败</p>
-                <button class="load-more-btn" onclick="loadMemos()" style="margin-top: 16px;">
-                    重试
-                </button>
             </div>
         `;
     }
 }
 
-// Transform Memos API response to internal format
+// Load TGTalk Data
+async function loadTGTalkData() {
+    const listContainer = document.getElementById('memos-list');
+    
+    try {
+        const response = await fetch(`${API_CONFIG.tgtalk.url}?_t=${Date.now()}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+        
+        if (!data.success || !data.data || data.data.length === 0) {
+            listContainer.innerHTML = `
+                <div class="memos-empty">
+                    <iconify-icon icon="material-symbols:chat-bubble-outline"></iconify-icon>
+                    <p>暂无 TGTalk 数据</p>
+                </div>
+            `;
+            document.getElementById('load-more').style.display = 'none';
+            return;
+        }
+        
+        memosData = transformTGTalk(data.data);
+        memosData.forEach(memo => {
+            if (memo.tags) memo.tags.forEach(tag => allTags.add(tag));
+        });
+        
+        renderMemos();
+        updateFilterTabs();
+        document.getElementById('load-more').style.display = 'none';
+        
+    } catch (error) {
+        console.error('Failed to load TGTalk:', error);
+        listContainer.innerHTML = `
+            <div class="memos-error">
+                <iconify-icon icon="material-symbols:error-outline"></iconify-icon>
+                <p>加载 TGTalk 数据失败</p>
+            </div>
+        `;
+    }
+}
+
+// Load Jike RSS Data
+async function loadJikeData() {
+    const listContainer = document.getElementById('memos-list');
+    
+    try {
+        const response = await fetch(`${API_CONFIG.jike.url}?_t=${Date.now()}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const rssText = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(rssText, 'text/xml');
+        
+        const items = xmlDoc.querySelectorAll('item');
+        if (items.length === 0) {
+            listContainer.innerHTML = `
+                <div class="memos-empty">
+                    <iconify-icon icon="material-symbols:chat-bubble-outline"></iconify-icon>
+                    <p>暂无即刻数据</p>
+                </div>
+            `;
+            document.getElementById('load-more').style.display = 'none';
+            return;
+        }
+        
+        memosData = transformJike(items);
+        renderMemos();
+        updateFilterTabs();
+        document.getElementById('load-more').style.display = 'none';
+        
+    } catch (error) {
+        console.error('Failed to load Jike:', error);
+        listContainer.innerHTML = `
+            <div class="memos-error">
+                <iconify-icon icon="material-symbols:error-outline"></iconify-icon>
+                <p>加载即刻数据失败</p>
+            </div>
+        `;
+    }
+}
+
+// Transform Memos
 function transformMemos(memos) {
     return memos
         .filter(m => m.visibility === 'PUBLIC' && m.state === 'NORMAL')
@@ -1829,26 +2429,114 @@ function transformMemos(memos) {
                 .filter(a => a.type && a.type.startsWith('image/'))
                 .map(a => `https://m.314926.xyz/file/${a.name}/${a.filename}`),
             location: m.location?.placeholder,
-            pinned: m.pinned
+            pinned: m.pinned,
+            source: 'memos'
         }))
         .sort((a, b) => {
-            // Pinned first, then by date
             if (a.pinned && !b.pinned) return -1;
             if (!a.pinned && b.pinned) return 1;
             return new Date(b.date).getTime() - new Date(a.date).getTime();
         });
 }
 
+// Transform TGTalk
+function transformTGTalk(data) {
+    return data.map(item => {
+        // Parse HTML content
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(item.text, 'text/html');
+        
+        // Extract tags from links like <a href="?q=%23%E6%97%A5%E5%B8%B8">#日常</a>
+        const tags = [];
+        doc.querySelectorAll('a[href^="?q=%23"]').forEach(link => {
+            const tagText = link.textContent.trim();
+            if (tagText.startsWith('#')) {
+                tags.push(tagText.substring(1));
+            }
+        });
+        
+        // Process content: remove tag links but keep other content
+        let content = item.text;
+        // Remove tag links but keep the text
+        content = content.replace(/<a href="\?q=%23[^"]+">([^<]+)<\/a>/g, '$1');
+        // Convert <br/> to newlines for markdown
+        content = content.replace(/<br\s*\/?>/gi, '\n');
+        
+        // Process images - filter out emoji images
+        const images = [];
+        if (item.image && Array.isArray(item.image)) {
+            item.image.forEach(img => {
+                // Skip telegram emoji images
+                if (img && !img.includes('telegram.org/img/emoji')) {
+                    // Ensure HTTPS
+                    const imgUrl = img.startsWith('//') ? 'https:' + img : 
+                                   img.startsWith('http') ? img : 'https://' + img;
+                    images.push(imgUrl);
+                }
+            });
+        }
+        
+        return {
+            id: item.id,
+            content: content,
+            date: new Date(item.time).toISOString(),
+            tags: tags,
+            images: images,
+            location: null,
+            pinned: false,
+            source: 'tgtalk',
+            views: item.views
+        };
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+// Transform Jike RSS
+function transformJike(items) {
+    const result = [];
+    items.forEach(item => {
+        const title = item.querySelector('title')?.textContent || '';
+        const description = item.querySelector('description')?.textContent || '';
+        const pubDate = item.querySelector('pubDate')?.textContent || '';
+        const link = item.querySelector('link')?.textContent || '';
+        
+        // Parse HTML description
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(description, 'text/html');
+        
+        // Extract images
+        const images = [];
+        doc.querySelectorAll('img').forEach(img => {
+            const src = img.getAttribute('src');
+            if (src) images.push(src);
+        });
+        
+        // Get text content
+        let content = doc.body.textContent || description;
+        content = content.replace(/<[^>]+>/g, '');
+        
+        result.push({
+            id: link,
+            content: content,
+            date: new Date(pubDate).toISOString(),
+            tags: [],
+            images: images,
+            location: null,
+            pinned: false,
+            source: 'jike'
+        });
+    });
+    return result;
+}
+
 // Render Memos
 function renderMemos() {
     const listContainer = document.getElementById('memos-list');
-
-    // Filter memos
+    
     let filteredMemos = memosData;
     if (currentFilter !== 'all') {
         filteredMemos = memosData.filter(m => m.tags && m.tags.includes(currentFilter));
     }
-
+    
     if (filteredMemos.length === 0) {
         listContainer.innerHTML = `
             <div class="memos-empty">
@@ -1858,10 +2546,8 @@ function renderMemos() {
         `;
         return;
     }
-
-    listContainer.innerHTML = filteredMemos.map(memo => renderMemoCard(memo)).join('');
     
-    // 重新渲染 Markdown
+    listContainer.innerHTML = filteredMemos.map(memo => renderMemoCard(memo)).join('');
     renderMarkdownContent();
 }
 
@@ -1876,9 +2562,22 @@ function renderMemoCard(memo) {
             ${escapeHtml(memo.location)}
         </span>
     ` : '';
-
+    
+    const sourceLabel = {
+        'memos': 'Memos',
+        'tgtalk': 'TGTalk',
+        'jike': '即刻'
+    }[memo.source] || memo.source;
+    
+    const sourceHtml = `
+        <span class="memo-source">
+            <iconify-icon icon="material-symbols:source"></iconify-icon>
+            ${sourceLabel}
+        </span>
+    `;
+    
     return `
-        <div class="memo-card ${memo.pinned ? 'pinned' : ''}" data-tags="${memo.tags.join(',')}">
+        <div class="memo-card ${memo.pinned ? 'pinned' : ''}" data-tags="${memo.tags.join(',')}" data-source="${memo.source}">
             ${memo.pinned ? `
                 <div class="memo-pin" title="置顶">
                     <iconify-icon icon="material-symbols:keep"></iconify-icon>
@@ -1892,6 +2591,7 @@ function renderMemoCard(memo) {
                     <iconify-icon icon="material-symbols:schedule"></iconify-icon>
                     <time datetime="${memo.date}" title="${new Date(memo.date).toLocaleString()}">${relativeTime}</time>
                 </span>
+                ${sourceHtml}
                 ${locationHtml}
             </div>
         </div>
@@ -1903,15 +2603,9 @@ function renderMarkdownContent() {
     document.querySelectorAll('.memo-content[data-content]').forEach(el => {
         const content = el.getAttribute('data-content');
         if (content) {
-            // 使用 marked.js 渲染 Markdown
             let html = marked.parse(content);
-            
-            // 处理图片点击事件
             html = html.replace(/<img([^>]+)>/g, '<img$1 onclick="openLightbox(this.src)" style="cursor: pointer;">');
-            
-            // 处理链接在新窗口打开
             html = html.replace(/<a([^>]+)href=/g, '<a$1target="_blank" rel="noopener" href=');
-            
             el.innerHTML = html;
             el.removeAttribute('data-content');
         }
@@ -1921,30 +2615,30 @@ function renderMarkdownContent() {
 // Render Images
 function renderImages(images, memoId) {
     if (!images || images.length === 0) return '';
-
+    
     let layoutClass = 'grid';
     if (images.length === 1) layoutClass = 'single';
     else if (images.length === 2) layoutClass = 'double';
     else if (images.length === 3) layoutClass = 'triple';
-
+    
     const imagesHtml = images.map((img, i) => `
         <img src="${escapeHtml(img)}" alt="Image ${i + 1}" loading="lazy" onclick="openLightbox('${escapeHtml(img)}')">
     `).join('');
-
+    
     return `<div class="memo-images ${layoutClass}">${imagesHtml}</div>`;
 }
 
 // Render Tags
 function renderTags(tags) {
     if (!tags || tags.length === 0) return '';
-
+    
     const tagsHtml = tags.map(tag => `
         <span class="memo-tag" onclick="filterByTag('${escapeHtml(tag)}')">
             <iconify-icon icon="material-symbols:tag"></iconify-icon>
             ${escapeHtml(tag)}
         </span>
     `).join('');
-
+    
     return `<div class="memo-tags">${tagsHtml}</div>`;
 }
 
@@ -1961,19 +2655,19 @@ function formatRelativeTime(dateString) {
     const date = new Date(dateString);
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-
+    
     if (diffInMinutes < 1) return '刚刚';
     if (diffInMinutes < 60) return `${diffInMinutes} 分钟前`;
-
+    
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours} 小时前`;
-
+    
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 30) return `${diffInDays} 天前`;
-
+    
     const diffInMonths = Math.floor(diffInDays / 30);
     if (diffInMonths < 12) return `${diffInMonths} 个月前`;
-
+    
     const diffInYears = Math.floor(diffInDays / 365);
     return `${diffInYears} 年前`;
 }
@@ -1982,14 +2676,14 @@ function formatRelativeTime(dateString) {
 function updateFilterTabs() {
     const filterContainer = document.getElementById('memos-filter');
     const tags = Array.from(allTags).sort();
-
+    
     let filterHtml = `
         <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" data-filter="all" onclick="setFilter('all')">
             <iconify-icon icon="material-symbols:apps"></iconify-icon>
             <span>全部</span>
         </button>
     `;
-
+    
     tags.forEach(tag => {
         const count = memosData.filter(m => m.tags && m.tags.includes(tag)).length;
         filterHtml += `
@@ -1999,7 +2693,7 @@ function updateFilterTabs() {
             </button>
         `;
     });
-
+    
     filterContainer.innerHTML = filterHtml;
 }
 
@@ -2010,21 +2704,22 @@ function setFilter(filter) {
     updateFilterTabs();
 }
 
-// Filter by Tag (from clicking a tag)
+// Filter by Tag
 function filterByTag(tag) {
     setFilter(tag);
-    // Scroll to top of memos list
     document.getElementById('memos-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // Load More Memos
 async function loadMoreMemos() {
+    if (currentSource !== 'memos') return;
+    
     const btn = document.querySelector('.load-more-btn');
     btn.disabled = true;
     btn.innerHTML = '<iconify-icon icon="material-symbols:sync" style="animation: spin 1s linear infinite;"></iconify-icon> 加载中...';
-
-    await loadMemos();
-
+    
+    await loadMemosData();
+    
     btn.disabled = false;
     btn.innerHTML = '<iconify-icon icon="material-symbols:expand-more"></iconify-icon> 加载更多';
 }
@@ -2044,19 +2739,33 @@ function closeLightbox() {
     document.body.style.overflow = '';
 }
 
-// Keyboard support for lightbox
+// Keyboard support
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeLightbox();
-    }
+    if (e.key === 'Escape') closeLightbox();
 });
 
 // Set header icons
 document.getElementById("pathHome").setAttribute("d", IconList["home"]);
 document.getElementById("themeSwitch").setAttribute("d", IconList["sun"]);
 
-// Initialize on page load - 每次页面加载都会重新获取数据
-document.addEventListener('DOMContentLoaded', initMemos);
+// Initialize - load data based on current source
+document.addEventListener('DOMContentLoaded', () => {
+    if (currentSource === 'memos') {
+        loadMemosData();
+    } else if (currentSource === 'tgtalk') {
+        loadTGTalkData();
+    } else if (currentSource === 'jike') {
+        loadJikeData();
+    } else {
+        // Try to find matching loader function
+        const loaderFunc = window[`load${currentSource.charAt(0).toUpperCase() + currentSource.slice(1)}Data`];
+        if (loaderFunc) {
+            loaderFunc();
+        } else {
+            loadMemosData();
+        }
+    }
+});
 </script>
 
 </html>

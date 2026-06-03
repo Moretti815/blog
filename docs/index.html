@@ -236,6 +236,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     font-size: 12px;
 }
 
+.memos-img-placeholder {
+    display: inline-block;
+    margin: 0 2px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
 .memos-arrow {
     width: 16px;
     height: 16px;
@@ -1021,16 +1028,397 @@ if("11/01/2024"!=""){
         };
     }
 
+    // 创建节流的滚动处理函数
+    const throttledHandleScroll = throttle(handleScroll, 100);
+
     // 绑定滚动事件（节流处理，每 100ms 执行一次）
-    window.addEventListener('scroll', throttle(handleScroll, 100));
+    window.addEventListener('scroll', throttledHandleScroll);
 
     // 初始化一次
     handleScroll();
 
-    // 暴露到全局
+    // 暴露到全局，供 PJAX 使用
     window.backToTop = backToTop;
+    window.handleScroll = handleScroll;
+    window.throttledHandleScroll = throttledHandleScroll;
 })();
-</script></body>
+</script><!-- PJAX - Partial Page Load System -->
+<script>
+(function() {
+    'use strict';
+    
+    // PJAX Configuration
+    const PJAX_CONFIG = {
+        selector: 'a[href^="https://blog.2005815.xyz"]:not([data-pjax-disable]):not([href*=".pdf"]):not([href*=".zip"]):not([href*=".rar"]):not([target="_blank"])',
+        container: '#content',
+        timeout: 10000,
+        cache: true,
+        cacheLimit: 10
+    };
+    
+    // Cache storage
+    const pageCache = new Map();
+    
+    // Current state
+    let isLoading = false;
+    let currentUrl = location.href;
+    
+    // Utility: Parse HTML string
+    function parseHTML(html) {
+        const parser = new DOMParser();
+        return parser.parseFromString(html, 'text/html');
+    }
+    
+    // Utility: Execute scripts in container
+    function executeScripts(container) {
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            // Copy attributes
+            Array.from(oldScript.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value);
+            });
+            // Copy content
+            newScript.textContent = oldScript.textContent;
+            // Replace
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    }
+    
+    // Utility: Update elements that need refresh
+    function updatePage(doc, url) {
+        const newContent = doc.querySelector(PJAX_CONFIG.container);
+        const currentContent = document.querySelector(PJAX_CONFIG.container);
+        
+        if (!newContent || !currentContent) {
+            console.warn('PJAX: Content container not found');
+            return false;
+        }
+        
+        // Update content
+        currentContent.innerHTML = newContent.innerHTML;
+        
+        // Execute scripts in new content
+        executeScripts(currentContent);
+        
+        // Update title
+        const newTitle = doc.querySelector('title');
+        if (newTitle) {
+            document.title = newTitle.textContent;
+        }
+        
+        // Update meta tags (description, og:*, etc.)
+        const metaSelectors = ['meta[name="description"]', 'meta[property^="og:"]', 'meta[name="twitter:"]'];
+        metaSelectors.forEach(selector => {
+            const newMeta = doc.querySelector(selector);
+            const currentMeta = document.querySelector(selector);
+            if (newMeta && currentMeta) {
+                currentMeta.content = newMeta.content;
+            }
+        });
+        
+        // Update header if it exists in both pages
+        const newHeader = doc.querySelector('#header');
+        const currentHeader = document.querySelector('#header');
+        if (newHeader && currentHeader) {
+            currentHeader.innerHTML = newHeader.innerHTML;
+            executeScripts(currentHeader);
+        }
+        
+        // Update footer if it exists in both pages
+        const newFooter = doc.querySelector('#footer');
+        const currentFooter = document.querySelector('#footer');
+        if (newFooter && currentFooter) {
+            currentFooter.innerHTML = newFooter.innerHTML;
+            executeScripts(currentFooter);
+        }
+        
+        // Update body classes and attributes
+        const newBody = doc.body;
+        const currentBody = document.body;
+        
+        // Copy data attributes from new body
+        Array.from(newBody.attributes).forEach(attr => {
+            if (attr.name.startsWith('data-')) {
+                currentBody.setAttribute(attr.name, attr.value);
+            }
+        });
+        
+        // Trigger custom event for page-specific initialization
+        window.dispatchEvent(new CustomEvent('pjax:complete', { detail: { url: url } }));
+        
+        return true;
+    }
+    
+    // Load page via AJAX
+    async function loadPage(url, pushState = true) {
+        if (isLoading || url === currentUrl) return;
+        
+        isLoading = true;
+        
+        // Show loading indicator
+        showLoading();
+        
+        // Check cache
+        if (PJAX_CONFIG.cache && pageCache.has(url)) {
+            const cached = pageCache.get(url);
+            if (Date.now() - cached.time < 5 * 60 * 1000) { // 5 minutes cache
+                updatePage(cached.doc, url);
+                if (pushState) {
+                    history.pushState({ url: url }, '', url);
+                }
+                currentUrl = url;
+                isLoading = false;
+                hideLoading();
+                return;
+            }
+            pageCache.delete(url);
+        }
+        
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-PJAX': 'true'
+                },
+                credentials: 'same-origin'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const html = await response.text();
+            const doc = parseHTML(html);
+            
+            // Cache the page
+            if (PJAX_CONFIG.cache) {
+                if (pageCache.size >= PJAX_CONFIG.cacheLimit) {
+                    const firstKey = pageCache.keys().next().value;
+                    pageCache.delete(firstKey);
+                }
+                pageCache.set(url, { doc: doc, time: Date.now() });
+            }
+            
+            // Update page
+            if (updatePage(doc, url)) {
+                if (pushState) {
+                    history.pushState({ url: url }, '', url);
+                }
+                currentUrl = url;
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            } else {
+                // Fallback to normal navigation
+                location.href = url;
+            }
+            
+        } catch (error) {
+            console.error('PJAX load error:', error);
+            // Fallback to normal navigation
+            location.href = url;
+        } finally {
+            isLoading = false;
+            hideLoading();
+        }
+    }
+    
+    // Show loading indicator
+    function showLoading() {
+        // Use existing preloader if available
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.style.display = 'flex';
+            preloader.classList.remove('hidden');
+        }
+    }
+    
+    // Hide loading indicator
+    function hideLoading() {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            preloader.classList.add('hidden');
+            setTimeout(() => {
+                if (!isLoading) {
+                    preloader.style.display = 'none';
+                }
+            }, 500);
+        }
+    }
+    
+    // Handle link clicks
+    function handleClick(event) {
+        const link = event.target.closest('a');
+        if (!link) return;
+        
+        // Check if link matches PJAX selector
+        if (!link.matches(PJAX_CONFIG.selector)) return;
+        
+        // Skip if modifier keys are pressed
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        
+        // Skip if it's the same page
+        if (link.href === currentUrl) {
+            event.preventDefault();
+            return;
+        }
+        
+        event.preventDefault();
+        loadPage(link.href);
+    }
+    
+    // Handle popstate (back/forward buttons)
+    function handlePopState(event) {
+        if (event.state && event.state.url) {
+            loadPage(event.state.url, false);
+        }
+    }
+    
+    // Initialize PJAX
+    function init() {
+        // Don't initialize if browser doesn't support required features
+        if (!window.history || !window.history.pushState) return;
+        
+        // Add click listener to document
+        document.addEventListener('click', handleClick);
+        
+        // Handle back/forward buttons
+        window.addEventListener('popstate', handlePopState);
+        
+        // Save initial state
+        history.replaceState({ url: location.href }, '', location.href);
+        
+        console.log('%c PJAX initialized ', 'padding:2px 5px;background:#0969da;color:#fff;border-radius:3px');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Expose PJAX API
+    window.PJAX = {
+        load: loadPage,
+        reload: function() { loadPage(currentUrl, false); },
+        clearCache: function() { pageCache.clear(); },
+        config: PJAX_CONFIG
+    };
+})();
+</script>
+
+<!-- PJAX Page Initialization Handler -->
+<script>
+// Handle page-specific initialization after PJAX load
+window.addEventListener('pjax:complete', function(event) {
+    const url = event.detail.url;
+    
+    // Re-initialize theme switcher icon
+    const themeSwitch = document.getElementById('themeSwitch');
+    if (themeSwitch && typeof IconList !== 'undefined') {
+        const currentMode = document.documentElement.getAttribute('data-color-mode');
+        if (currentMode === 'dark') {
+            themeSwitch.setAttribute('d', IconList['moon']);
+            themeSwitch.parentNode.style.color = '#00f0ff';
+        } else {
+            themeSwitch.setAttribute('d', IconList['sun']);
+            themeSwitch.parentNode.style.color = '#ff5000';
+        }
+    }
+    
+    // Re-initialize home icon
+    const pathHome = document.getElementById('pathHome');
+    if (pathHome && typeof IconList !== 'undefined') {
+        pathHome.setAttribute('d', IconList['home']);
+    }
+    
+    // Re-initialize memos timeline if on home page
+    if (typeof loadMemosTimeline === 'function') {
+        const timeline = document.getElementById('memos-timeline');
+        if (timeline) {
+            // Clear existing interval
+            if (window.memosCarouselInterval) {
+                clearInterval(window.memosCarouselInterval);
+                window.memosCarouselInterval = null;
+            }
+            // Reset state
+            window.currentMemoIndex = 0;
+            window.publicMemos = [];
+            // Reload timeline
+            loadMemosTimeline();
+        }
+    }
+    
+    // Re-initialize Vercount stats
+    if (typeof createVercount === 'function') {
+        createVercount();
+    }
+    
+    // Re-initialize back to top button
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
+        backToTopBtn.style.display = 'none';
+        backToTopBtn.classList.remove('show');
+    }
+    
+    // Re-initialize scroll event listeners
+    if (typeof window.throttledHandleScroll === 'function') {
+        window.removeEventListener('scroll', window.throttledHandleScroll);
+        window.addEventListener('scroll', window.throttledHandleScroll);
+        // Reset scroll state
+        window.handleScroll();
+    }
+    
+    // Re-run all DOMContentLoaded handlers
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    
+    console.log('PJAX: Page initialized for', url);
+});
+</script>
+
+<style>
+/* PJAX Loading Indicator */
+.pjax-loading-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-emphasis, #0969da), var(--color-accent-muted, #54aeff));
+    z-index: 10001;
+    transition: width 0.3s ease, opacity 0.3s ease;
+    width: 0;
+    opacity: 0;
+}
+
+.pjax-loading-bar.active {
+    width: 70%;
+    opacity: 1;
+    animation: pjax-loading-pulse 1s ease-in-out infinite;
+}
+
+.pjax-loading-bar.complete {
+    width: 100%;
+    opacity: 0;
+    transition: width 0.2s ease, opacity 0.2s ease 0.2s;
+}
+
+@keyframes pjax-loading-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* PJAX Fade Animation */
+#content {
+    transition: opacity 0.15s ease;
+}
+
+#content.pjax-loading {
+    opacity: 0.7;
+}
+</style></body>
 <script>
 var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'search': 'M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z', 'rss': 'M2.002 2.725a.75.75 0 0 1 .797-.699C8.79 2.42 13.58 7.21 13.974 13.201a.75.75 0 0 1-1.497.098 10.502 10.502 0 0 0-9.776-9.776.747.747 0 0 1-.7-.798ZM2.84 7.05h-.002a7.002 7.002 0 0 1 6.113 6.111.75.75 0 0 1-1.49.178 5.503 5.503 0 0 0-4.8-4.8.75.75 0 0 1 .179-1.489ZM2 13a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z', 'upload': 'M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z M11.78 4.72a.749.749 0 1 1-1.06 1.06L8.75 3.811V9.5a.75.75 0 0 1-1.5 0V3.811L5.28 5.78a.749.749 0 1 1-1.06-1.06l3.25-3.25a.749.749 0 0 1 1.06 0l3.25 3.25Z', 'post': 'M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25Zm1.75-.25a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25ZM3.5 6.25a.75.75 0 0 1 .75-.75h7a.75.75 0 0 1 0 1.5h-7a.75.75 0 0 1-.75-.75Zm.75 2.25h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1 0-1.5Z', 'about': 'M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z', 'friends': 'm7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z', 'guide': 'M1.75 1h12.5c.966 0 1.75.784 1.75 1.75v4c0 .372-.116.717-.314 1 .198.283.314.628.314 1v4a1.75 1.75 0 0 1-1.75 1.75H1.75A1.75 1.75 0 0 1 0 12.75v-4c0-.358.109-.707.314-1a1.739 1.739 0 0 1-.314-1v-4C0 1.784.784 1 1.75 1ZM1.5 2.75v4c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-4a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Zm.25 5.75a.25.25 0 0 0-.25.25v4c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-4a.25.25 0 0 0-.25-.25ZM7 4.75A.75.75 0 0 1 7.75 4h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 7 4.75ZM7.75 10h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM3 4.75A.75.75 0 0 1 3.75 4h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 3 4.75ZM3.75 10h.5a.75.75 0 0 1 0 1.5h-.5a.75.75 0 0 1 0-1.5Z'};
 var utterancesLoad=0;
@@ -1465,9 +1853,11 @@ for(var i=0;i<iconPost.length;i++){
 
 document.getElementById("关于").setAttribute("d",value=IconList["about"]);document.getElementById("友链").setAttribute("d",value=IconList["friends"]);document.getElementById("导航").setAttribute("d",value=IconList["guide"]);
 
-// Memos Timeline
-const MEMOS_API_URL = 'https://m.314926.xyz/api/v1/memos';
+// Memos Timelineconst MEMOS_API_URL = 'https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5';
+const MEMOS_API_TYPE = 'rss';
 const MEMOS_PAGE_URL = 'https://blog.2005815.xyz/memos.html';
+const MEMOS_TIMELINE_ENABLED = true;
+const MEMOS_TIMELINE_LIMIT = 5;
 
 let memosCarouselInterval = null;
 let currentMemoIndex = 0;
@@ -1482,18 +1872,38 @@ function escapeHtml(text) {
 function formatMemoContent(memo) {
     let text = memo.content || '';
     
-    // Strip HTML tags and markdown
-    text = text.replace(/<[^>]*>/g, '').replace(/!\[.*?\]\(.*?\)/g, '[图片]').replace(/\[.*?\]\(.*?\)/g, '$1');
+    // Check for images in markdown format ![alt](url) or HTML <img> tags
+    const hasMarkdownImage = /!\[.*?\]\(.*?\)/.test(text);
+    const hasHtmlImage = /<img[^>]+src\s*=\s*["'][^"']+["'][^>]*>/i.test(text);
+    
+    // Replace markdown images with placeholder [📷]
+    text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
+        return `<span class="memos-img-placeholder">📷</span>`;
+    });
+    
+    // Replace HTML img tags with placeholder
+    text = text.replace(/<img[^>]+src\s*=\s*["']([^"']+)["'][^>]*>/gi, function(match, url) {
+        return `<span class="memos-img-placeholder">📷</span>`;
+    });
+    
+    // Strip remaining HTML tags
+    text = text.replace(/<[^>]*>/g, '');
+    
+    // Handle regular markdown links [text](url) - keep the text
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1');
     
     // Truncate text
     if (text.length > 60) {
         text = text.substring(0, 60) + '...';
     }
     
-    const hasImage = memo.resources && memo.resources.some(r => r.type && r.type.startsWith('image/'));
+    // Check for resources (attachments)
+    const hasResourceImage = memo.resources && memo.resources.some(r => r.type && r.type.startsWith('image/'));
+    
+    const hasImage = hasMarkdownImage || hasHtmlImage || hasResourceImage;
     
     return {
-        text: escapeHtml(text),
+        text: text,
         hasImage: hasImage
     };
 }
@@ -1529,23 +1939,41 @@ async function loadMemosTimeline() {
     
     if (!container || !contentEl) return;
     
+    // Check if timeline is enabled
+    if (!MEMOS_TIMELINE_ENABLED) {
+        container.style.display = 'none';
+        return;
+    }
+    
     try {
-        const response = await fetch(`${MEMOS_API_URL}?limit=5&_t=${Date.now()}`);
+        const response = await fetch(`${MEMOS_API_URL}?limit=${MEMOS_TIMELINE_LIMIT}&_t=${Date.now()}`);
         if (!response.ok) throw new Error('Failed to fetch');
         
-        const data = await response.json();
-        const memos = data.memos || [];
+        // Parse data based on API type
+        let memos = [];
         
-        if (memos.length === 0) {
-            contentEl.innerHTML = '<span class="memos-loading">暂无动态</span>';
-            return;
+        if (MEMOS_API_TYPE === 'memos') {
+            const data = await response.json();
+            memos = data.memos || [];
+            // Filter only public memos
+            publicMemos = memos.filter(m => m.visibility === 'PUBLIC');
+        } else if (MEMOS_API_TYPE === 'json') {
+            // TGTalk format
+            const data = await response.json();
+            if (data.success && data.data) {
+                publicMemos = transformTGTalkForTimeline(data.data);
+            }
+        } else if (MEMOS_API_TYPE === 'rss') {
+            // Jike RSS format
+            const rssText = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(rssText, 'text/xml');
+            const items = xmlDoc.querySelectorAll('item');
+            publicMemos = transformJikeForTimeline(items);
         }
         
-        // Filter only public memos
-        publicMemos = memos.filter(m => m.visibility === 'PUBLIC');
-        
         if (publicMemos.length === 0) {
-            contentEl.innerHTML = '<span class="memos-loading">暂无公开动态</span>';
+            contentEl.innerHTML = '<span class="memos-loading">暂无动态</span>';
             return;
         }
         
@@ -1577,6 +2005,65 @@ async function loadMemosTimeline() {
         console.error('Failed to load memos:', error);
         contentEl.innerHTML = '<span class="memos-loading">加载失败</span>';
     }
+}
+
+// Transform TGTalk data for timeline
+function transformTGTalkForTimeline(data) {
+    return data.slice(0, MEMOS_TIMELINE_LIMIT).map(item => {
+        let text = item.text || '';
+        
+        // Remove HTML tags for display
+        text = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        
+        // Truncate text
+        if (text.length > 60) {
+            text = text.substring(0, 60) + '...';
+        }
+        
+        // Check for images
+        const hasImage = item.image && item.image.some(img => 
+            img && !img.includes('telegram.org/img/emoji')
+        );
+        
+        return {
+            content: text,
+            resources: hasImage ? [{ type: 'image/jpeg' }] : []
+        };
+    });
+}
+
+// Transform Jike RSS data for timeline
+function transformJikeForTimeline(items) {
+    const result = [];
+    let count = 0;
+    items.forEach(item => {
+        if (count >= MEMOS_TIMELINE_LIMIT) return;
+        
+        const description = item.querySelector('description')?.textContent || '';
+        
+        // Parse HTML description
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(description, 'text/html');
+        
+        // Check for images
+        const hasImage = doc.querySelector('img') !== null;
+        
+        // Get text content
+        let text = doc.body.textContent || description;
+        text = text.replace(/<[^>]+>/g, '').trim();
+        
+        // Truncate text
+        if (text.length > 60) {
+            text = text.substring(0, 60) + '...';
+        }
+        
+        result.push({
+            content: text,
+            resources: hasImage ? [{ type: 'image/jpeg' }] : []
+        });
+        count++;
+    });
+    return result;
 }
 
 // Initialize
