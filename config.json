@@ -192,5 +192,35 @@
             "external": true,
             "customIcon": true
         }
-    ]
+    ],
+    "memosSources": {
+        "memos": {
+            "url": "https://m.314926.xyz/api/v1/memos",
+            "pageSize": 20,
+            "type": "memos",
+            "label": "Memos",
+            "icon": "material-symbols:chat",
+            "enabled": true
+        },
+        "tgtalk": {
+            "url": "https://tgtalk.kemiaosw.top/",
+            "type": "json",
+            "label": "TGTalk",
+            "icon": "material-symbols:send",
+            "enabled": true
+        },
+        "jike": {
+            "url": "https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
+            "type": "rss",
+            "label": "即刻",
+            "icon": "material-symbols:explore",
+            "enabled": true
+        }
+    },
+    "timelineSource": {
+    "url": "https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
+    "type": "rss",
+    "limit": 5,
+    "enabled": true
+ }
 }
