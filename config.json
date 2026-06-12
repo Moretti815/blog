@@ -193,7 +193,7 @@
             "customIcon": true
         }
     ],
-    "memosDefaultSource": "jike",
+    "memosDefaultSource": "mastodon",
     "memosSources": {
         "memos": {
             "url": "https://m.314926.xyz/api/v1/memos",
@@ -210,6 +210,13 @@
             "icon": "material-symbols:send",
             "enabled": true
         },
+        "mastodon": {
+            "url": "https://mastodon-api.20050815.xyz/",
+            "type": "json",
+            "label": "Mastodon",
+            "icon": "material-symbols:alternate-email",
+            "enabled": true
+        },
         "jike": {
             "url": "https://rsshub-api.2005815.xyz/?url=https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
             "type": "rss",
@@ -219,7 +226,7 @@
         }
     },
     "timelineSource": {
-    "url": "https://rsshub-api.2005815.xyz/?url=https://rsshub.261770.xyz/jike/user/07152f0c-0f65-4501-855b-031f3e20e4a5",
+    "url": "https://mastodon-api.20050815.xyz/",
     "type": "rss",
     "limit": 5,
     "enabled": true
