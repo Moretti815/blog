@@ -227,7 +227,7 @@
     },
     "timelineSource": {
     "url": "https://mastodon-api.20050815.xyz/",
-    "type": "rss",
+    "type": "json",
     "limit": 5,
     "enabled": true
  }
