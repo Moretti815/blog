@@ -193,7 +193,7 @@
             "customIcon": true
         }
     ],
-    "memosDefaultSource": "mastodon",
+    "memosDefaultSource": "icefox",
     "memosSources": {
         "memos": {
             "url": "https://m.314926.xyz/api/v1/memos",
