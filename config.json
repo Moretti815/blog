@@ -223,11 +223,19 @@
             "label": "即刻",
             "icon": "material-symbols:explore",
             "enabled": true
+        },
+        "icefox": {
+            "url": "https://m.2005815.xyz/v1/memo",
+            "type": "json",
+            "label": "Icefox",
+            "icon": "material-symbols:ac-unit",
+            "enabled": true
         }
     },
     "timelineSource": {
-    "url": "https://mastodon-api.20050815.xyz/",
+    "url": "https://m.2005815.xyz/v1/memo",
     "type": "json",
+    "source": "icefox",
     "limit": 5,
     "enabled": true
  }
