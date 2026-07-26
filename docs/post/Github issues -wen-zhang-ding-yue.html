@@ -24,13 +24,9 @@
         }
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="本文介绍了一个利用 GitHub Issues 实现博客更新订阅通知的简单方法。通过创建一个专门的订阅 Issue 并结合 GitHub Actions 工作流，每次博客更新时在该 Issue 下自动发布评论，订阅此 Issue 的用户即可收到 GitHub 发送的邮件通知。该方案的优势包括零成本、高邮件送达率、订阅便捷及更新历史透明等。具体实现步骤包括创建订阅 Issue、编写 GitHub Actions 工作流文件，以及在博客中添加订阅入口链接。此外，文章还提供了触发时机优化、通知过滤条件设置及邮件内容设计的建议。
-
-改进建议：可以进一步探讨如何处理订阅者的大量增长对 GitHub API 限制的潜在影响，以及如何在 GitHub Actions 中更灵活地管理不同博客平台的适配问题。">
+<meta name="description" content="本文介绍了利用 GitHub Issues 的订阅功能实现博客更新通知的方案。通过创建一个专门的订阅 Issue，读者可以订阅并接收博客更新的邮件通知，解决了传统 RSS 转邮件和自建邮件订阅的复杂性和垃圾邮件问题。方案的核心是使用 GitHub Actions 自动在订阅 Issue 下发布评论通知，结合工作流触发条件和内容过滤，确保通知准确且避免重复。优点包括零成本、高邮件可信度、简单操作及无需维护复杂的退订逻辑。改进建议：可进一步优化邮件内容格式以提升阅读体验，并探索支持其他博客平台的通用性。">
 <meta property="og:title" content="Github issues 文章订阅">
-<meta property="og:description" content="本文介绍了一个利用 GitHub Issues 实现博客更新订阅通知的简单方法。通过创建一个专门的订阅 Issue 并结合 GitHub Actions 工作流，每次博客更新时在该 Issue 下自动发布评论，订阅此 Issue 的用户即可收到 GitHub 发送的邮件通知。该方案的优势包括零成本、高邮件送达率、订阅便捷及更新历史透明等。具体实现步骤包括创建订阅 Issue、编写 GitHub Actions 工作流文件，以及在博客中添加订阅入口链接。此外，文章还提供了触发时机优化、通知过滤条件设置及邮件内容设计的建议。
-
-改进建议：可以进一步探讨如何处理订阅者的大量增长对 GitHub API 限制的潜在影响，以及如何在 GitHub Actions 中更灵活地管理不同博客平台的适配问题。">
+<meta property="og:description" content="本文介绍了利用 GitHub Issues 的订阅功能实现博客更新通知的方案。通过创建一个专门的订阅 Issue，读者可以订阅并接收博客更新的邮件通知，解决了传统 RSS 转邮件和自建邮件订阅的复杂性和垃圾邮件问题。方案的核心是使用 GitHub Actions 自动在订阅 Issue 下发布评论通知，结合工作流触发条件和内容过滤，确保通知准确且避免重复。优点包括零成本、高邮件可信度、简单操作及无需维护复杂的退订逻辑。改进建议：可进一步优化邮件内容格式以提升阅读体验，并探索支持其他博客平台的通用性。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html">
 <meta property="og:image" content="https://img.314926.xyz/h">
@@ -908,9 +904,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="post-update" style="font-size: 14px; color: #666;">更新于 <time style="font-weight: bold; color: #333;">2026-05-20 12:09:44</time></span>
 
 <p><div style="border: 1px dashed #ccc; padding: 10px; margin-bottom: 20px;">
-    <strong>AI总结:</strong> 本文介绍了一个利用 GitHub Issues 实现博客更新订阅通知的简单方法。通过创建一个专门的订阅 Issue 并结合 GitHub Actions 工作流，每次博客更新时在该 Issue 下自动发布评论，订阅此 Issue 的用户即可收到 GitHub 发送的邮件通知。该方案的优势包括零成本、高邮件送达率、订阅便捷及更新历史透明等。具体实现步骤包括创建订阅 Issue、编写 GitHub Actions 工作流文件，以及在博客中添加订阅入口链接。此外，文章还提供了触发时机优化、通知过滤条件设置及邮件内容设计的建议。
-
-改进建议：可以进一步探讨如何处理订阅者的大量增长对 GitHub API 限制的潜在影响，以及如何在 GitHub Actions 中更灵活地管理不同博客平台的适配问题。
+    <strong>AI总结:</strong> 本文介绍了利用 GitHub Issues 的订阅功能实现博客更新通知的方案。通过创建一个专门的订阅 Issue，读者可以订阅并接收博客更新的邮件通知，解决了传统 RSS 转邮件和自建邮件订阅的复杂性和垃圾邮件问题。方案的核心是使用 GitHub Actions 自动在订阅 Issue 下发布评论通知，结合工作流触发条件和内容过滤，确保通知准确且避免重复。优点包括零成本、高邮件可信度、简单操作及无需维护复杂的退订逻辑。改进建议：可进一步优化邮件内容格式以提升阅读体验，并探索支持其他博客平台的通用性。
 </div>
 
 <div class="markdown-body" id="postBody">
