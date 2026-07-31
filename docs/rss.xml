@@ -1,9 +1,45 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Moretti's Blog</title><link>https://blog.2005815.xyz</link><description>这是最好的时代，也是最坏的时代。</description><copyright>Moretti's Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif</url><title>avatar</title><link>https://blog.2005815.xyz</link></image><lastBuildDate>Thu, 30 Jul 2026 17:40:21 +0000</lastBuildDate><managingEditor>Moretti's Blog</managingEditor><ttl>60</ttl><webMaster>Moretti's Blog</webMaster><item><title>Petal Note：写给喜欢碎碎念的你</title><link>https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html</link><description>本文介绍了一个名为 Petal Note 的极简日记框架，其核心特点是轻量化、易用性和高度定制性。用户只需一个 TXT 文件即可开始记录日常想法，无需复杂的数据库或后端支持。Petal Note 提供多种部署方式，如 Vercel、Cloudflare Pages 和 GitHub Pages，且完全免费。用户可以通过简单的配置文件设置个性化的主题、字体和样式，并支持密码保护和自定义语法规则。此外，框架还允许通过网页编辑器直接撰写和更新内容，甚至支持无服务器的即时保存和更新方式。
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Moretti's Blog</title><link>https://blog.2005815.xyz</link><description>这是最好的时代，也是最坏的时代。</description><copyright>Moretti's Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif</url><title>avatar</title><link>https://blog.2005815.xyz</link></image><lastBuildDate>Fri, 31 Jul 2026 17:43:04 +0000</lastBuildDate><managingEditor>Moretti's Blog</managingEditor><ttl>60</ttl><webMaster>Moretti's Blog</webMaster><item><title>Petal Note：写给喜欢碎碎念的你</title><link>https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html</link><description># Petal Note：写给喜欢碎碎念的你
 
-改进建议：进一步说明与其他日记工具的核心区别和优势；补充更多实际应用场景或用户案例，以便更直观地展示其价值。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html</guid><pubDate>Wed, 27 May 2026 11:56:09 +0000</pubDate></item><item><title>本博客的 ai 总结</title><link>https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html</link><description>本文介绍了作者为 Gmeek 博客添加 AI 自动生成文章摘要功能的实现过程，包括整体思路、具体实现、前端显示、GitHub Actions 配置以及解决过程中遇到的问题。主要步骤包括：编写调用 AI 接口的模块 `Summary.py`，通过环境变量支持多个 API 配置；在处理文章内容时调用 AI 生成摘要并集成到现有代码中；在前端模板中添加摘要展示区域；以及在 GitHub Actions 中配置环境变量以支持自动化构建。作者还分享了解决环境变量未传递、API 调用超时和摘要过长等问题的经验。最终实现的功能可以在文章发布时自动生成简洁的摘要，同时具备回退机制。后续计划包括支持手动控制摘要生成、缓存摘要结果和允许编辑生成的摘要。
+*风吹落的花瓣，和那些无处安放的碎碎念。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/Petal%20Note%EF%BC%9A-xie-gei-xi-huan-sui-sui-nian-de-ni.html</guid><pubDate>Wed, 27 May 2026 11:56:09 +0000</pubDate></item><item><title>本博客的 ai 总结</title><link>https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html</link><description># 给 Gmeek 博客添加 AI 文章总结
 
-改进建议：
-1. 考虑对生成的摘要进行更多样化的质量评估，例如通过用户反馈优化 prompt。
-2. 为摘要生成增加多语言支持，提升用户体验。
-3. 在前端提供更灵活的摘要显示样式，增强视觉效果。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html</guid><pubDate>Thu, 21 May 2026 11:56:03 +0000</pubDate></item><item><title>Github issues 文章订阅</title><link>https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html</link><description>本文介绍了利用 GitHub Issues 的订阅功能作为个人博客更新通知的解决方案。通过创建一个专门的订阅 Issue，读者可以轻松订阅并接收 GitHub 的邮件通知。博客作者通过 GitHub Actions 自动在订阅 Issue 中发布更新评论，通知内容包括文章标题、预览、标签等信息。此方案的优点是零成本、邮件可信度高、操作简单，并且无需维护复杂的邮件系统。改进建议包括优化过滤条件以减少重复通知，并针对不同博客类型（如静态博客）调整触发事件。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html</guid><pubDate>Wed, 20 May 2026 04:01:45 +0000</pubDate></item><item><title>Hello World</title><link>https://blog.2005815.xyz/post/Hello%20World.html</link><description>本文介绍了一个博客页面的内容展示示例，包括多种格式化元素的应用。内容涵盖了不同级别的标题、文本样式（如粗体、斜体）、超链接、图片插入、无序和有序列表、待办事项清单、表格对齐方式，以及代码块中的流程图与数学公式展示。页面设计展示了多样化的排版与功能，适合用于展示个人博客或技术文档。改进建议：可以补充更多实际内容和说明，以增加页面的实用性和吸引力，同时优化图片加载速度。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/Hello%20World.html</guid><pubDate>Sun, 17 May 2026 07:37:53 +0000</pubDate></item><item><title>导航</title><link>https://blog.2005815.xyz/guide.html</link><description>本站提供的实用导航入口，点击即可跳转使用。</description><guid isPermaLink="true">https://blog.2005815.xyz/guide.html</guid><pubDate>Thu, 30 Jul 2026 17:40:21 +0000</pubDate></item><item><title>友链</title><link>https://blog.2005815.xyz/friends.html</link><description>亦师亦友 · 给予帮助的人最可爱！</description><guid isPermaLink="true">https://blog.2005815.xyz/friends.html</guid><pubDate>Thu, 30 Jul 2026 17:40:21 +0000</pubDate></item><item><title>关于</title><link>https://blog.2005815.xyz/about.html</link><guid isPermaLink="true">https://blog.2005815.xyz/about.html</guid><pubDate>Thu, 30 Jul 2026 17:40:21 +0000</pubDate></item></channel></rss>
+前段时间折腾博客的时候，发现有些文章比较长，想给每篇文章加个自动生成的摘要。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/ben-bo-ke-de-%20ai%20-zong-jie.html</guid><pubDate>Thu, 21 May 2026 11:56:03 +0000</pubDate></item><item><title>Github issues 文章订阅</title><link>https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html</link><description>博客写久了，总会想：读者怎么知道我更新了？
+
+RSS 是个老方案，但现在的邮箱服务商越来越严格，RSS 转邮件的通知经常被丢进垃圾箱。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/Github%20issues%20-wen-zhang-ding-yue.html</guid><pubDate>Wed, 20 May 2026 04:01:45 +0000</pubDate></item><item><title>Hello World</title><link>https://blog.2005815.xyz/post/Hello%20World.html</link><description>欢迎来到我的博客！
+
+# 一级标题
+## 二级标题
+### 三级标题
+
+测试**粗体**，测试*斜体*
+
+测试[链接](https://www.kemiaosw.top)
+
+测试图片:
+![](https://jsd.268682.xyz/gh/Kemeow0815/img@main/img/kemiao.gif)
+
+- 无序
+- 列表
+
+1. 有序
+2. 列表
+
+- [ ] todo
+-  [x] 待办列表
+
+| 标题 | 第一 | 第二 |
+| :--- | :---: | ---: |
+| 左对齐 | 居中 | 右对齐 |
+
+```mermaid
+graph TD
+    A[开始] --&gt; B{条件判断}
+    B --&gt;|Yes| C[执行操作A]
+    B --&gt;|No| D[执行操作B]
+    C --&gt; E[结束]
+    D --&gt; E
+```
+
+$$E = mc^2$$
+
+$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$。</description><guid isPermaLink="true">https://blog.2005815.xyz/post/Hello%20World.html</guid><pubDate>Sun, 17 May 2026 07:37:53 +0000</pubDate></item><item><title>导航</title><link>https://blog.2005815.xyz/guide.html</link><description>本站提供的实用导航入口，点击即可跳转使用。</description><guid isPermaLink="true">https://blog.2005815.xyz/guide.html</guid><pubDate>Fri, 31 Jul 2026 17:43:04 +0000</pubDate></item><item><title>友链</title><link>https://blog.2005815.xyz/friends.html</link><description>亦师亦友 · 给予帮助的人最可爱！</description><guid isPermaLink="true">https://blog.2005815.xyz/friends.html</guid><pubDate>Fri, 31 Jul 2026 17:43:04 +0000</pubDate></item><item><title>关于</title><link>https://blog.2005815.xyz/about.html</link><guid isPermaLink="true">https://blog.2005815.xyz/about.html</guid><pubDate>Fri, 31 Jul 2026 17:43:04 +0000</pubDate></item></channel></rss>
